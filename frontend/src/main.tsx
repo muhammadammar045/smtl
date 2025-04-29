@@ -4,11 +4,15 @@ import { RouterProvider } from "react-router-dom";
 import "./index.css";
 import { router } from "./router";
 import { ThemeProvider } from "./contexts/themeContext/themeContext";
+import { ApiProvider } from "@reduxjs/toolkit/query/react";
+import { api } from "../store/service/rtk-service";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
-            <RouterProvider router={router} />
+            <ApiProvider api={api}>
+                <RouterProvider router={router} />
+            </ApiProvider>
         </ThemeProvider>
     </StrictMode>
 );
