@@ -194,7 +194,7 @@ function Calendar() {
                                 key={`slot-${i}-${j}`}
                                 className='border-t border-l p-1 min-h-[60px]'
                             >
-                                {/* Event slots */}
+                                {/* Event slot s */}
                             </div>
                         ))}
                     </>
