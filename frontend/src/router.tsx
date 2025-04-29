@@ -20,6 +20,8 @@ import LiveClasses from "./pages/dashboard/LiveClasses";
 import ExamsResult from "./pages/dashboard/examinations/ExamsResult";
 import Noticeboard from "./pages/dashboard/Noticeboard";
 import Login from "./pages/Login/Login";
+import Calendar from "./components/dashboard/calendar/Calendar";
+import Todo from "./components/dashboard/todo/Todo";
 
 // Import the page components
 
@@ -59,6 +61,14 @@ export const router = createBrowserRouter([
                 path: "dashboard",
                 element: <DashboardLayout />,
                 children: [
+                    {
+                        path: "calendar",
+                        element: <Calendar />,
+                    },
+                    {
+                        path: "todo",
+                        element: <Todo />,
+                    },
                     {
                         path: "profile",
                         element: <Profile />,

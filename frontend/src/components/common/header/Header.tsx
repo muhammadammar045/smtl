@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import { Calendar, UserCircle, ListTodo } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 
@@ -49,6 +50,7 @@ export const Header = ({
         title: "Air Foundation School System",
     },
 }: HeaderProps) => {
+    const navigate = useNavigate();
     return (
         <section className='h-[100px] w-full bg-background border-b relative'>
             <div className='h-full w-full px-4 flex items-center'>
@@ -103,8 +105,7 @@ export const Header = ({
                                         size='icon'
                                         className='hover:bg-accent'
                                         onClick={() =>
-                                            (window.location.href =
-                                                "/dashboard/todo")
+                                            navigate("/dashboard/todo")
                                         }
                                     >
                                         <ListTodo className='h-5 w-5' />
@@ -122,8 +123,7 @@ export const Header = ({
                                         size='icon'
                                         className='hover:bg-accent'
                                         onClick={() =>
-                                            (window.location.href =
-                                                "/dashboard/calendar")
+                                            navigate("/dashboard/calendar")
                                         }
                                     >
                                         <Calendar className='h-5 w-5' />
