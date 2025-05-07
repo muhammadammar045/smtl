@@ -5,6 +5,7 @@ import morgan from "morgan";
 import logger from "./utils/logger.js";
 import ApiError from "./utils/ApiError.js"
 import { db } from "./db/conn.js";
+import UserModel from "./models/user.model.js";
 
 const app = express();
 
@@ -48,11 +49,10 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true, }));
 
 
-
 app.get("/", async (req, res) => {
     try {
-        const users = await getUsers();
-        res.json(users);
+        const users = await UserModel.getFromUser("03145158070")
+        console.log("🚀 ~ app.get ~ users:", users)
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).json({ error: "Internal Server Error" });
