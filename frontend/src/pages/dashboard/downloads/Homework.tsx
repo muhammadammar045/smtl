@@ -1,5 +1,5 @@
 import React from "react";
-import HomeworkComp from "@/components/dashboard/downloads/Homework";
+import HomeworkComp from "@/components/student/dashboard/downloads/Homework";
 
 function Homework() {
     return <HomeworkComp />;

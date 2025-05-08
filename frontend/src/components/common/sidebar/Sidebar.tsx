@@ -14,6 +14,7 @@ import {
     Book,
     Sun,
     CalendarSearchIcon,
+    User,
 } from "lucide-react";
 
 import {
@@ -33,7 +34,29 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-const Links = [
+
+const mockChildren = [
+    {
+        id: "1",
+        name: "Muhammad Senan",
+        rollNumber: "afsss-B17-00093",
+    },
+    {
+        id: "2",
+        name: "Muhammad Ammar",
+        rollNumber: "affss-B17-00094",
+    },
+    {
+        id: "3",
+        name: "Muhammad Maaz",
+        rollNumber: "afsas-B17-00094",
+    },
+];
+
+// Check if current user is parent (in real app, get from auth context)
+const isParent = window.location.pathname.includes("/parent");
+
+const studentLinks = [
     {
         title: "My Profile",
         url: "/dashboard/profile",
@@ -129,6 +152,76 @@ const Links = [
         icon: Bus,
     },
 ];
+
+const generateParentLinks = () => {
+    const links: LinkItem[] = [];
+
+    mockChildren.forEach((child) => {
+        links.push({
+            title: child.name,
+            url: `/parent/child/${child.id}`,
+            icon: User,
+            items: [
+                {
+                    title: "Profile",
+                    url: `/parent/child/${child.id}/profile`,
+                    icon: Users,
+                },
+                {
+                    title: "Notice Board",
+                    url: `/parent/child/${child.id}/notice-board`,
+                    icon: Bell,
+                },
+                {
+                    title: "Attendance",
+                    url: `/parent/child/${child.id}/attendance`,
+                    icon: ClipboardList,
+                },
+                {
+                    title: "Live Classes",
+                    url: `/parent/child/${child.id}/live-classes`,
+                    icon: BookOpen,
+                },
+                {
+                    title: "IN/OUT Time Log",
+                    url: `/parent/child/${child.id}/time-log`,
+                    icon: Clock,
+                },
+                {
+                    title: "Diary",
+                    url: `/parent/child/${child.id}/diary`,
+                    icon: FileText,
+                },
+                {
+                    title: "Examinations",
+                    url: `/parent/child/${child.id}/examinations`,
+                    icon: FileText,
+                    items: [
+                        {
+                            title: "Exam Schedule",
+                            url: `/parent/child/${child.id}/exams/schedule`,
+                            icon: CalendarSearchIcon,
+                        },
+                        {
+                            title: "Exam Results",
+                            url: `/parent/child/${child.id}/exams/results`,
+                            icon: FileText,
+                        },
+                        {
+                            title: "Progress Report",
+                            url: `/parent/child/${child.id}/progress/report`,
+                            icon: FileText,
+                        },
+                    ],
+                },
+            ],
+        });
+    });
+
+    return links;
+};
+
+const Links = isParent ? generateParentLinks() : studentLinks;
 
 interface LinkItem {
     title: string;

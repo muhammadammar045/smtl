@@ -1,5 +1,5 @@
 import React from "react";
-import TimeTableComp from "@/components/dashboard/downloads/TimeTable";
+import TimeTableComp from "@/components/student/dashboard/downloads/TimeTable";
 
 function TimeTable() {
     return <TimeTableComp />;

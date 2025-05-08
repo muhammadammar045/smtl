@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "./layouts/RootLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
-import { DashboardLayout } from "./layouts/DashboardLayout";
 import { NotFound } from "./components/error/NotFound";
 import Profile from "./pages/dashboard/Profile";
 import Attendance from "./pages/dashboard/Attendance";
@@ -20,8 +19,10 @@ import LiveClasses from "./pages/dashboard/LiveClasses";
 import ExamsResult from "./pages/dashboard/examinations/ExamsResult";
 import Noticeboard from "./pages/dashboard/Noticeboard";
 import Login from "./pages/Login/Login";
-import Calendar from "./components/dashboard/calendar/Calendar";
-import Todo from "./components/dashboard/todo/Todo";
+import { DashboardLayout } from "./layouts/DashboardLayout";
+import Calendar from "./components/student/dashboard/calendar/Calendar";
+import Todo from "./components/student/dashboard/todo/Todo";
+import { ParentDashboardLayout } from "./layouts/ParentDashboardLayout";
 
 // Import the page components
 
@@ -133,6 +134,41 @@ export const router = createBrowserRouter([
                         path: "transport",
                         element: <TransportRoutes />,
                     },
+                ],
+            },
+            {
+                path: "parent",
+                element: <ParentDashboardLayout />,
+                children: [
+                    {
+                        path: "calendar",
+                        element: <Calendar />,
+                    },
+                    {
+                        path: "todo",
+                        element: <Todo />,
+                    },
+                    {
+                        path: "notice-board",
+                        element: <Noticeboard />,
+                    },
+                    {
+                        path: "attendance",
+                        element: <Attendance />,
+                    },
+                    {
+                        path: "live-classes",
+                        element: <LiveClasses />,
+                    },
+                    {
+                        path: "time-log",
+                        element: <TimeLog />,
+                    },
+                    {
+                        path: "diary",
+                        element: <Diary />,
+                    },
+                    // Add other routes as needed
                 ],
             },
             {

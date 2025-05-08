@@ -1,5 +1,5 @@
 import React from "react";
-import ExamsResultComp from "@/components/dashboard/examinations/ExamsResult";
+import ExamsResultComp from "@/components/student/dashboard/examinations/ExamsResult";
 
 function ExamsResult() {
     return <ExamsResultComp />;

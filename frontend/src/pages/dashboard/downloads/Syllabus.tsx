@@ -1,5 +1,5 @@
 import React from "react";
-import SyllabusComp from "@/components/dashboard/downloads/Syllabus";
+import SyllabusComp from "@/components/student/dashboard/downloads/Syllabus";
 
 function Syllabus() {
     return <SyllabusComp />;

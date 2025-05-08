@@ -1,5 +1,5 @@
 import React from "react";
-import TransportRoutesComp from "@/components/dashboard/transport/TransportRoutes";
+import TransportRoutesComp from "@/components/student/dashboard/transport/TransportRoutes";
 
 function TransportRoutes() {
     return <TransportRoutesComp />;

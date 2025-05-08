@@ -1,5 +1,5 @@
 import React from "react";
-import SubjectsComp from "@/components/dashboard/subjects/Subjects";
+import SubjectsComp from "@/components/student/dashboard/subjects/Subjects";
 
 function Subjects() {
     return <SubjectsComp />;
