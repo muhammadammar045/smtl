@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import {
     BookOpen,
@@ -15,6 +15,7 @@ import {
     Sun,
     CalendarSearchIcon,
     User,
+    ChevronDown,
 } from "lucide-react";
 
 import {
@@ -39,24 +40,25 @@ const mockChildren = [
     {
         id: "1",
         name: "Muhammad Senan",
-        rollNumber: "afsss-B17-00093",
     },
     {
         id: "2",
         name: "Muhammad Ammar",
-        rollNumber: "affss-B17-00094",
     },
     {
         id: "3",
         name: "Muhammad Maaz",
-        rollNumber: "afsas-B17-00094",
     },
 ];
 
-// Check if current user is parent (in real app, get from auth context)
-const isParent = window.location.pathname.includes("/parent");
+interface LinkItem {
+    title: string;
+    url: string;
+    icon: React.ComponentType;
+    items?: LinkItem[];
+}
 
-const studentLinks = [
+const studentLinks: LinkItem[] = [
     {
         title: "My Profile",
         url: "/dashboard/profile",
@@ -153,82 +155,40 @@ const studentLinks = [
     },
 ];
 
-const generateParentLinks = () => {
-    const links: LinkItem[] = [];
+const generateParentLinks = (): LinkItem[] => {
+    return studentLinks.map((link) => {
+        const newLink: LinkItem = {
+            title: link.title,
+            url: link.url,
+            icon: link.icon,
+        };
 
-    mockChildren.forEach((child) => {
-        links.push({
-            title: child.name,
-            url: `/parent/child/${child.id}`,
-            icon: User,
-            items: [
-                {
-                    title: "Profile",
-                    url: `/parent/child/${child.id}/profile`,
-                    icon: Users,
-                },
-                {
-                    title: "Notice Board",
-                    url: `/parent/child/${child.id}/notice-board`,
-                    icon: Bell,
-                },
-                {
-                    title: "Attendance",
-                    url: `/parent/child/${child.id}/attendance`,
-                    icon: ClipboardList,
-                },
-                {
-                    title: "Live Classes",
-                    url: `/parent/child/${child.id}/live-classes`,
-                    icon: BookOpen,
-                },
-                {
-                    title: "IN/OUT Time Log",
-                    url: `/parent/child/${child.id}/time-log`,
-                    icon: Clock,
-                },
-                {
-                    title: "Diary",
-                    url: `/parent/child/${child.id}/diary`,
-                    icon: FileText,
-                },
-                {
-                    title: "Examinations",
-                    url: `/parent/child/${child.id}/examinations`,
-                    icon: FileText,
-                    items: [
-                        {
-                            title: "Exam Schedule",
-                            url: `/parent/child/${child.id}/exams/schedule`,
-                            icon: CalendarSearchIcon,
-                        },
-                        {
-                            title: "Exam Results",
-                            url: `/parent/child/${child.id}/exams/results`,
-                            icon: FileText,
-                        },
-                        {
-                            title: "Progress Report",
-                            url: `/parent/child/${child.id}/progress/report`,
-                            icon: FileText,
-                        },
-                    ],
-                },
-            ],
-        });
+        if (link.items) {
+            newLink.items = link.items.map((subItem) => ({
+                ...subItem,
+                // Add children to each sub-item
+                items: mockChildren.map((child) => ({
+                    title: child.name,
+                    url: `/parent/child/${child.id}${subItem.url.substring(
+                        "/dashboard".length
+                    )}`,
+                    icon: User,
+                })),
+            }));
+        } else {
+            // For simple links, add children directly
+            newLink.items = mockChildren.map((child) => ({
+                title: child.name,
+                url: `/parent/child/${child.id}${link.url.substring(
+                    "/dashboard".length
+                )}`,
+                icon: User,
+            }));
+        }
+
+        return newLink;
     });
-
-    return links;
 };
-
-const Links = isParent ? generateParentLinks() : studentLinks;
-
-interface LinkItem {
-    title: string;
-    url: string;
-    icon: React.ComponentType;
-    items?: LinkItem[];
-}
 
 const isItemActive = (item: LinkItem, pathname: string) => {
     if (item.url && pathname.startsWith(item.url)) {
@@ -244,28 +204,30 @@ const isItemActive = (item: LinkItem, pathname: string) => {
 
 export function AppSidebar() {
     const location = useLocation();
-    const [openAccordion, setOpenAccordion] = useState<string | undefined>(
-        undefined
+    const isParent = location.pathname.includes("/parent");
+
+    const Links = useMemo(
+        () => (isParent ? generateParentLinks() : studentLinks),
+        [isParent]
     );
 
-    useEffect(() => {
-        // when URL changes, auto open correct accordion
-        const activeItem = Links.find((item) =>
-            isItemActive(item, location.pathname)
-        );
-        if (activeItem && activeItem.items) {
-            setOpenAccordion(activeItem.title);
-        } else {
-            setOpenAccordion(undefined);
-        }
-    }, [location.pathname]);
+    const [openAccordions, setOpenAccordions] = useState<
+        Record<string, boolean>
+    >({});
+
+    const toggleAccordion = (title: string) => {
+        setOpenAccordions((prev) => ({
+            ...prev,
+            [title]: !prev[title],
+        }));
+    };
 
     return (
         <Sidebar>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
-                    <p className='text-sm py-3 text-start px-4 bg-primary'>
+                    <p className='text-sm py-3 text-start px-4 mb-2 bg-primary'>
                         Current Session : <span>2023-2024</span>
                     </p>
                     <SidebarGroupContent>
@@ -275,69 +237,165 @@ export function AppSidebar() {
                                     item,
                                     location.pathname
                                 );
+                                const hasChildren =
+                                    item.items && item.items.length > 0;
 
                                 return (
                                     <SidebarMenuItem key={item.title}>
-                                        {item.items ? (
-                                            <Accordion
-                                                type='single'
-                                                collapsible
-                                                value={openAccordion}
-                                                onValueChange={setOpenAccordion}
-                                            >
-                                                <AccordionItem
-                                                    key={item.title}
-                                                    value={item.title}
-                                                    className='border-none'
+                                        {hasChildren ? (
+                                            <div className='flex flex-col'>
+                                                <button
+                                                    onClick={() =>
+                                                        toggleAccordion(
+                                                            item.title
+                                                        )
+                                                    }
+                                                    className={`flex items-center justify-between w-full px-2 py-2 text-muted-foreground hover:no-underline ${
+                                                        active
+                                                            ? "bg-primary text-foreground rounded-md"
+                                                            : ""
+                                                    }`}
                                                 >
-                                                    <AccordionTrigger
-                                                        className={`px-2 py-2 hover:no-underline ${
-                                                            active
-                                                                ? "bg-primary text-foreground rounded-md"
+                                                    <div className='flex items-center gap-2'>
+                                                        <item.icon className='h-4 w-4' />
+                                                        <span>
+                                                            {item.title}
+                                                        </span>
+                                                    </div>
+                                                    <ChevronDown
+                                                        className={`h-4 w-4 transition-transform ${
+                                                            openAccordions[
+                                                                item.title
+                                                            ]
+                                                                ? "rotate-180"
                                                                 : ""
                                                         }`}
-                                                    >
-                                                        <div className='flex items-center gap-2'>
-                                                            <item.icon className='h-4 w-4' />
-                                                            <span>
-                                                                {item.title}
-                                                            </span>
-                                                        </div>
-                                                    </AccordionTrigger>
-                                                    <AccordionContent>
-                                                        <div className='flex flex-col gap-2 px-3'>
-                                                            {item.items.map(
-                                                                (subItem) => (
-                                                                    <NavLink
+                                                    />
+                                                </button>
+
+                                                {openAccordions[item.title] && (
+                                                    <div className='pl-6'>
+                                                        {item.items?.map(
+                                                            (subItem) => {
+                                                                const subHasChildren =
+                                                                    subItem.items &&
+                                                                    subItem
+                                                                        .items
+                                                                        .length >
+                                                                        0;
+
+                                                                return (
+                                                                    <div
                                                                         key={
                                                                             subItem.title
                                                                         }
-                                                                        to={
-                                                                            subItem.url
-                                                                        }
-                                                                        className={({
-                                                                            isActive,
-                                                                        }) =>
-                                                                            `flex items-center gap-2 py-2 text-sm hover:text-foreground ${
-                                                                                isActive
-                                                                                    ? "bg-primary text-foreground rounded-md px-2"
-                                                                                    : "text-muted-foreground"
-                                                                            }`
-                                                                        }
+                                                                        className='mt-1'
                                                                     >
-                                                                        <subItem.icon className='h-4 w-4' />
-                                                                        <span>
-                                                                            {
-                                                                                subItem.title
-                                                                            }
-                                                                        </span>
-                                                                    </NavLink>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </AccordionContent>
-                                                </AccordionItem>
-                                            </Accordion>
+                                                                        {subHasChildren ? (
+                                                                            <div className='flex flex-col'>
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        toggleAccordion(
+                                                                                            subItem.title
+                                                                                        )
+                                                                                    }
+                                                                                    className={`flex items-center justify-between w-full px-2 py-2 text-sm text-muted-foreground hover:no-underline ${
+                                                                                        isItemActive(
+                                                                                            subItem,
+                                                                                            location.pathname
+                                                                                        )
+                                                                                            ? "text-primary rounded-md"
+                                                                                            : ""
+                                                                                    }`}
+                                                                                >
+                                                                                    <div className='flex items-center gap-2'>
+                                                                                        <subItem.icon className='h-4 w-4' />
+                                                                                        <span>
+                                                                                            {
+                                                                                                subItem.title
+                                                                                            }
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <ChevronDown
+                                                                                        className={`h-4 w-4 transition-transform ${
+                                                                                            openAccordions[
+                                                                                                subItem
+                                                                                                    .title
+                                                                                            ]
+                                                                                                ? "rotate-180"
+                                                                                                : ""
+                                                                                        }`}
+                                                                                    />
+                                                                                </button>
+
+                                                                                {openAccordions[
+                                                                                    subItem
+                                                                                        .title
+                                                                                ] && (
+                                                                                    <div className='pl-4'>
+                                                                                        {subItem.items?.map(
+                                                                                            (
+                                                                                                childItem
+                                                                                            ) => (
+                                                                                                <NavLink
+                                                                                                    key={
+                                                                                                        childItem.title
+                                                                                                    }
+                                                                                                    to={
+                                                                                                        childItem.url
+                                                                                                    }
+                                                                                                    className={({
+                                                                                                        isActive,
+                                                                                                    }) =>
+                                                                                                        `flex items-center gap-2 py-1 px-2 text-xs hover:text-primary ${
+                                                                                                            isActive
+                                                                                                                ? "text-primary rounded-md"
+                                                                                                                : "text-muted-foreground"
+                                                                                                        }`
+                                                                                                    }
+                                                                                                >
+                                                                                                    <childItem.icon className='h-3 w-3' />
+                                                                                                    <span>
+                                                                                                        {
+                                                                                                            childItem.title
+                                                                                                        }
+                                                                                                    </span>
+                                                                                                </NavLink>
+                                                                                            )
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <NavLink
+                                                                                to={
+                                                                                    subItem.url
+                                                                                }
+                                                                                className={({
+                                                                                    isActive,
+                                                                                }) =>
+                                                                                    `flex items-center gap-2 py-1 px-2 text-sm hover:text-primary ${
+                                                                                        isActive
+                                                                                            ? "text-primary rounded-md"
+                                                                                            : "text-muted-foreground"
+                                                                                    }`
+                                                                                }
+                                                                            >
+                                                                                <subItem.icon className='h-4 w-4' />
+                                                                                <span>
+                                                                                    {
+                                                                                        subItem.title
+                                                                                    }
+                                                                                </span>
+                                                                            </NavLink>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         ) : (
                                             <SidebarMenuButton asChild>
                                                 <NavLink

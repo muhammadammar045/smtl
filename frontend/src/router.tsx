@@ -141,31 +141,35 @@ export const router = createBrowserRouter([
                 element: <ParentDashboardLayout />,
                 children: [
                     {
-                        path: "calendar",
+                        path: "calendar/child/:childId",
                         element: <Calendar />,
                     },
                     {
-                        path: "todo",
+                        path: "todo/child/:childId",
                         element: <Todo />,
                     },
                     {
-                        path: "notice-board",
+                        path: "child/:childId/profile",
+                        element: <Profile />,
+                    },
+                    {
+                        path: "child/:childId/notice-board",
                         element: <Noticeboard />,
                     },
                     {
-                        path: "attendance",
+                        path: "child/:childId/attendance",
                         element: <Attendance />,
                     },
                     {
-                        path: "live-classes",
+                        path: "child/:childId/live-classes",
                         element: <LiveClasses />,
                     },
                     {
-                        path: "time-log",
+                        path: "child/:childId/time-log",
                         element: <TimeLog />,
                     },
                     {
-                        path: "diary",
+                        path: "child/:childId/diary",
                         element: <Diary />,
                     },
                     // Add other routes as needed
