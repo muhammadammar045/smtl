@@ -3,9 +3,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import logger from "./utils/logger.js";
-import ApiError from "./utils/ApiError.js"
-import { db } from "./db/conn.js";
 import UserModel from "./models/user.model.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -49,23 +48,8 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true, }));
 
 
-app.get("/", async (req, res) => {
-    try {
-        const users = await UserModel.getFromUser("03145158070")
-        console.log("🚀 ~ app.get ~ users:", users)
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
+app.use("/api/auth", authRoutes);
 
 
-
-
-// app.all("*", (req, res) => {
-//     const message = `Can't find ${req.originalUrl} on this server!`;
-//     logger.warn(message);
-//     throw new ApiError(404, message);
-// });
 
 export default app;

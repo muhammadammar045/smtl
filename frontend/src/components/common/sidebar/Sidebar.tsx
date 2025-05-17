@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import {
     BookOpen,
@@ -19,13 +19,6 @@ import {
 } from "lucide-react";
 
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-
-import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
@@ -35,6 +28,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAppSelector } from "@/store/hooks/hooks";
+import { selectAuthRole } from "@/store/slices/auth/auth.slice";
 
 const mockChildren = [
     {
@@ -204,11 +199,11 @@ const isItemActive = (item: LinkItem, pathname: string) => {
 
 export function AppSidebar() {
     const location = useLocation();
-    const isParent = location.pathname.includes("/parent");
+    const role = useAppSelector(selectAuthRole);
 
     const Links = useMemo(
-        () => (isParent ? generateParentLinks() : studentLinks),
-        [isParent]
+        () => (role === "parent" ? generateParentLinks() : studentLinks),
+        [role]
     );
 
     const [openAccordions, setOpenAccordions] = useState<

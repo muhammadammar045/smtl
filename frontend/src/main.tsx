@@ -4,15 +4,30 @@ import { RouterProvider } from "react-router-dom";
 import "./index.css";
 import { router } from "./router";
 import { ThemeProvider } from "./contexts/themeContext/themeContext";
-import { ApiProvider } from "@reduxjs/toolkit/query/react";
-import { api } from "../store/service/rtk-service";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <ThemeProvider>
-            <ApiProvider api={api}>
+        <Provider store={store}>
+            <ThemeProvider>
                 <RouterProvider router={router} />
-            </ApiProvider>
-        </ThemeProvider>
+                <ToastContainer
+                    position='top-center'
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick={false}
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme='dark'
+                    transition={Bounce}
+                />
+            </ThemeProvider>
+        </Provider>
     </StrictMode>
 );

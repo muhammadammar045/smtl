@@ -1,3 +1,11 @@
+export interface ApiResponse<T> {
+    statusCode: number;
+    data: T;
+    message: string;
+    success: boolean;
+}
+
+
 export interface IProfileData {
     name: string;
     rollNumber: string;
@@ -41,4 +49,12 @@ export interface IProfileData {
         bankName: string;
         branchCode: string;
     };
+}
+
+export interface IUser {
+    id: string;
+    username: string;
+    role: string;
+    is_active: boolean;
+    def_status: string;
 }
