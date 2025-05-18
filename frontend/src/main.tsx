@@ -18,8 +18,8 @@ createRoot(document.getElementById("root")!).render(
                     position='top-center'
                     autoClose={2000}
                     hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick={false}
+                    newestOnTop
+                    closeOnClick
                     rtl={false}
                     pauseOnFocusLoss
                     draggable
