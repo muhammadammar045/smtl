@@ -51,10 +51,44 @@ export interface IProfileData {
     };
 }
 
-export interface IUser {
-    id: string;
+export interface ISchoolSettings {
+    date_format: string;
+    currency_symbol: string;
+    timezone: string;
+    sch_name: string;
+    language: {
+        lang_id: number;
+        language: string;
+    };
+    is_rtl: boolean;
+    theme: string;
+}
+
+export interface IStudentUser {
+    id: number;
+    student_id: number;
+    role: "student";
     username: string;
-    role: string;
-    is_active: boolean;
-    def_status: string;
+    image: string;
+    settings: ISchoolSettings;
+}
+
+export interface IParentChild {
+    student_id: number;
+    name: string;
+}
+
+export interface IParentUser {
+    id: number;
+    student_id: number; // Often 0 or null for parent itself
+    role: "parent";
+    username: string;
+    image: string;
+    settings: ISchoolSettings;
+    children: IParentChild[];
+}
+
+export interface IUser {
+    student?: IStudentUser;
+    parent?: IParentUser;
 }

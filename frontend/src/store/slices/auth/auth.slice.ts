@@ -115,6 +115,6 @@ export const { setUser, clearUser, setError, setLoading } = authSlice.actions;
 export default authSlice.reducer;
 
 export const selectAuthUser = (state: RootState) => state.auth.user;
-export const selectAuthRole = (state: RootState) => state.auth.user?.role;
+export const selectAuthRole = (state: RootState) => state.auth.user
 export const selectAuthIsLoading = (state: RootState) => state.auth.loading;
 export const selectAuthError = (state: RootState) => state.auth.error;

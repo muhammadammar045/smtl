@@ -44,8 +44,10 @@ export function LoginForm({
                 success: "Login successful",
                 error: "Login failed",
             });
+            console.log("🚀 ~ onSubmit ~ result:", result);
             if (result.success) {
-                navigate("/dashboard");
+                const parent = result.data.parent;
+                parent ? navigate("/parent") : navigate("/dashboard");
             }
         } catch (err) {
             console.error("Login failed:", err);

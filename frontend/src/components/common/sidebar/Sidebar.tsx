@@ -49,7 +49,7 @@ const mockChildren = [
 interface LinkItem {
     title: string;
     url: string;
-    icon: React.ComponentType;
+    icon: React.ReactNode;
     items?: LinkItem[];
 }
 
@@ -57,96 +57,96 @@ const studentLinks: LinkItem[] = [
     {
         title: "My Profile",
         url: "/dashboard/profile",
-        icon: Users,
+        icon: <Users />,
     },
     {
         title: "Notice Board",
         url: "/dashboard/notice-board",
-        icon: Bell,
+        icon: <Bell />,
     },
     {
         title: "Attendance",
         url: "/dashboard/attendance",
-        icon: ClipboardList,
+        icon: <ClipboardList />,
     },
     {
         title: "Live Classes",
         url: "/dashboard/live-classes",
-        icon: BookOpen,
+        icon: <BookOpen />,
     },
     {
         title: "IN/OUT Time Log",
         url: "/dashboard/time-log",
-        icon: Clock,
+        icon: <Clock />,
     },
     {
         title: "Diary",
         url: "/dashboard/diary",
-        icon: FileText,
+        icon: <FileText />,
     },
     {
         title: "Examinations",
         url: "/dashboard/examinations",
-        icon: FileText,
+        icon: <FileText />,
         items: [
             {
                 title: "Exam Schedule",
                 url: "/dashboard/exams/schedule",
-                icon: CalendarSearchIcon,
+                icon: <CalendarSearchIcon />,
             },
             {
                 title: "Exam Results",
                 url: "/dashboard/exams/results",
-                icon: FileText,
+                icon: <FileText />,
             },
             {
                 title: "Progress Report",
                 url: "/dashboard/progress/report",
-                icon: FileText,
+                icon: <FileText />,
             },
         ],
     },
     {
         title: "Download Center",
         url: "/dashboard/downloads",
-        icon: Download,
+        icon: <Download />,
         items: [
             {
                 title: "Time Table",
                 url: "/dashboard/downloads/timetable",
-                icon: Calendar,
+                icon: <Calendar />,
             },
             {
                 title: "Homework",
                 url: "/dashboard/downloads/homework",
-                icon: BookCopy,
+                icon: <BookCopy />,
             },
             {
                 title: "Study Material",
                 url: "/dashboard/downloads/study-material",
-                icon: Book,
+                icon: <Book />,
             },
             {
                 title: "Syllabus",
                 url: "/dashboard/downloads/syllabus",
-                icon: FileText,
+                icon: <FileText />,
             },
             {
                 title: "Summer Tasks",
                 url: "/dashboard/downloads/summer-tasks",
-                icon: Sun,
+                icon: <Sun />,
             },
         ],
     },
     {
         title: "Subjects",
         url: "/dashboard/subjects",
-        icon: BookOpen,
+        icon: <BookOpen />,
     },
     {
         title: "Transport Routes",
         url: "/dashboard/transport",
-        icon: Bus,
+        icon: <Bus />,
     },
 ];
 
@@ -167,7 +167,7 @@ const generateParentLinks = (): LinkItem[] => {
                     url: `/parent/child/${child.id}${subItem.url.substring(
                         "/dashboard".length
                     )}`,
-                    icon: User,
+                    icon: <User />,
                 })),
             }));
         } else {
@@ -177,7 +177,7 @@ const generateParentLinks = (): LinkItem[] => {
                 url: `/parent/child/${child.id}${link.url.substring(
                     "/dashboard".length
                 )}`,
-                icon: User,
+                icon: <User />,
             }));
         }
 
@@ -202,7 +202,7 @@ export function AppSidebar() {
     const role = useAppSelector(selectAuthRole);
 
     const Links = useMemo(
-        () => (role === "parent" ? generateParentLinks() : studentLinks),
+        () => (role?.parent ? generateParentLinks() : studentLinks),
         [role]
     );
 
@@ -252,7 +252,7 @@ export function AppSidebar() {
                                                     }`}
                                                 >
                                                     <div className='flex items-center gap-2'>
-                                                        <item.icon className='h-4 w-4' />
+                                                        {item.icon}
                                                         <span>
                                                             {item.title}
                                                         </span>
@@ -304,7 +304,9 @@ export function AppSidebar() {
                                                                                     }`}
                                                                                 >
                                                                                     <div className='flex items-center gap-2'>
-                                                                                        <subItem.icon className='h-4 w-4' />
+                                                                                        {
+                                                                                            subItem.icon
+                                                                                        }
                                                                                         <span>
                                                                                             {
                                                                                                 subItem.title
@@ -349,7 +351,9 @@ export function AppSidebar() {
                                                                                                         }`
                                                                                                     }
                                                                                                 >
-                                                                                                    <childItem.icon className='h-3 w-3' />
+                                                                                                    {
+                                                                                                        childItem.icon
+                                                                                                    }
                                                                                                     <span>
                                                                                                         {
                                                                                                             childItem.title
@@ -376,7 +380,9 @@ export function AppSidebar() {
                                                                                     }`
                                                                                 }
                                                                             >
-                                                                                <subItem.icon className='h-4 w-4' />
+                                                                                {
+                                                                                    subItem.icon
+                                                                                }
                                                                                 <span>
                                                                                     {
                                                                                         subItem.title
@@ -401,7 +407,7 @@ export function AppSidebar() {
                                                             : "text-muted-foreground"
                                                     }`}
                                                 >
-                                                    <item.icon className='h-4 w-4' />
+                                                    {item.icon}
                                                     <span>{item.title}</span>
                                                 </NavLink>
                                             </SidebarMenuButton>
