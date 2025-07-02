@@ -1,4 +1,3 @@
-import React from "react";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import {
     Table,

@@ -1,7 +1,6 @@
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
-import React from "react";
 
 interface TimeTableI {
     name: string;

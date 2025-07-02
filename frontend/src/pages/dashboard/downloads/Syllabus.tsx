@@ -1,4 +1,3 @@
-import React from "react";
 import SyllabusComp from "@/components/student/dashboard/downloads/Syllabus";
 
 function Syllabus() {

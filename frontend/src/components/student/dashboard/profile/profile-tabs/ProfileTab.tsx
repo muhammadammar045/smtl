@@ -1,4 +1,3 @@
-import React from "react";
 import { IProfileData } from "@/interfaces/interfaces";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";

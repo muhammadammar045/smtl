@@ -1,4 +1,3 @@
-import React from "react";
 import TimeLogComp from "@/components/student/dashboard/timeLog/TimeLog";
 
 function TimeLog() {

@@ -1,5 +1,3 @@
-import React from "react";
-
 function ProgressReport() {
     return (
         <div className='p-6'>

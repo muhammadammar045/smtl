@@ -5,7 +5,7 @@ export const api = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_BACKEND_API_URL,
         credentials: "include",
-        prepareHeaders: (headers, { getState }) => {
+        prepareHeaders: (headers) => {
             const token = localStorage.getItem("token");
             console.log("Token in prepareHeaders:", token);
             if (token) {

@@ -189,7 +189,7 @@ function Calendar() {
                         >
                             {time}
                         </div>
-                        {days.map((day, j) => (
+                        {days.map((_, j) => (
                             <div
                                 key={`slot-${i}-${j}`}
                                 className='border-t border-l p-1 min-h-[60px]'
