@@ -19,7 +19,7 @@ const initialState: StudentState = {
 export const studentApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getStudentDetails: builder.query<ApiResponse<StudentDashboardData>, number>({
-            query: (studentId) => `/students/student-details`,
+            query: () => `/students/student-details`,
         }),
     }),
 });
