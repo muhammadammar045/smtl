@@ -5,53 +5,29 @@ import ProfileTab from "./profile-tabs/ProfileTab";
 import FeeTab from "./profile-tabs/FeeTab";
 import DocumentTab from "./profile-tabs/DocumentTab";
 import TimelineTab from "./profile-tabs/TimelineTab";
-import { IProfileData } from "@/interfaces/interfaces";
+import {
+    selectStudent,
+    useGetStudentDetailsQuery,
+} from "@/store/slices/student/student.slice";
+import { useSelector } from "react-redux";
 
 function Profile() {
-    const profileData: IProfileData = {
-        name: "Parisa Zainab",
-        rollNumber: "afss-B17-00604",
-        class: "I",
-        section: "Blue Bells",
-        rte: "Yes",
-        campus: "Junior School",
-        group: "Science",
-        studentMobile: "03327755522",
-        religion: "Islam",
-        email: "example@email.com",
-        addresses: {
-            current: "123 Main Street",
-            postal: "H # 14/0, St # 10, Block C1, B-17",
-            permanent: "Same as postal address",
-        },
-        parentDetails: {
-            fatherName: "Babar Mughal",
-            fatherMobile1: "03358448355",
-            fatherMobile2: "03452342423",
-            fatherOccupation: "Manager",
-            motherName: "Zunaira",
-            motherPhone: "03452342423",
-            motherOccupation: "Housewife",
-            guardianName: "Muhammad Aqib",
-            guardianEmail: "abcd@example.com",
-            guardianRelation: "Cousin",
-            guardianOccupation: "Labour",
-            guardianAddress: "Dak",
-        },
-        miscellaneous: {
-            bloodGroup: "B+",
-            studentHouse: "Red House",
-            height: "152 cm",
-            weight: "45 kg",
-            asOnDate: "15-03-2022",
-            previousSchoolDetails: "Beacon House School System",
-            nationalIdentificationNumber: "13501-1234567-1",
-            localIdentificationNumber: "LID-2023-1234",
-            bankAccountNumber: "PK36BAHL1234567890123",
-            bankName: "Bank Al Habib",
-            branchCode: "0123",
-        },
-    };
+    const user = localStorage.getItem("user");
+    const studentId = user ? JSON.parse(user).student.student_id : null;
+
+    const { error, isLoading } = useGetStudentDetailsQuery(studentId);
+
+    const student = useSelector(selectStudent);
+
+    if (!student) return <div>Loading...</div>;
+
+    console.log("🚀 -------------------------------------------------🚀");
+    console.log("🚀 ~ Profile.tsx:20 ~ Profile ~ student:", student);
+    console.log("🚀 -------------------------------------------------🚀");
+
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error</div>;
+
     return (
         <>
             <PageTitle
@@ -73,7 +49,10 @@ function Profile() {
                     <TabsContent value='profile'>
                         <Card>
                             <CardContent className='p-6'>
-                                <ProfileTab profileData={profileData} />
+                                <ProfileTab
+                                    student={student.student}
+                                    getSetting={student.getSetting}
+                                />
                             </CardContent>
                         </Card>
                     </TabsContent>

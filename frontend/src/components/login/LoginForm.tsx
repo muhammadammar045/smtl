@@ -44,7 +44,8 @@ export function LoginForm({
                 success: "Login successful",
                 error: "Login failed",
             });
-            console.log("🚀 ~ onSubmit ~ result:", result);
+            localStorage.setItem("user", JSON.stringify(result.data));
+
             if (result.success) {
                 const parent = result.data.parent;
                 parent ? navigate("/parent") : navigate("/dashboard");

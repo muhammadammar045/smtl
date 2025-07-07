@@ -1,10 +1,7 @@
-import { IProfileData } from "@/interfaces/interfaces";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
-
-interface ProfileTabProps {
-    profileData: IProfileData;
-}
+import { IStudent, SchoolSetting } from "@/interfaces/student";
+import envVars from "@/envExporter";
 
 interface InfoRowProps {
     label: string;
@@ -20,7 +17,13 @@ function InfoRow({ label, value }: InfoRowProps) {
     );
 }
 
-function ProfileTab({ profileData }: ProfileTabProps) {
+function ProfileTab({
+    student,
+    getSetting,
+}: {
+    student: IStudent;
+    getSetting: SchoolSetting;
+}) {
     return (
         <>
             <PageTitle
@@ -34,30 +37,33 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                     <CardContent className='p-6 flex flex-col items-center'>
                         <div className='w-32 h-32 rounded-full overflow-hidden mb-4'>
                             <img
-                                src='/student.png'
-                                alt={profileData.name}
+                                src={`${envVars.IMAGE_BASE_URL}/${
+                                    student.image ||
+                                    "/uploads/student_images/no_image.png"
+                                }`}
+                                alt={student.firstname + " " + student.lastname}
                                 className='w-full h-full object-cover'
                             />
                         </div>
                         <h2 className='text-xl font-bold my-2'>
-                            {profileData.name}
+                            {student.firstname + " " + student.lastname}
                         </h2>
                         <div className='w-full my-2 space-y-4'>
                             <InfoRow
                                 label='Roll Number'
-                                value={profileData.rollNumber}
+                                value={student.roll_no}
                             />
                             <InfoRow
                                 label='Class'
-                                value={profileData.class}
+                                value={student.class}
                             />
                             <InfoRow
                                 label='Section'
-                                value={profileData.section}
+                                value={student.section}
                             />
                             <InfoRow
                                 label='RTE'
-                                value={profileData.rte}
+                                value={getSetting.is_rtl}
                             />
                         </div>
                     </CardContent>
@@ -71,23 +77,23 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                 <InfoRow
                                     label='Campus'
-                                    value={profileData.campus}
+                                    value={student.campus}
                                 />
                                 <InfoRow
                                     label='Group'
-                                    value={profileData.group}
+                                    value={student.group}
                                 />
                                 <InfoRow
                                     label='Student Mobile No.'
-                                    value={profileData.studentMobile}
+                                    value={student.mobileno}
                                 />
                                 <InfoRow
                                     label='Religion'
-                                    value={profileData.religion}
+                                    value={student.religion}
                                 />
                                 <InfoRow
                                     label='Email'
-                                    value={profileData.email}
+                                    value={student.email}
                                 />
                             </div>
                         </CardContent>
@@ -102,15 +108,15 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='Current Address'
-                                    value={profileData.addresses.current}
+                                    value={student.current_address}
                                 />
                                 <InfoRow
                                     label='Postal Address'
-                                    value={profileData.addresses.postal}
+                                    value={student.postal_address}
                                 />
                                 <InfoRow
                                     label='Permanent Address'
-                                    value={profileData.addresses.permanent}
+                                    value={student.permanent_address}
                                 />
                             </div>
                         </CardContent>
@@ -129,7 +135,10 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 <div className='w-24 h-24 flex-shrink-0'>
                                     <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
                                         <img
-                                            src='/student.png'
+                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                                student.father_pic ||
+                                                "/uploads/student_images/no_image.png"
+                                            }`}
                                             alt="Father's picture"
                                             className='w-full h-full object-cover'
                                         />
@@ -137,41 +146,29 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 </div>
                                 <InfoRow
                                     label='Father Name'
-                                    value={profileData.parentDetails.fatherName}
+                                    value={student.father_name}
                                 />
 
                                 <InfoRow
                                     label='Father/Guardian Mobile No 2'
-                                    value={
-                                        profileData.parentDetails.fatherMobile2
-                                    }
+                                    value={student.father_phone}
                                 />
                                 <InfoRow
                                     label='Father/Guardian Occupation'
-                                    value={
-                                        profileData.parentDetails
-                                            .fatherOccupation
-                                    }
+                                    value={student.father_occupation}
                                 />
                                 {/* Additional Details Column */}
                                 <InfoRow
                                     label='Father/Guardian Mobile No 1'
-                                    value={
-                                        profileData.parentDetails.fatherMobile1
-                                    }
+                                    value={student.guardian_phone}
                                 />
                                 <InfoRow
                                     label='Father/Guardian Email'
-                                    value={
-                                        profileData.parentDetails.guardianEmail
-                                    }
+                                    value={student.guardian_email}
                                 />
                                 <InfoRow
                                     label='Guardian Address'
-                                    value={
-                                        profileData.parentDetails
-                                            .guardianAddress
-                                    }
+                                    value={student.guardian_address}
                                 />
                             </div>
 
@@ -180,7 +177,10 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 <div className='w-24 h-24 flex-shrink-0'>
                                     <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
                                         <img
-                                            src='/student.png'
+                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                                student.mother_pic ||
+                                                "/uploads/student_images/no_image.png"
+                                            }`}
                                             alt="Father's picture"
                                             className='w-full h-full object-cover'
                                         />
@@ -188,21 +188,16 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 </div>
                                 <InfoRow
                                     label='Mother Name'
-                                    value={profileData.parentDetails.motherName}
+                                    value={student.mother_name}
                                 />
 
                                 <InfoRow
                                     label='Mother Phone'
-                                    value={
-                                        profileData.parentDetails.motherPhone
-                                    }
+                                    value={student.mother_phone}
                                 />
                                 <InfoRow
                                     label='Mother Occupation'
-                                    value={
-                                        profileData.parentDetails
-                                            .motherOccupation
-                                    }
+                                    value={student.mother_occupation}
                                 />
                             </div>
 
@@ -211,7 +206,10 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 <div className='w-24 h-24 flex-shrink-0'>
                                     <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
                                         <img
-                                            src='/student.png'
+                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                                student.guardian_pic ||
+                                                "/uploads/student_images/no_image.png"
+                                            }`}
                                             alt="Father's picture"
                                             className='w-full h-full object-cover'
                                         />
@@ -219,24 +217,16 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                                 </div>
                                 <InfoRow
                                     label='Guardian Name'
-                                    value={
-                                        profileData.parentDetails.guardianName
-                                    }
+                                    value={student.guardian_name}
                                 />
 
                                 <InfoRow
                                     label='Guardian Relation'
-                                    value={
-                                        profileData.parentDetails
-                                            .guardianRelation
-                                    }
+                                    value={student.guardian_relation}
                                 />
                                 <InfoRow
                                     label='Guardian Occupation'
-                                    value={
-                                        profileData.parentDetails
-                                            .guardianOccupation
-                                    }
+                                    value={student.guardian_occupation}
                                 />
                             </div>
                         </div>
@@ -254,21 +244,19 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='Blood Group'
-                                    value={profileData.miscellaneous.bloodGroup}
+                                    value={student.blood_group}
                                 />
                                 <InfoRow
                                     label='Student House'
-                                    value={
-                                        profileData.miscellaneous.studentHouse
-                                    }
+                                    value={student.house_name}
                                 />
                                 <InfoRow
                                     label='Height'
-                                    value={profileData.miscellaneous.height}
+                                    value={student.height}
                                 />
                                 <InfoRow
                                     label='Weight'
-                                    value={profileData.miscellaneous.weight}
+                                    value={student.weight}
                                 />
                             </div>
 
@@ -276,28 +264,19 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='As on Date'
-                                    value={profileData.miscellaneous.asOnDate}
+                                    value={student.admission_date}
                                 />
                                 <InfoRow
                                     label='Previous School Details'
-                                    value={
-                                        profileData.miscellaneous
-                                            .previousSchoolDetails
-                                    }
+                                    value={student.previous_school}
                                 />
                                 <InfoRow
                                     label='National Identification Number'
-                                    value={
-                                        profileData.miscellaneous
-                                            .nationalIdentificationNumber
-                                    }
+                                    value={student.student_cnic}
                                 />
                                 <InfoRow
                                     label='Local Identification Number'
-                                    value={
-                                        profileData.miscellaneous
-                                            .localIdentificationNumber
-                                    }
+                                    value={student.student_cnic}
                                 />
                             </div>
 
@@ -305,18 +284,15 @@ function ProfileTab({ profileData }: ProfileTabProps) {
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='Bank Account Number'
-                                    value={
-                                        profileData.miscellaneous
-                                            .bankAccountNumber
-                                    }
+                                    value={getSetting.bank_account_1}
                                 />
                                 <InfoRow
                                     label='Bank Name'
-                                    value={profileData.miscellaneous.bankName}
+                                    value={getSetting.bank_account_1_name}
                                 />
                                 <InfoRow
                                     label='Branch Code'
-                                    value={profileData.miscellaneous.branchCode}
+                                    value={getSetting.branch_code}
                                 />
                             </div>
                         </div>

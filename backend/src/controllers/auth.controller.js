@@ -116,6 +116,7 @@ const login = asyncHandler(async (req, res) => {
                 theme: setting.theme,
             },
         };
+        req.session.user = responseData.student;
     } else if (role === "parent") {
         const [siblings] = await sqlPool.query(
             `SELECT *
@@ -131,7 +132,7 @@ const login = asyncHandler(async (req, res) => {
 
         responseData.parent = {
             id: result.id,
-            student_id: result.user_id,
+            parent_id: result.user_id,
             role: result.role,
             username: result.guardian_name,
             image:
@@ -154,6 +155,7 @@ const login = asyncHandler(async (req, res) => {
             },
             children: childStudent,
         };
+        req.session.user = responseData.parent;
     }
 
     // 5. Final response
