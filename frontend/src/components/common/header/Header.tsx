@@ -76,13 +76,16 @@ export const Header = ({
                                 <span className='text-primary font-bold'>
                                     Current Session :
                                 </span>{" "}
-                                <span>2025-2026</span>
+                                <span>
+                                    {new Date().getFullYear()}-
+                                    {new Date().getFullYear() + 1}
+                                </span>
                             </p>
                             <p className='text-sm'>
                                 <span className='text-primary font-bold'>
                                     Today Date :
                                 </span>{" "}
-                                <span>2023-08-01</span>
+                                <span>{new Date().toDateString()}</span>
                             </p>
                         </div>
                     </div>

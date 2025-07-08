@@ -27,6 +27,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { useAppSelector } from "@/store/hooks/hooks";
 import { selectAuthRole } from "@/store/slices/auth/auth.slice";
@@ -201,6 +202,10 @@ export function AppSidebar() {
     const location = useLocation();
     const role = useAppSelector(selectAuthRole);
 
+    console.log("🚀 -----------------------------------------------🚀");
+    console.log("🚀 ~ Sidebar.tsx:204 ~ AppSidebar ~ role:", role);
+    console.log("🚀 -----------------------------------------------🚀");
+
     const Links = useMemo(
         () => (role?.parent ? generateParentLinks() : studentLinks),
         [role]
@@ -216,6 +221,13 @@ export function AppSidebar() {
             [title]: !prev[title],
         }));
     };
+    const { isMobile, setOpenMobile } = useSidebar();
+
+    const handleNavClick = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
+    };
 
     return (
         <Sidebar>
@@ -223,7 +235,14 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <p className='text-sm py-3 text-start px-4 mb-2 bg-primary'>
-                        Current Session : <span>2023-2024</span>
+                        Current Session :{" "}
+                        <span>
+                            {" "}
+                            <span>
+                                {new Date().getFullYear()}-
+                                {new Date().getFullYear() + 1}
+                            </span>
+                        </span>
                     </p>
                     <SidebarGroupContent>
                         <SidebarMenu>
@@ -341,6 +360,9 @@ export function AppSidebar() {
                                                                                                     to={
                                                                                                         childItem.url
                                                                                                     }
+                                                                                                    onClick={
+                                                                                                        handleNavClick
+                                                                                                    }
                                                                                                     className={({
                                                                                                         isActive,
                                                                                                     }) =>
@@ -369,6 +391,9 @@ export function AppSidebar() {
                                                                             <NavLink
                                                                                 to={
                                                                                     subItem.url
+                                                                                }
+                                                                                onClick={
+                                                                                    handleNavClick
                                                                                 }
                                                                                 className={({
                                                                                     isActive,
@@ -401,6 +426,7 @@ export function AppSidebar() {
                                             <SidebarMenuButton asChild>
                                                 <NavLink
                                                     to={item.url}
+                                                    onClick={handleNavClick}
                                                     className={`flex items-center gap-2 py-2 hover:text-foreground ${
                                                         active
                                                             ? "bg-primary text-foreground rounded-md px-2"
