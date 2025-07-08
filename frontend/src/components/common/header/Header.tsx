@@ -76,7 +76,7 @@ export const Header = ({
                                 <span className='text-primary font-bold'>
                                     Current Session :
                                 </span>{" "}
-                                <span>2023-2024</span>
+                                <span>2025-2026</span>
                             </p>
                             <p className='text-sm'>
                                 <span className='text-primary font-bold'>
