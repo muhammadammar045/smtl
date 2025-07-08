@@ -114,6 +114,7 @@ export function LoginForm({
                                 <FormControl>
                                     <Input
                                         type='password'
+                                        placeholder='password'
                                         {...field}
                                     />
                                 </FormControl>
