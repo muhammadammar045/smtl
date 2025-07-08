@@ -34,10 +34,10 @@ jobs:
             - name: 🔁 Move frontend to Nginx folder with sudo
               run: |
                   ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-                    sudo rm -rf /var/www/html/*
-                    sudo cp -r /home/ubuntu/tmp-frontend/* /var/www/html/
-                    sudo chown -R www-data:www-data /var/www/html
-                    echo "✅ Frontend moved to /var/www/html"
+                    sudo rm -rf /var/www/frontend/*
+                    sudo cp -r /home/ubuntu/tmp-frontend/* /var/www/frontend/
+                    sudo chown -R www-data:www-data /var/www/frontend
+                    echo "✅ Frontend moved to /var/www/frontend"
                   EOF
 
             - name: 📤 Upload backend code to EC2
