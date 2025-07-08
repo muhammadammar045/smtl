@@ -26,13 +26,24 @@ jobs:
                   npm ci
                   npm run build
 
-            - name: 📤 Upload Vite frontend (`dist/`) to EC2
+            - name: 📤 Upload Vite frontend to EC2 (temp path)
               run: |
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./frontend/dist/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./frontend/dist/ \
+                    ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/tmp-frontend/
+
+            - name: 🔁 Move frontend to Nginx folder with sudo
+              run: |
+                  ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+                    sudo rm -rf /var/www/html/*
+                    sudo cp -r /home/ubuntu/tmp-frontend/* /var/www/html/
+                    sudo chown -R www-data:www-data /var/www/html
+                    echo "✅ Frontend moved to /var/www/html"
+                  EOF
 
             - name: 📤 Upload backend code to EC2
               run: |
-                  rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./backend/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_PROJECT_DIR }}/backend/
+                  rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./backend/ \
+                    ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_PROJECT_DIR }}/backend/
 
             - name: 🚀 SSH into EC2 and restart backend
               run: |
