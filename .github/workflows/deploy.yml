@@ -20,6 +20,11 @@ jobs:
                   chmod 600 ~/.ssh/id_rsa
                   ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
+            - name: 📄 Create .env.production for Vite from GitHub Secret
+              working-directory: frontend
+              run: |
+                  echo "VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }}" > .env.production
+
             - name: ⚙️ Install and build frontend (Vite)
               working-directory: frontend
               run: |
