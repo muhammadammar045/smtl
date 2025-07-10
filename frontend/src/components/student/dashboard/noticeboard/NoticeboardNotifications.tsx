@@ -1,22 +1,26 @@
+import DOMPurify from "dompurify";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import { Card } from "@/components/ui/card";
-import { CalendarIcon } from "lucide-react";
-
-interface Notice {
-    title: string;
-    date: string;
-    isNew?: boolean;
-}
+import {
+    selectNoticeBoardNotifications,
+    useGetNoticeBoardNotificationsQuery,
+} from "@/store/slices/noticeboard/noticeboard.slice";
+import { useSelector } from "react-redux";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 function NoticeboardNotifications() {
-    const notices: Notice[] = [
-        { title: "EID Milan Party Notice", date: "17-04-2025", isNew: true },
-        { title: "Eid ul Fitr Notice", date: "27-03-2025", isNew: true },
-        { title: "Grammar books Notice", date: "26-03-2025", isNew: true },
-        { title: "Kashmir Day Notice", date: "04-02-2025" },
-        { title: "4th Parents Teacher Meeting Notice", date: "16-01-2025" },
-        { title: "Final Term Exam fee Notice", date: "08-01-2025" },
-    ];
+    const { isLoading, error } = useGetNoticeBoardNotificationsQuery();
+    const noticeboardNotifications = useSelector(
+        selectNoticeBoardNotifications
+    );
+
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error</div>;
 
     return (
         <>
@@ -26,29 +30,44 @@ function NoticeboardNotifications() {
             />
 
             <Card className='p-4'>
-                <div className='flex flex-col gap-2'>
-                    {notices.map((notice, index) => (
-                        <div
-                            key={index}
-                            className='flex items-center justify-between py-3 border-b last:border-b-0'
+                <Accordion
+                    type='single'
+                    collapsible
+                    className='w-full'
+                >
+                    {noticeboardNotifications?.map((notification) => (
+                        <AccordionItem
+                            key={notification.id}
+                            value={`item-${notification.id}`}
+                            className='border-b'
                         >
-                            <div className='flex items-center gap-2'>
-                                <span className='text-primary hover:text-primary/80 cursor-pointer'>
-                                    {notice.title}
-                                </span>
-                                {notice.isNew && (
-                                    <span className='bg-red-500 text-white text-xs px-1.5 py-0.5 rounded'>
-                                        New
+                            <AccordionTrigger className='flex justify-between items-center gap-2'>
+                                <div className='flex items-center gap-2 text-left'>
+                                    <span className='text-primary font-medium'>
+                                        {notification.title}
                                     </span>
-                                )}
-                            </div>
-                            <div className='flex items-center gap-2 text-muted-foreground text-sm'>
-                                <CalendarIcon className='h-4 w-4' />
-                                <span>Date: {notice.date}</span>
-                            </div>
-                        </div>
+                                    {notification.notification_id ===
+                                        "unread" && (
+                                        <span className='bg-red-500 text-white text-xs px-1.5 py-0.5 rounded'>
+                                            New
+                                        </span>
+                                    )}
+                                </div>
+                            </AccordionTrigger>
+
+                            <AccordionContent>
+                                <div
+                                    className='text-sm text-muted-foreground mt-2'
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            notification.message
+                                        ),
+                                    }}
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
                     ))}
-                </div>
+                </Accordion>
             </Card>
         </>
     );

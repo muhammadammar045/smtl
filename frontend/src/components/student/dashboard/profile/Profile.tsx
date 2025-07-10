@@ -21,10 +21,6 @@ function Profile() {
 
     if (!student) return <div>Loading...</div>;
 
-    console.log("🚀 -------------------------------------------------🚀");
-    console.log("🚀 ~ Profile.tsx:20 ~ Profile ~ student:", student);
-    console.log("🚀 -------------------------------------------------🚀");
-
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error</div>;
 
