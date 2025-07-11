@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 
 function Profile() {
     const user = localStorage.getItem("user");
-    const studentId = user ? JSON.parse(user).student.student_id : null;
+    const studentId = user ? JSON.parse(user).user.student_id : null;
 
     const { error, isLoading } = useGetStudentDetailsQuery(studentId);
 

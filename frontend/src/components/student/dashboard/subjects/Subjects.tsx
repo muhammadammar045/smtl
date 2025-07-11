@@ -1,59 +1,39 @@
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
+import { SubjectData } from "@/interfaces/subject";
+import { useGetSubjectsQuery } from "@/store/slices/subject/subject.slice";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
 
-interface Subject {
-    subject: string;
-    subjectCode: string;
-    teacher: string;
-    subjectType: string;
-}
-
 function Subjects() {
-    const data: Subject[] = [
+    const { data: subjects, isLoading, isError } = useGetSubjectsQuery();
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isError || !subjects) {
+        return <div>Error loading subjects</div>;
+    }
+
+    const columns: ColumnDef<SubjectData>[] = [
         {
-            subject: "Mathematics",
-            subjectCode: "MATH101",
-            teacher: "Mr. John Doe",
-            subjectType: "Theory",
+            accessorKey: "subject_name",
+            header: "Subject Name",
         },
         {
-            subject: "English",
-            subjectCode: "ENG101",
-            teacher: "Ms. Jane Doe",
-            subjectType: "Theory",
-        },
-        {
-            subject: "Physics",
-            subjectCode: "PHY101",
-            teacher: "Mr. David Smith",
-            subjectType: "Theory",
-        },
-        {
-            subject: "Chemistry",
-            subjectCode: "CHEM101",
-            teacher: "Ms. Sarah Johnson",
-            subjectType: "Theory",
-        },
-    ];
-    const columns: ColumnDef<Subject>[] = [
-        {
-            accessorKey: "subject",
-            header: "Subject",
-        },
-        {
-            accessorKey: "subjectCode",
+            accessorKey: "code",
             header: "Subject Code",
         },
         {
-            accessorKey: "teacher",
+            accessorKey: "teachers",
             header: "Teacher",
         },
         {
-            accessorKey: "subjectType",
+            accessorKey: "type",
             header: "Subject Type",
         },
     ];
+
     return (
         <>
             <PageTitle
@@ -62,7 +42,7 @@ function Subjects() {
             />
 
             <TenStackReactTable
-                data={data}
+                data={subjects.data}
                 columns={columns}
             />
         </>

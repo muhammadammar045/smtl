@@ -1,6 +1,27 @@
 import { sqlPool } from "../config/database.js";
 
 const StudentFunctions = {
+    async findUserByUsernameAndPassword(username, password) {
+        const [rows] = await sqlPool.query(
+            `SELECT id, username, password, role, is_active, def_status 
+         FROM users WHERE username LIKE ? AND password = ? LIMIT 1`,
+            [`%${username}%`, password]
+        );
+        return rows[0];
+    },
+
+    async getStudentInfo(userId) {
+        const [info] = await sqlPool.query(
+            `SELECT users.*, students.firstname, students.lastname, students.image, students.guardian_name 
+            FROM users 
+            JOIN students ON students.id = users.user_id 
+            WHERE users.id = ? AND students.is_active = 'yes' 
+            LIMIT 1`,
+            [userId]
+        );
+        return info[0];
+    },
+
     async getStudentById(studentId) {
         const [rows] = await sqlPool.query(
             `SELECT 
@@ -52,6 +73,81 @@ const StudentFunctions = {
             [studentId]
         );
         return rows;
+    },
+
+    async getRecentRecord(id = null, currentSession) {
+        const limit = 5;
+
+        const baseQuery = `
+            SELECT 
+                classes.id AS class_id,
+                classes.class,
+                classes.playlist_id,
+                sections.id AS section_id,
+                sections.section,
+                students.id,
+                student_session.campus_id,
+                students.admission_no,
+                students.program_applied_for,
+                students.roll_no,
+                students.admission_date,
+                students.firstname,
+                students.lastname,
+                students.image,
+                students.mobileno,
+                students.email,
+                students.state,
+                students.city,
+                students.pincode,
+                students.religion,
+                students.dob,
+                students.birthofplace,
+                students.current_address,
+                students.permanent_address,
+                students.category_id,
+                students.adhar_no,
+                students.samagra_id,
+                students.bank_account_no,
+                students.bank_name,
+                students.ifsc_code,
+                students.guardian_name,
+                students.guardian_relation,
+                students.guardian_phone,
+                students.guardian_address,
+                students.is_active,
+                students.created_at,
+                students.updated_at,
+                students.father_name,
+                students.father_phone,
+                students.father_occupation,
+                students.mother_name,
+                students.mother_phone,
+                students.mother_occupation,
+                students.guardian_occupation,
+                students.gender,
+                students.guardian_is
+            FROM students
+            JOIN student_session ON student_session.student_id = students.id
+            JOIN classes ON student_session.class_id = classes.id
+            JOIN sections ON sections.id = student_session.section_id
+            WHERE student_session.session_id = ?
+            ${id ? "AND students.id = ?" : ""}
+            ORDER BY students.admission_no ASC
+            LIMIT ?
+        `;
+
+        try {
+            const params = id
+                ? [currentSession, id, limit]
+                : [currentSession, limit];
+
+            const [rows] = await sqlPool.query(baseQuery, params);
+
+            return id ? rows[0] : rows;
+        } catch (err) {
+            console.error("Error fetching recent student records:", err);
+            throw err;
+        }
     },
 };
 

@@ -139,6 +139,100 @@ const ParentFunctions = {
 
         return rows[0]; // Always return a single student
     },
+
+    async getForParent(id = null, currentSession = null) {
+        let baseQuery = `
+        SELECT 
+            users.username AS std_username,
+            users.password,
+            students.*,
+            categories.category AS \`group\`,
+            vehicle_routes.route_id,
+            vehicle_routes.vehicle_id,
+            transport_route.route_title,
+            vehicles.vehicle_no,
+            vehicles.driver_name,
+            vehicles.driver_contact,
+            hostel.id AS hostel_id,
+            hostel.hostel_name,
+            room_types.id AS room_type_id,
+            room_types.room_type,
+            hostel_rooms.room_no,
+            student_session.transport_fees,
+            student_session.fees_discount,
+            student_session.id AS student_session_id,
+            classes.id AS class_id,
+            classes.playlist_id,
+            classes.class,
+            sections.id AS section_id,
+            sections.section,
+            school_houses.house_name,
+            campus.id AS campus_main_id,
+            campus.campus
+        FROM students
+        JOIN student_session ON student_session.student_id = students.id
+        JOIN classes ON student_session.class_id = classes.id
+        JOIN sections ON sections.id = student_session.section_id
+        LEFT JOIN hostel_rooms ON hostel_rooms.id = students.hostel_room_id
+        LEFT JOIN hostel ON hostel.id = hostel_rooms.hostel_id
+        LEFT JOIN room_types ON room_types.id = hostel_rooms.room_type_id
+        LEFT JOIN vehicle_routes ON vehicle_routes.id = students.vehroute_id
+        LEFT JOIN transport_route ON vehicle_routes.route_id = transport_route.id
+        LEFT JOIN vehicles ON vehicles.id = vehicle_routes.vehicle_id
+        LEFT JOIN school_houses ON school_houses.id = students.school_house_id
+        JOIN campus ON campus.id = student_session.campus_id
+        LEFT JOIN categories ON students.program_applied_for = categories.id
+        LEFT JOIN users ON users.user_id = students.id
+    `;
+
+        const conditions = [];
+        const params = [];
+
+        if (currentSession) {
+            conditions.push("student_session.session_id = ?");
+            params.push(currentSession);
+        }
+
+        if (id) {
+            conditions.push("students.id = ?");
+            params.push(id);
+        } else {
+            conditions.push("students.is_active = 'yes'");
+        }
+
+        if (conditions.length > 0) {
+            baseQuery += " WHERE " + conditions.join(" AND ");
+        }
+
+        if (!id) {
+            baseQuery += " ORDER BY students.admission_no ASC";
+        }
+
+        const [rows] = await sqlPool.query(baseQuery, params);
+
+        return rows[0];
+    },
+
+    async getParentInfo(username, password) {
+        const [info] = await sqlPool.query(
+            `SELECT users.*, students.*, students.father_pic, students.mother_pic, students.guardian_pic, students.guardian_relation 
+         FROM users 
+         JOIN students ON students.parent_id = users.id 
+         WHERE users.username = ? AND users.password = ? 
+         LIMIT 1`,
+            [username, password]
+        );
+        return info[0];
+    },
+
+    async getSiblingsByParentId(parentId) {
+        const [siblings] = await sqlPool.query(
+            `SELECT id, firstname, lastname FROM students 
+         WHERE parent_id = ? AND is_active = 'yes'`,
+            [parentId]
+        );
+        return siblings;
+    },
 };
 
 export default ParentFunctions;

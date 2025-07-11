@@ -7,21 +7,10 @@ import session from "express-session";
 
 import authRoutes from "./routes/auth.routes.js";
 import studentsRoutes from "./routes/student.routes.js";
+import subjectRoutes from "./routes/subject.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 
 const app = express();
-
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET || "ammarkey123",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: false,
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
-        },
-    })
-);
 
 const morganFormat =
     ":method :url :status :res[content-length] - :response-time ms :http-version - :user-agent";
@@ -64,6 +53,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/subjects", subjectRoutes);
 app.use("/api/students", studentsRoutes);
 app.use("/api/notifications", notificationRoutes);
 
