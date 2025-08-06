@@ -214,6 +214,71 @@ const StudentFunctions = {
             throw err;
         }
     },
+
+    async getStudentForParentDiary(studentId, currentSessionId) {
+        const sql = `
+        SELECT 
+            classes.id AS class_id,
+            classes.class,
+            sections.id AS section_id,
+            sections.section,
+            students.id,
+            student_session.campus_id,
+            students.admission_no,
+            students.program_applied_for,
+            students.roll_no,
+            students.admission_date,
+            students.firstname,
+            students.lastname,
+            students.image,
+            students.mobileno,
+            students.email,
+            students.state,
+            students.city,
+            students.pincode,
+            students.religion,
+            students.dob,
+            students.birthofplace,
+            students.current_address,
+            students.permanent_address,
+            students.category_id,
+            students.adhar_no,
+            students.samagra_id,
+            students.bank_account_no,
+            students.bank_name,
+            students.ifsc_code,
+            students.guardian_name,
+            students.guardian_relation,
+            students.guardian_phone,
+            students.guardian_address,
+            students.is_active,
+            students.created_at,
+            students.updated_at,
+            students.father_name,
+            students.father_phone,
+            students.father_occupation,
+            students.mother_name,
+            students.mother_phone,
+            students.mother_occupation,
+            students.guardian_occupation,
+            students.gender,
+            students.guardian_is
+        FROM students
+        INNER JOIN student_session ON student_session.student_id = students.id
+        INNER JOIN classes ON student_session.class_id = classes.id
+        INNER JOIN sections ON sections.id = student_session.section_id
+        WHERE student_session.session_id = ?
+            AND students.id = ?
+        ORDER BY students.admission_no ASC
+        LIMIT 1
+        `;
+
+        const [rows] = await sqlPool.execute(sql, [
+            currentSessionId,
+            studentId,
+        ]);
+        return rows.length ? rows[0] : null;
+    },
 };
 
 export default StudentFunctions;
