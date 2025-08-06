@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ParentFunctions from "../models/parent.model.js";
 import SubjectFunctions from "../models/subject.model.js";
+import SettingFunctions from "../models/setting.model.js";
 
 const getStudentSubjects = asyncHandler(async (req, res) => {
     const studentId = req.user.student_id;

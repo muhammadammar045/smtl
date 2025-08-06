@@ -67,6 +67,71 @@ const StudentFunctions = {
         return rows[0];
     },
 
+    async getStudentByIdInAttendance(id = null, currentSession) {
+        const params = [];
+        let query = `
+            SELECT 
+                student_session.id as student_session_id,
+                student_session.fees_discount,
+                student_session.transport_fees,
+                students.*,
+                classes.playlist_id,
+                classes.id AS class_id,
+                classes.class,
+                sections.id AS section_id,
+                sections.section,
+                campus.id as campus_main_id,
+                campus.campus,
+                categories.category as \`group\`,
+                school_houses.house_name,
+                hostel_rooms.room_no,
+                hostel.id as hostel_id,
+                hostel.hostel_name,
+                room_types.id as room_type_id,
+                room_types.room_type,
+                vehicle_routes.route_id,
+                vehicle_routes.vehicle_id,
+                transport_route.route_title,
+                vehicles.vehicle_no,
+                vehicles.driver_name,
+                vehicles.driver_contact
+            FROM students
+            JOIN student_session ON student_session.student_id = students.id
+            JOIN classes ON student_session.class_id = classes.id
+            JOIN sections ON student_session.section_id = sections.id
+            JOIN campus ON student_session.campus_id = campus.id
+            LEFT JOIN hostel_rooms ON students.hostel_room_id = hostel_rooms.id
+            LEFT JOIN hostel ON hostel.id = hostel_rooms.hostel_id
+            LEFT JOIN room_types ON room_types.id = hostel_rooms.room_type_id
+            LEFT JOIN vehicle_routes ON vehicle_routes.id = students.vehroute_id
+            LEFT JOIN transport_route ON transport_route.id = vehicle_routes.route_id
+            LEFT JOIN vehicles ON vehicles.id = vehicle_routes.vehicle_id
+            LEFT JOIN school_houses ON school_houses.id = students.school_house_id
+            LEFT JOIN categories ON students.program_applied_for = categories.id
+            WHERE student_session.session_id = ?
+        `;
+
+        params.push(currentSession);
+
+        if (id) {
+            query += ` AND students.id = ?`;
+            params.push(id);
+        } else {
+            query += ` AND students.is_active = 'yes' ORDER BY students.admission_no ASC`;
+        }
+
+        const [rows] = await sqlPool.execute(query, params);
+        return id ? rows[0] || null : rows;
+    },
+
+    async getCurrentSession2(campusId) {
+        const [rows] = await sqlPool.query(
+            `SELECT session_id FROM sch_settings WHERE campus_id = ? ORDER BY id LIMIT 1`,
+            [campusId]
+        );
+        return rows.length ? rows[0].session_id : null;
+    },
+
     async getStudentDocs(studentId) {
         const [rows] = await sqlPool.query(
             `SELECT * FROM student_doc WHERE student_id = ?`,
