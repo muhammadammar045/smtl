@@ -12,6 +12,7 @@ import notificationRoutes from "./routes/notification.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import diaryRoutes from "./routes/diary.routes.js";
 import classesRoutes from "./routes/liveClasses.routes.js";
+import examRoutes from "./routes/exam.routes.js";
 
 const app = express();
 
@@ -62,6 +63,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/diary", diaryRoutes);
 app.use("/api/classes", classesRoutes);
+app.use("/api/exams", examRoutes);
 
 app.use((err, req, res, next) => {
     res.status(err.statusCode || 500).json({
