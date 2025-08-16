@@ -1,19 +1,17 @@
 export interface IDashboardData {
-    message: string
-    data: {
-        student: IStudentData,
-        gradeList: IGrade[],
-        category_list: ICategory[],
-        feeSystem: string,
-        student_due_fee: IStudentDueFee[],
-        student_discount_fee: any[],
-        timeline_list: any[],
-        classLanguage: string,
-        getSetting: IGetSetting,
-        examSchedule: any[],
-        student_doc: any[],
-        student_doc_id: string
-    }
+    student: IStudentData,
+    gradeList: IGrade[],
+    category_list: ICategory[],
+    feeSystem: string,
+    student_due_fee: IStudentDueFee[],
+    student_discount_fee: any[],
+    timeline_list: any[],
+    classLanguage: string,
+    getSetting: IGetSetting,
+    examSchedule: any[],
+    student_doc: any[],
+    student_doc_id: string
+
 }
 
 export interface IFeeHead {

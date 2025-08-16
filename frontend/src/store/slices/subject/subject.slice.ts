@@ -1,25 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
-import { SubjectData } from "@/interfaces/subject";
+import { Subject, SubjectData } from "./types";
+import { CommonApiResponse } from "@/store/commonApiResponse";
 
 interface SubjectState {
     subjects: SubjectData[];
-    subject: SubjectData | null;
+    subject: Subject;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: SubjectState = {
     subjects: [],
-    subject: null,
+    subject: {} as Subject,
     loading: false,
     error: null
 };
 
 export const subjectApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getSubjects: builder.query<any, void>({
+        getSubjects: builder.query<CommonApiResponse<SubjectData[]>, void>({
             query: () => `/subjects`,
         }),
     }),
@@ -29,7 +30,7 @@ const subjectSlice = createSlice({
     name: "subject",
     initialState,
     reducers: {
-        setSubject: (state, action: PayloadAction<SubjectData>) => {
+        setSubject: (state, action: PayloadAction<Subject>) => {
             state.subject = action.payload;
         },
         setError: (state, action: PayloadAction<string>) => {

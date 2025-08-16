@@ -3,6 +3,7 @@ import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
 import { apiRoutes } from "@/store/routes";
 import { IDashboardData } from "./types";
+import { CommonApiResponse } from "@/store/commonApiResponse";
 
 
 
@@ -20,7 +21,7 @@ const initialState: StudentState = {
 
 export const dashboardApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getDashboardDetails: builder.query<any, void>({
+        getDashboardDetails: builder.query<CommonApiResponse<IDashboardData>, void>({
             query: () => `${apiRoutes.dashboard.getDashboardDetails}`,
         }),
     }),

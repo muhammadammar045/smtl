@@ -1,27 +1,22 @@
-// types.ts
-export interface ILanguage {
-    lang_id: string;
-    language: string;
-}
-
-export interface ISession {
-    id: string;
-    student_id: string;
-    role: "student" | "parent";
-    username: string;
-    date_format: string;
-    currency_symbol: string;
-    timezone: string;
-    sch_name: string;
-    language: ILanguage;
-    is_rtl: "enabled" | "disabled";
-    theme: string;
-    image: string;
-}
-
 export interface IUser {
-    status: "success" | "error";
-    role: "student" | "parent";
+    status: string;
+    role: string;
     redirect_url: string;
-    session: ISession;
+    session: {
+        id: string;
+        student_id: string;
+        role: string;
+        username: string;
+        date_format: string;
+        currency_symbol: string;
+        timezone: string;
+        sch_name: string;
+        language: {
+            lang_id: string;
+            language: string;
+        };
+        is_rtl: string;
+        theme: string;
+        image: string;
+    };
 }

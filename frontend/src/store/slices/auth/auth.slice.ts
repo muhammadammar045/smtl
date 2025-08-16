@@ -3,6 +3,7 @@ import { api } from "@/store/service/rtk-service";
 import { IUser } from "@/store/slices/auth/types";
 import { RootState } from "@/store/store";
 import { apiRoutes } from "@/store/routes";
+import { CommonApiResponse } from "@/store/commonApiResponse";
 
 interface UserState {
   user: IUser | null;
@@ -20,27 +21,11 @@ const initialState: UserState = {
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUser: builder.query<any, void>({
-      query: () => "/auth/profile",
-    }),
-    login: builder.mutation<IUser, FormData>({
+    login: builder.mutation<CommonApiResponse<IUser>, FormData>({
       query: (credentials) => ({
         url: `${apiRoutes.auth.login}`,
         method: "POST",
         body: credentials,
-      }),
-    }),
-    logout: builder.mutation<any, void>({
-      query: () => ({
-        url: "/auth/logout",
-        method: "POST",
-      }),
-    }),
-    forgotPassword: builder.mutation<any, { email: string }>({
-      query: (data) => ({
-        url: "/auth/forgot-password",
-        method: "POST",
-        body: data,
       }),
     }),
   }),
@@ -71,40 +56,37 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }) => {
-        state.user = payload;
-        state.isAuthenticated = true;
+    builder.addMatcher(
+      authApi.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        if (payload.status && payload.data) {
+          state.user = payload.data; // use payload.data (the IUser)
+          state.isAuthenticated = true;
+          state.error = null;
+        } else {
+          state.error = payload.message || "Login failed";
+          state.user = null;
+          state.isAuthenticated = false;
+        }
         state.loading = false;
-        state.error = null;
-      })
-      .addMatcher(authApi.endpoints.getUser.matchFulfilled, (state, { payload }) => {
-        state.user = payload.data || null;
-        state.isAuthenticated = !!payload.data;
+      }
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.login.matchRejected,
+      (state, { error }) => {
         state.loading = false;
-        state.error = null;
-      })
-      .addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
+        state.error = error?.message || "Login failed";
         state.user = null;
         state.isAuthenticated = false;
-        state.loading = false;
-        state.error = null;
-      })
-      .addMatcher(authApi.endpoints.forgotPassword.matchFulfilled, (state) => {
-        state.loading = false;
-        state.error = null;
-      });
+      }
+    );
   },
 });
 
 export const { setUser, clearUser, setError, setLoading } = authSlice.actions;
 
-export const {
-  useGetUserQuery,
-  useLoginMutation,
-  useLogoutMutation,
-  useForgotPasswordMutation,
-} = authApi;
+export const { useLoginMutation } = authApi;
 
 export const selectAuth = (state: RootState) => state.auth.user;
 
