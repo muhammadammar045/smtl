@@ -6,12 +6,6 @@ export const api = createApi({
         baseUrl: import.meta.env.VITE_BACKEND_API_URL,
         credentials: "include",
         prepareHeaders: (headers) => {
-            const token = localStorage.getItem("token");
-            console.log("Token in prepareHeaders:", token);
-            if (token) {
-                headers.set("Authorization", ` Bearer ${token}`);
-            }
-
             return headers;
         },
     }),

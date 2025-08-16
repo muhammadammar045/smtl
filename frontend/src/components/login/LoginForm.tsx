@@ -37,19 +37,19 @@ export function LoginForm({
 
     const onSubmit = async (data: LoginFormValues) => {
         try {
-            const loginPromise = login(data).unwrap();
+            const formData = new FormData();
+            formData.append("username", data.username);
+            formData.append("password", data.password);
+
+            const loginPromise = login(formData).unwrap();
 
             const result = await toast.promise(loginPromise, {
                 pending: "Logging in...",
                 success: "Login successful",
                 error: "Login failed",
             });
-            localStorage.setItem("user", JSON.stringify(result.data));
-
-            if (result.success) {
-                const parent = result.data.parent;
-                parent ? navigate("/parent") : navigate("/dashboard");
-            }
+            if (result.role === "student") navigate("/dashboard");
+            else if (result.role === "parent") navigate("/parent/dashboard");
         } catch (err) {
             console.error("Login failed:", err);
         }

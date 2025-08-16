@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
-import { ApiResponse } from "@/interfaces/interfaces";
 import { RootState } from "@/store/store";
 import { SubjectData } from "@/interfaces/subject";
 
@@ -20,7 +19,7 @@ const initialState: SubjectState = {
 
 export const subjectApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getSubjects: builder.query<ApiResponse<SubjectData[]>, void>({
+        getSubjects: builder.query<any, void>({
             query: () => `/subjects`,
         }),
     }),

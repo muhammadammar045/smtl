@@ -5,21 +5,26 @@ import ProfileTab from "./profile-tabs/ProfileTab";
 import FeeTab from "./profile-tabs/FeeTab";
 import DocumentTab from "./profile-tabs/DocumentTab";
 import TimelineTab from "./profile-tabs/TimelineTab";
-import {
-    selectStudent,
-    useGetStudentDetailsQuery,
-} from "@/store/slices/student/student.slice";
-import { useSelector } from "react-redux";
+import { useGetDashboardDetailsQuery } from "@/store/slices/dashboard/dashboard.slice";
 
 function Profile() {
-    const user = localStorage.getItem("user");
-    const studentId = user ? JSON.parse(user).user.student_id : null;
+    const {
+        data: dashboardData,
+        error,
+        isLoading,
+    } = useGetDashboardDetailsQuery();
+    console.log(
+        "🚀 ---------------------------------------------------------------🚀"
+    );
+    console.log(
+        "🚀 ~ Profile.tsx:16 ~ Profile ~ dashboardData==>",
+        dashboardData
+    );
+    console.log(
+        "🚀 ---------------------------------------------------------------🚀"
+    );
 
-    const { error, isLoading } = useGetStudentDetailsQuery(studentId);
-
-    const student = useSelector(selectStudent);
-
-    if (!student) return <div>Loading...</div>;
+    if (!dashboardData) return <div>Loading...</div>;
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error</div>;
@@ -46,8 +51,8 @@ function Profile() {
                         <Card>
                             <CardContent className='p-6'>
                                 <ProfileTab
-                                    student={student.student}
-                                    getSetting={student.getSetting}
+                                    student={dashboardData.data.student}
+                                    getSetting={dashboardData.data.getSetting}
                                 />
                             </CardContent>
                         </Card>

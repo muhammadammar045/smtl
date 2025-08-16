@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
-import { IStudent, SchoolSetting } from "@/interfaces/student";
 import envVars from "@/envExporter";
+import { IGetSetting, IStudent } from "@/store/slices/dashboard/types";
 
 interface InfoRowProps {
     label: string;
@@ -22,7 +22,7 @@ function ProfileTab({
     getSetting,
 }: {
     student: IStudent;
-    getSetting: SchoolSetting;
+    getSetting: IGetSetting;
 }) {
     return (
         <>
@@ -93,7 +93,7 @@ function ProfileTab({
                                 />
                                 <InfoRow
                                     label='Email'
-                                    value={student.email}
+                                    value={student.email ?? "-"}
                                 />
                             </div>
                         </CardContent>
@@ -108,7 +108,7 @@ function ProfileTab({
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='Current Address'
-                                    value={student.current_address}
+                                    value={student.current_address ?? "-"}
                                 />
                                 <InfoRow
                                     label='Postal Address'
@@ -116,7 +116,7 @@ function ProfileTab({
                                 />
                                 <InfoRow
                                     label='Permanent Address'
-                                    value={student.permanent_address}
+                                    value={student.permanent_address ?? "-"}
                                 />
                             </div>
                         </CardContent>
@@ -155,7 +155,7 @@ function ProfileTab({
                                 />
                                 <InfoRow
                                     label='Father/Guardian Occupation'
-                                    value={student.father_occupation}
+                                    value={student.father_occupation ?? "-"}
                                 />
                                 {/* Additional Details Column */}
                                 <InfoRow
@@ -244,19 +244,19 @@ function ProfileTab({
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='Blood Group'
-                                    value={student.blood_group}
+                                    value={student.blood_group ?? "-"}
                                 />
                                 <InfoRow
                                     label='Student House'
-                                    value={student.house_name}
+                                    value={student.house_name ?? "-"}
                                 />
                                 <InfoRow
                                     label='Height'
-                                    value={student.height}
+                                    value={student.height ?? "-"}
                                 />
                                 <InfoRow
                                     label='Weight'
-                                    value={student.weight}
+                                    value={student.weight ?? "-"}
                                 />
                             </div>
 
@@ -268,7 +268,7 @@ function ProfileTab({
                                 />
                                 <InfoRow
                                     label='Previous School Details'
-                                    value={student.previous_school}
+                                    value={student.previous_school ?? "-"}
                                 />
                                 <InfoRow
                                     label='National Identification Number'

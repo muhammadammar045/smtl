@@ -30,7 +30,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useAppSelector } from "@/store/hooks/hooks";
-import { selectAuthRole } from "@/store/slices/auth/auth.slice";
+import { selectAuth } from "@/store/slices/auth/auth.slice";
 
 const mockChildren = [
     {
@@ -200,14 +200,11 @@ const isItemActive = (item: LinkItem, pathname: string) => {
 
 export function AppSidebar() {
     const location = useLocation();
-    const role = useAppSelector(selectAuthRole);
-
-    console.log("🚀 -----------------------------------------------🚀");
-    console.log("🚀 ~ Sidebar.tsx:204 ~ AppSidebar ~ role:", role);
-    console.log("🚀 -----------------------------------------------🚀");
+    const user = useAppSelector(selectAuth);
+    const role = user?.role;
 
     const Links = useMemo(
-        () => (role?.parent ? generateParentLinks() : studentLinks),
+        () => (role === "parent" ? generateParentLinks() : studentLinks),
         [role]
     );
 

@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
-import { ApiResponse, IUser } from "@/interfaces/interfaces";
+import { IUser } from "@/store/slices/auth/types";
 import { RootState } from "@/store/store";
-
-
+import { apiRoutes } from "@/store/routes";
 
 interface UserState {
   user: IUser | null;
@@ -16,28 +15,28 @@ const initialState: UserState = {
   user: null,
   isAuthenticated: false,
   loading: false,
-  error: null
+  error: null,
 };
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUser: builder.query<ApiResponse<IUser>, void>({
+    getUser: builder.query<any, void>({
       query: () => "/auth/profile",
     }),
-    login: builder.mutation<ApiResponse<IUser>, { username: string; password: string }>({
+    login: builder.mutation<IUser, FormData>({
       query: (credentials) => ({
-        url: "/auth/login",
+        url: `${apiRoutes.auth.login}`,
         method: "POST",
         body: credentials,
       }),
     }),
-    logout: builder.mutation<ApiResponse<IUser>, void>({
+    logout: builder.mutation<any, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
     }),
-    forgotPassword: builder.mutation<ApiResponse<IUser>, { email: string }>({
+    forgotPassword: builder.mutation<any, { email: string }>({
       query: (data) => ({
         url: "/auth/forgot-password",
         method: "POST",
@@ -47,9 +46,8 @@ export const authApi = api.injectEndpoints({
   }),
 });
 
-
 const authSlice = createSlice({
-  name: "user",
+  name: "auth",
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<IUser>) => {
@@ -62,6 +60,7 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.loading = false;
+      state.error = null;
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
@@ -69,52 +68,44 @@ const authSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(
-        authApi.endpoints.login.matchFulfilled,
-        (state, { payload }) => {
-          state.user = payload.data;
-          state.isAuthenticated = true;
-          state.loading = false;
-          state.error = null;
-        }
-      )
-      .addMatcher(
-        authApi.endpoints.getUser.matchFulfilled,
-        (state, { payload }) => {
-          state.user = payload.data;
-          state.isAuthenticated = true;
-          state.loading = false;
-          state.error = null;
-        }
-      )
-      .addMatcher(
-        authApi.endpoints.logout.matchFulfilled,
-        (state) => {
-          state.user = null;
-          state.isAuthenticated = false;
-          state.loading = false;
-          state.error = null;
-        }
-      )
-      .addMatcher(
-        authApi.endpoints.forgotPassword.matchFulfilled,
-        (state) => {
-          state.loading = false;
-          state.error = null;
-        }
-      );
+      .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }) => {
+        state.user = payload;
+        state.isAuthenticated = true;
+        state.loading = false;
+        state.error = null;
+      })
+      .addMatcher(authApi.endpoints.getUser.matchFulfilled, (state, { payload }) => {
+        state.user = payload.data || null;
+        state.isAuthenticated = !!payload.data;
+        state.loading = false;
+        state.error = null;
+      })
+      .addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      })
+      .addMatcher(authApi.endpoints.forgotPassword.matchFulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      });
   },
 });
 
-export const { useGetUserQuery, useLoginMutation, useLogoutMutation } = authApi;
 export const { setUser, clearUser, setError, setLoading } = authSlice.actions;
-export default authSlice.reducer;
 
-export const selectAuthUser = (state: RootState) => state.auth.user;
-export const selectAuthRole = (state: RootState) => state.auth.user
-export const selectAuthIsLoading = (state: RootState) => state.auth.loading;
-export const selectAuthError = (state: RootState) => state.auth.error;
+export const {
+  useGetUserQuery,
+  useLoginMutation,
+  useLogoutMutation,
+  useForgotPasswordMutation,
+} = authApi;
+
+export const selectAuth = (state: RootState) => state.auth.user;
+
+export default authSlice.reducer;
