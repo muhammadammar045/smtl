@@ -3,6 +3,7 @@ import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
 import { apiRoutes } from "@/store/routes";
 import { IDownload } from "./types";
+import { CommonApiResponse } from "@/store/commonApiResponse";
 
 interface DownloadCenterState {
     timetables: IDownload[];
@@ -27,19 +28,19 @@ const initialState: DownloadCenterState = {
 // ✅ Inject RTK Query endpoints
 export const downloadApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getTimetable: builder.query<{ data: IDownload[] }, void>({
+        getTimetable: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.timeTable,
         }),
-        getHomework: builder.query<{ data: IDownload[] }, void>({
+        getHomework: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.assignment,
         }),
-        getStudyMaterial: builder.query<{ data: IDownload[] }, void>({
+        getStudyMaterial: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.studyMaterial,
         }),
-        getSyllabus: builder.query<{ data: IDownload[] }, void>({
+        getSyllabus: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.syllabus,
         }),
-        getOtherSummerTasks: builder.query<{ data: IDownload[] }, void>({
+        getOtherSummerTasks: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.other,
         }),
     }),

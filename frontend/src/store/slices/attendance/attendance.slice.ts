@@ -1,38 +1,48 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
-import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { AttendanceData, AttendanceDetailData } from "./types";
+import { apiRoutes } from "@/store/routes";
+import { CommonApiResponse } from "@/store/commonApiResponse";
 
-interface NoticeBoardState {
-    notifications: NoticeBoardData[];
-    notification: NoticeBoardData | null;
+interface AttendanceState {
+    attendance: AttendanceData | null;
+    attendanceDetails: AttendanceDetailData | null;
     loading: boolean;
     error: string | null;
 }
 
-const initialState: NoticeBoardState = {
-    notifications: [],
-    notification: null,
+const initialState: AttendanceState = {
+    attendance: null,
+    attendanceDetails: null,
     loading: false,
-    error: null
+    error: null,
 };
 
-export const noticeboardApi = api.injectEndpoints({
+// RTK Query endpoints
+export const attendanceApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getNoticeBoardNotifications: builder.query<any, void>({
-            query: () => `/notifications/get-dashboard-notifications`,
+        getAttendance: builder.query<CommonApiResponse<AttendanceData>, void>({
+            query: () => `${apiRoutes.attendance.getAttendance}`,
+        }),
+        getAttendanceDetails: builder.query<CommonApiResponse<AttendanceDetailData>, { month: number, year: number, search: string }>({
+            query: (args) => `${apiRoutes.attendance.getAttendanceDetails(args.month, args.year, args.search)}`,
         }),
     }),
 });
 
-const noticeboardSlice = createSlice({
-    name: "noticeboard",
+const attendanceSlice = createSlice({
+    name: "attendance",
     initialState,
     reducers: {
-        setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-            state.notification = action.payload;
+        setAttendance: (state, action: PayloadAction<AttendanceData>) => {
+            state.attendance = action.payload;
         },
-        setError: (state, action: PayloadAction<string>) => {
+
+        setAttendanceDetails: (state, action: PayloadAction<AttendanceDetailData>) => {
+            state.attendanceDetails = action.payload;
+        },
+        setAttendanceError: (state, action: PayloadAction<string>) => {
             state.error = action.payload;
             state.loading = false;
         },
@@ -40,19 +50,58 @@ const noticeboardSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addMatcher(
-                noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
+                attendanceApi.endpoints.getAttendance.matchPending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                attendanceApi.endpoints.getAttendance.matchFulfilled,
                 (state, { payload }) => {
-                    state.notifications = payload.data;
+                    state.attendance = payload.data; // ✅ expects { code, data, message, status }
                     state.loading = false;
                     state.error = null;
+                }
+            )
+            .addMatcher(
+                attendanceApi.endpoints.getAttendance.matchRejected,
+                (state, { error }) => {
+                    state.loading = false;
+                    state.error = error.message ?? "Failed to fetch attendance";
+                }
+            )
+            .addMatcher(
+                attendanceApi.endpoints.getAttendanceDetails.matchPending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                attendanceApi.endpoints.getAttendanceDetails.matchFulfilled,
+                (state, { payload }) => {
+                    state.attendanceDetails = payload.data; // ✅ expects { code, data, message, status }
+                    state.loading = false;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                attendanceApi.endpoints.getAttendanceDetails.matchRejected,
+                (state, { error }) => {
+                    state.loading = false;
+                    state.error = error.message ?? "Failed to fetch attendance details";
                 }
             );
     },
 });
 
+export const { useGetAttendanceQuery, useGetAttendanceDetailsQuery } = attendanceApi;
+export const { setAttendance, setAttendanceDetails, setAttendanceError } = attendanceSlice.actions;
+export default attendanceSlice.reducer;
 
-export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-export const { setNotification, setError } = noticeboardSlice.actions;
-export default noticeboardSlice.reducer;
-
-export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+// ✅ Selectors
+export const selectAttendance = (state: RootState) => state.attendance.attendance;
+export const selectAttendanceDetails = (state: RootState) => state.attendance.attendanceDetails;
+export const selectAttendanceLoading = (state: RootState) => state.attendance.loading;
+export const selectAttendanceError = (state: RootState) => state.attendance.error;
