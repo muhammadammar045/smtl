@@ -32,6 +32,7 @@ export function LoginForm({
         defaultValues: {
             username: "",
             password: "",
+            remember: true,
         },
     });
 
@@ -48,8 +49,9 @@ export function LoginForm({
                 success: "Login successful",
                 error: "Login failed",
             });
-            if (result.role === "student") navigate("/dashboard");
-            else if (result.role === "parent") navigate("/parent/dashboard");
+            if (result.data.role === "student") navigate("/dashboard");
+            else if (result.data.role === "parent")
+                navigate("/parent/dashboard");
         } catch (err) {
             console.error("Login failed:", err);
         }

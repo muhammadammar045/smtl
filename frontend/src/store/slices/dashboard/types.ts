@@ -1,5 +1,5 @@
 export interface IDashboardData {
-    student: IStudentData,
+    student: IStudent,
     gradeList: IGrade[],
     category_list: ICategory[],
     feeSystem: string,
