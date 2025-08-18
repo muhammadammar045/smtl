@@ -1,48 +1,93 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
-import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { apiRoutes } from "@/store/routes";
+import { IDownload } from "./types";
 
-interface NoticeBoardState {
-    notifications: NoticeBoardData[];
-    notification: NoticeBoardData | null;
+interface DownloadCenterState {
+    timetables: IDownload[];
+    homeworks: IDownload[];
+    studyMaterials: IDownload[];
+    syllabuses: IDownload[];
+    otherSummerTasks: IDownload[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: NoticeBoardState = {
-    notifications: [],
-    notification: null,
+const initialState: DownloadCenterState = {
+    timetables: [],
+    homeworks: [],
+    studyMaterials: [],
+    syllabuses: [],
+    otherSummerTasks: [],
     loading: false,
-    error: null
+    error: null,
 };
 
-export const noticeboardApi = api.injectEndpoints({
+// ✅ Inject RTK Query endpoints
+export const downloadApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getNoticeBoardNotifications: builder.query<any, void>({
-            query: () => `/notifications/get-dashboard-notifications`,
+        getTimetable: builder.query<{ data: IDownload[] }, void>({
+            query: () => apiRoutes.download.timeTable,
+        }),
+        getHomework: builder.query<{ data: IDownload[] }, void>({
+            query: () => apiRoutes.download.assignment,
+        }),
+        getStudyMaterial: builder.query<{ data: IDownload[] }, void>({
+            query: () => apiRoutes.download.studyMaterial,
+        }),
+        getSyllabus: builder.query<{ data: IDownload[] }, void>({
+            query: () => apiRoutes.download.syllabus,
+        }),
+        getOtherSummerTasks: builder.query<{ data: IDownload[] }, void>({
+            query: () => apiRoutes.download.other,
         }),
     }),
 });
 
-const noticeboardSlice = createSlice({
-    name: "noticeboard",
+// ✅ Slice
+const downloadCenterSlice = createSlice({
+    name: "downloadCenter",
     initialState,
-    reducers: {
-        setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-            state.notification = action.payload;
-        },
-        setError: (state, action: PayloadAction<string>) => {
-            state.error = action.payload;
-            state.loading = false;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addMatcher(
-                noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
+                downloadApi.endpoints.getTimetable.matchFulfilled,
                 (state, { payload }) => {
-                    state.notifications = payload.data;
+                    state.timetables = payload.data;
+                    state.loading = false;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                downloadApi.endpoints.getHomework.matchFulfilled,
+                (state, { payload }) => {
+                    state.homeworks = payload.data;
+                    state.loading = false;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                downloadApi.endpoints.getStudyMaterial.matchFulfilled,
+                (state, { payload }) => {
+                    state.studyMaterials = payload.data;
+                    state.loading = false;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                downloadApi.endpoints.getSyllabus.matchFulfilled,
+                (state, { payload }) => {
+                    state.syllabuses = payload.data;
+                    state.loading = false;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                downloadApi.endpoints.getOtherSummerTasks.matchFulfilled,
+                (state, { payload }) => {
+                    state.otherSummerTasks = payload.data;
                     state.loading = false;
                     state.error = null;
                 }
@@ -50,9 +95,26 @@ const noticeboardSlice = createSlice({
     },
 });
 
+// ✅ Export hooks for components
+export const {
+    useGetTimetableQuery,
+    useGetHomeworkQuery,
+    useGetStudyMaterialQuery,
+    useGetSyllabusQuery,
+    useGetOtherSummerTasksQuery,
+} = downloadApi;
 
-export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-export const { setNotification, setError } = noticeboardSlice.actions;
-export default noticeboardSlice.reducer;
+export default downloadCenterSlice.reducer;
 
-export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+// ✅ Selectors
+export const selectDownloadCenter = (state: RootState) => state.downloadCenter;
+export const selectTimetables = (state: RootState) =>
+    state.downloadCenter.timetables;
+export const selectHomeworks = (state: RootState) =>
+    state.downloadCenter.homeworks;
+export const selectStudyMaterials = (state: RootState) =>
+    state.downloadCenter.studyMaterials;
+export const selectSyllabuses = (state: RootState) =>
+    state.downloadCenter.syllabuses;
+export const selectOtherSummerTasks = (state: RootState) =>
+    state.downloadCenter.otherSummerTasks;

@@ -5,6 +5,7 @@ import authReducer from "@/store/slices/auth/auth.slice";
 import dashboardReducer from "@/store/slices/dashboard/dashboard.slice";
 import noticeboardReducer from "./slices/noticeboard/noticeboard.slice";
 import subjectReducer from "./slices/subject/subject.slice";
+import downloadReducer from "./slices/download/download.slice";
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
         auth: authReducer,
         dashboard: dashboardReducer,
         noticeboard: noticeboardReducer,
-        subjects: subjectReducer
+        subjects: subjectReducer,
+        downloadCenter: downloadReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(api.middleware),

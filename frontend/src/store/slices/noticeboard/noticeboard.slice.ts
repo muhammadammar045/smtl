@@ -3,6 +3,7 @@ import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
 import { CommonApiResponse } from "@/store/commonApiResponse";
 import { NoticeBoardData, Notification } from "./types";
+import { apiRoutes } from "@/store/routes";
 
 interface NoticeBoardState {
     notifications: Notification[];
@@ -21,7 +22,7 @@ const initialState: NoticeBoardState = {
 export const noticeboardApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getNoticeBoardNotifications: builder.query<CommonApiResponse<NoticeBoardData>, void>({
-            query: () => `/notifications/get-dashboard-notifications`,
+            query: () => `${apiRoutes.noticeboard.getNoticeboardDetails}`,
         }),
     }),
 });
