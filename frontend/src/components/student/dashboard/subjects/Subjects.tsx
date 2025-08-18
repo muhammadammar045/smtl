@@ -1,5 +1,4 @@
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
-import { SubjectData } from "@/interfaces/subject";
 import { useGetSubjectsQuery } from "@/store/slices/subject/subject.slice";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
@@ -15,7 +14,7 @@ function Subjects() {
         return <div>Error loading subjects</div>;
     }
 
-    const columns: ColumnDef<SubjectData>[] = [
+    const columns: ColumnDef<any>[] = [
         {
             accessorKey: "subject_name",
             header: "Subject Name",
