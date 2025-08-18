@@ -1,58 +1,118 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
-import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { ExamSchedule, ExamProgressReportData } from "./types";
+import { CommonApiResponse } from "@/store/commonApiResponse";
+import { apiRoutes } from "@/store/routes";
 
-interface NoticeBoardState {
-    notifications: NoticeBoardData[];
-    notification: NoticeBoardData | null;
+interface ExamState {
+    examSchedules: ExamSchedule[];
+    selectedExamSchedule: ExamSchedule | null;
+    examProgressReport: ExamProgressReportData[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: NoticeBoardState = {
-    notifications: [],
-    notification: null,
+const initialState: ExamState = {
+    examSchedules: [],
+    selectedExamSchedule: null,
+    examProgressReport: [],
     loading: false,
-    error: null
+    error: null,
 };
 
-export const noticeboardApi = api.injectEndpoints({
+// API slice
+export const examApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getNoticeBoardNotifications: builder.query<any, void>({
-            query: () => `/notifications/get-dashboard-notifications`,
+        getExamSchedules: builder.query<CommonApiResponse<ExamSchedule[]>, void>({
+            query: () => `${apiRoutes.exam.examSchedule}`,
+        }),
+        getResultProgress: builder.query<CommonApiResponse<ExamProgressReportData[]>, void>({
+            query: () => `${apiRoutes.exam.examProgressReport}`,
         }),
     }),
 });
 
-const noticeboardSlice = createSlice({
-    name: "noticeboard",
+// Slice
+const examSlice = createSlice({
+    name: "exam",
     initialState,
     reducers: {
-        setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-            state.notification = action.payload;
+        setSelectedExamSchedule: (state, action: PayloadAction<ExamSchedule>) => {
+            state.selectedExamSchedule = action.payload;
         },
-        setError: (state, action: PayloadAction<string>) => {
+        setExamProgressReport: (state, action: PayloadAction<ExamProgressReportData[]>) => {
+            state.examProgressReport = action.payload;
+        },
+        setExamScheduleError: (state, action: PayloadAction<string>) => {
             state.error = action.payload;
             state.loading = false;
         },
     },
     extraReducers: (builder) => {
-        builder
-            .addMatcher(
-                noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
-                (state, { payload }) => {
-                    state.notifications = payload.data;
-                    state.loading = false;
-                    state.error = null;
-                }
-            );
+        // ExamSchedules
+        builder.addMatcher(
+            examApi.endpoints.getExamSchedules.matchFulfilled,
+            (state, { payload }) => {
+                state.examSchedules = payload.data;
+                state.loading = false;
+                state.error = null;
+            }
+        );
+        builder.addMatcher(
+            examApi.endpoints.getExamSchedules.matchPending,
+            (state) => {
+                state.loading = true;
+            }
+        );
+        builder.addMatcher(
+            examApi.endpoints.getExamSchedules.matchRejected,
+            (state, { error }) => {
+                state.loading = false;
+                state.error = error?.message || "Failed to fetch exam schedules";
+            }
+        );
+
+        // Exam Progress Report
+        builder.addMatcher(
+            examApi.endpoints.getResultProgress.matchFulfilled,
+            (state, { payload }) => {
+                state.examProgressReport = payload.data;
+                state.loading = false;
+                state.error = null;
+            }
+        );
+        builder.addMatcher(
+            examApi.endpoints.getResultProgress.matchPending,
+            (state) => {
+                state.loading = true;
+            }
+        );
+        builder.addMatcher(
+            examApi.endpoints.getResultProgress.matchRejected,
+            (state, { error }) => {
+                state.loading = false;
+                state.error = error?.message || "Failed to fetch exam progress report";
+            }
+        );
     },
 });
 
+// Hooks from API
+export const {
+    useGetExamSchedulesQuery,
+    useGetResultProgressQuery,
+} = examApi;
 
-export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-export const { setNotification, setError } = noticeboardSlice.actions;
-export default noticeboardSlice.reducer;
+// Actions
+export const { setSelectedExamSchedule, setExamProgressReport, setExamScheduleError } =
+    examSlice.actions;
 
-export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+export default examSlice.reducer;
+
+// Selectors
+export const selectExamSchedules = (state: RootState) => state.exam.examSchedules;
+export const selectSelectedExamSchedule = (state: RootState) => state.exam.selectedExamSchedule;
+export const selectExamProgressReport = (state: RootState) => state.exam.examProgressReport;
+export const selectExamScheduleLoading = (state: RootState) => state.exam.loading;
+export const selectExamScheduleError = (state: RootState) => state.exam.error;
