@@ -6,6 +6,7 @@ export const api = createApi({
         baseUrl: import.meta.env.VITE_BACKEND_API_URL,
         credentials: "include",
         prepareHeaders: (headers) => {
+            headers.set("Accept", "application/json");
             return headers;
         },
     }),
