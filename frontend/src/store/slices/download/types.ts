@@ -18,3 +18,26 @@ export interface IDownload {
     class: string | null;
     section: string | null;
 }
+
+export interface IDownloadStudyMaterial {
+    title: string;
+    study_material: IDownload[]
+}
+export interface IDownloadSyllabus {
+    title: string;
+    syllabus: IDownload[]
+}
+export interface IDownloadSummerTasks {
+    title: string;
+    downloads: IDownload[]
+}
+
+
+export interface IDownloadSyllabus {
+    title: string;
+    syllabus: IDownload[]
+}
+export interface IDownloadSyllabus {
+    title: string;
+    syllabus: IDownload[]
+}

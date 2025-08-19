@@ -18,7 +18,7 @@ function Syllabus() {
 
     // ✅ Transform API response into rows
     const syllabusList: SyllabusRow[] =
-        data?.data?.map((item: any) => ({
+        data?.data?.syllabus.map((item: any) => ({
             name: item.title,
             date: new Date(item.date).toLocaleDateString("en-GB"),
             type: item.type,

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
 import { apiRoutes } from "@/store/routes";
-import { IDownload } from "./types";
+import { IDownload, IDownloadStudyMaterial, IDownloadSummerTasks, IDownloadSyllabus } from "./types";
 import { CommonApiResponse } from "@/store/commonApiResponse";
 
 interface DownloadCenterState {
@@ -34,13 +34,13 @@ export const downloadApi = api.injectEndpoints({
         getHomework: builder.query<CommonApiResponse<IDownload[]>, void>({
             query: () => apiRoutes.download.assignment,
         }),
-        getStudyMaterial: builder.query<CommonApiResponse<IDownload[]>, void>({
+        getStudyMaterial: builder.query<CommonApiResponse<IDownloadStudyMaterial>, void>({
             query: () => apiRoutes.download.studyMaterial,
         }),
-        getSyllabus: builder.query<CommonApiResponse<IDownload[]>, void>({
+        getSyllabus: builder.query<CommonApiResponse<IDownloadSyllabus>, void>({
             query: () => apiRoutes.download.syllabus,
         }),
-        getOtherSummerTasks: builder.query<CommonApiResponse<IDownload[]>, void>({
+        getOtherSummerTasks: builder.query<CommonApiResponse<IDownloadSummerTasks>, void>({
             query: () => apiRoutes.download.other,
         }),
     }),
@@ -72,7 +72,7 @@ const downloadCenterSlice = createSlice({
             .addMatcher(
                 downloadApi.endpoints.getStudyMaterial.matchFulfilled,
                 (state, { payload }) => {
-                    state.studyMaterials = payload.data;
+                    state.studyMaterials = payload.data.study_material;
                     state.loading = false;
                     state.error = null;
                 }
@@ -80,7 +80,7 @@ const downloadCenterSlice = createSlice({
             .addMatcher(
                 downloadApi.endpoints.getSyllabus.matchFulfilled,
                 (state, { payload }) => {
-                    state.syllabuses = payload.data;
+                    state.syllabuses = payload.data.syllabus;
                     state.loading = false;
                     state.error = null;
                 }
@@ -88,7 +88,7 @@ const downloadCenterSlice = createSlice({
             .addMatcher(
                 downloadApi.endpoints.getOtherSummerTasks.matchFulfilled,
                 (state, { payload }) => {
-                    state.otherSummerTasks = payload.data;
+                    state.otherSummerTasks = payload.data.downloads;
                     state.loading = false;
                     state.error = null;
                 }

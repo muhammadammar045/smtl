@@ -18,7 +18,7 @@ function StudyMaterial() {
 
     // ✅ Transform API response into table rows
     const studyMaterials: StudyMaterialRow[] =
-        data?.data?.map((item: any) => ({
+        data?.data?.study_material?.map((item: any) => ({
             name: item.title,
             date: new Date(item.date).toLocaleDateString("en-GB"),
             type: item.type,

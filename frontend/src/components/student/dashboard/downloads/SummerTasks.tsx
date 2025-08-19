@@ -18,7 +18,7 @@ function SummerTasks() {
 
     // ✅ Transform API response → rows
     const summerTasks: SummerTaskRow[] =
-        data?.data?.map((item: any) => ({
+        data?.data?.downloads.map((item: any) => ({
             name: item.title,
             date: new Date(item.date).toLocaleDateString("en-GB"),
             type: item.type,
