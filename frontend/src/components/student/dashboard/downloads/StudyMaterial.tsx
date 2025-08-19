@@ -14,7 +14,7 @@ interface StudyMaterialRow {
 }
 
 function StudyMaterial() {
-    const { data, isLoading } = useGetStudyMaterialQuery();
+    const { data } = useGetStudyMaterialQuery();
 
     // ✅ Transform API response into table rows
     const studyMaterials: StudyMaterialRow[] =

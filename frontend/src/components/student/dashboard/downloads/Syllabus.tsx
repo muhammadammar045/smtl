@@ -14,7 +14,7 @@ interface SyllabusRow {
 }
 
 function Syllabus() {
-    const { data, isLoading } = useGetSyllabusQuery();
+    const { data } = useGetSyllabusQuery();
 
     // ✅ Transform API response into rows
     const syllabusList: SyllabusRow[] =

@@ -14,7 +14,7 @@ interface SummerTaskRow {
 }
 
 function SummerTasks() {
-    const { data, isLoading } = useGetOtherSummerTasksQuery();
+    const { data } = useGetOtherSummerTasksQuery();
 
     // ✅ Transform API response → rows
     const summerTasks: SummerTaskRow[] =
