@@ -1,305 +1,77 @@
+import { useState } from "react";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
+import { useGetAttendanceQuery } from "@/store/slices/attendance/attendance.slice";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
+import AttendanceDetailModal from "./AttendanceDetailModal";
 
-interface AttendanceData {
+type AttendanceRow = {
     id: number;
-    name: string;
-    rollNumber: string;
-    class: string;
-    section: string;
-    rte: string;
-    campus: string;
-    group: string;
-    studentMobile: string;
-    religion: string;
-}
+    month: string; // e.g. "2025-04"
+    workingDays: number;
+    present: number;
+    late: number;
+    absent: number;
+    halfDay: number;
+    holiday: number;
+    leave: number;
+    off: number;
+};
 
 function Attendance() {
-    const data: AttendanceData[] = [
-        {
-            id: 1,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 2,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 3,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 4,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 5,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 6,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 7,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 8,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 9,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 10,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 11,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 12,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 13,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 14,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 15,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 16,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 17,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 18,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 19,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-        {
-            id: 20,
-            name: "Parisa Zainab",
-            rollNumber: "afss-B17-00604",
-            class: "I",
-            section: "Blue Bells",
-            rte: "Yes",
-            campus: "Junior School",
-            group: "Science",
-            studentMobile: "03327755522",
-            religion: "Islam",
-        },
-    ];
+    const { data: attendanceData, isLoading } = useGetAttendanceQuery();
+    const [selectedMonthYear, setSelectedMonthYear] = useState<{
+        month: number;
+        year: number;
+    } | null>(null);
 
-    const columns: ColumnDef<AttendanceData>[] = [
+    if (isLoading) return <p>Loading...</p>;
+    if (!attendanceData) return <p>No data found</p>;
+
+    const apiData = attendanceData.data.attendance_student;
+
+    const tableData: AttendanceRow[] = Object.entries(apiData).map(
+        ([month, values]: [string, any], index) => ({
+            id: index + 1,
+            month, // "2025-04"
+            workingDays: values.working_days,
+            present: values.count_present,
+            late: values.count_late,
+            absent: values.absent,
+            halfDay: values.half_day,
+            holiday: values.count_holiday,
+            leave: values.count_leave,
+            off: values.off,
+        })
+    );
+
+    const columns: ColumnDef<AttendanceRow>[] = [
         {
-            accessorKey: "id",
-            header: "ID",
+            accessorKey: "action",
+            header: "Action",
+            cell: ({ row }) => (
+                <button
+                    className='btn btn-primary'
+                    onClick={() => {
+                        const [year, month] = row.original.month
+                            .split("-")
+                            .map(Number);
+                        setSelectedMonthYear({ month, year });
+                    }}
+                >
+                    View Detail
+                </button>
+            ),
         },
-        {
-            accessorKey: "name",
-            header: "Name",
-        },
-        {
-            accessorKey: "rollNumber",
-            header: "Roll Number",
-        },
-        {
-            accessorKey: "class",
-            header: "Class",
-        },
-        {
-            accessorKey: "section",
-            header: "Section",
-        },
-        {
-            accessorKey: "rte",
-            header: "RTE",
-        },
-        {
-            accessorKey: "campus",
-            header: "Campus",
-        },
-        {
-            accessorKey: "group",
-            header: "Group",
-        },
-        {
-            accessorKey: "studentMobile",
-            header: "Mobile",
-        },
-        {
-            accessorKey: "religion",
-            header: "Religion",
-        },
+        { accessorKey: "month", header: "Months" },
+        { accessorKey: "workingDays", header: "Working Days" },
+        { accessorKey: "present", header: "Present" },
+        { accessorKey: "late", header: "Late" },
+        { accessorKey: "absent", header: "Absent" },
+        { accessorKey: "halfDay", header: "Half Day" },
+        { accessorKey: "holiday", header: "Holiday" },
+        { accessorKey: "leave", header: "Leave" },
+        { accessorKey: "off", header: "Off" },
     ];
 
     return (
@@ -309,9 +81,18 @@ function Attendance() {
                 description=''
             />
             <TenStackReactTable
-                data={data}
+                data={tableData}
                 columns={columns}
             />
+
+            {/* Modal */}
+            {selectedMonthYear && (
+                <AttendanceDetailModal
+                    month={selectedMonthYear.month}
+                    year={selectedMonthYear.year}
+                    onClose={() => setSelectedMonthYear(null)}
+                />
+            )}
         </>
     );
 }

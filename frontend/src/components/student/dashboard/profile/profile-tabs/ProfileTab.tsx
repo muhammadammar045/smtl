@@ -264,7 +264,7 @@ function ProfileTab({
                             <div className='space-y-4'>
                                 <InfoRow
                                     label='As on Date'
-                                    value={student.admission_date}
+                                    value={student.measurement_date}
                                 />
                                 <InfoRow
                                     label='Previous School Details'

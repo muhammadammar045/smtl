@@ -3,6 +3,7 @@ import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
 import { Subject, SubjectData } from "./types";
 import { CommonApiResponse } from "@/store/commonApiResponse";
+import { apiRoutes } from "@/store/routes";
 
 interface SubjectState {
     subjects: SubjectData[];
@@ -21,7 +22,7 @@ const initialState: SubjectState = {
 export const subjectApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getSubjects: builder.query<CommonApiResponse<SubjectData[]>, void>({
-            query: () => `/subjects`,
+            query: () => `${apiRoutes.subjects.getSubjects}`,
         }),
     }),
 });
