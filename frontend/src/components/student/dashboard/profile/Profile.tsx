@@ -59,7 +59,11 @@ function Profile() {
                     <TabsContent value='fee'>
                         <Card>
                             <CardContent className='p-6'>
-                                <FeeTab />
+                                <FeeTab
+                                    studentFee={
+                                        dashboardData.data.student_due_fee
+                                    }
+                                />
                             </CardContent>
                         </Card>
                     </TabsContent>
