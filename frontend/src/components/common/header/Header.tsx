@@ -51,110 +51,94 @@ export const Header = ({
     },
 }: HeaderProps) => {
     const navigate = useNavigate();
+
+    const currentYear = new Date().getFullYear();
+
     return (
-        <section className='h-[100px] w-full bg-background border-b relative'>
-            <div className='h-full w-full px-4 flex items-center'>
-                {/* Desktop Menu */}
-                <nav className='hidden justify-between w-full lg:flex'>
+        <header className='h-[100px] w-full bg-background border-b shadow-sm sticky top-0 z-50'>
+            <div className='h-full w-full px-4 flex items-center justify-between max-w-7xl mx-auto'>
+                {/* Desktop Header */}
+                <nav className='hidden lg:flex items-center justify-between w-full'>
+                    {/* Logo and School Info */}
                     <div className='flex items-center gap-6'>
-                        {/* Logo */}
                         <Link
                             to={logo.url}
-                            className='flex items-center gap-2'
+                            className='flex items-center gap-3'
                         >
                             <img
                                 src={logo.src}
-                                className='max-h-24 '
+                                className='h-16'
                                 alt={logo.alt}
                             />
                         </Link>
                         <div className='flex flex-col'>
-                            <h2 className='text-2xl font-bold'>
-                                Air Foundation School System
-                            </h2>
-                            <p className='text-sm'>
-                                <span className='text-primary font-bold'>
-                                    Current Session :
+                            <h1 className='text-xl font-semibold text-foreground'>
+                                {logo.title}
+                            </h1>
+                            <p className='text-sm text-muted-foreground'>
+                                <span className='font-medium text-primary'>
+                                    Current Session:
                                 </span>{" "}
-                                <span>
-                                    {new Date().getFullYear()}-
-                                    {new Date().getFullYear() + 1}
-                                </span>
+                                {currentYear}-{currentYear + 1}
                             </p>
-                            <p className='text-sm'>
-                                <span className='text-primary font-bold'>
-                                    Today Date :
+                            <p className='text-sm text-muted-foreground'>
+                                <span className='font-medium text-primary'>
+                                    Today:
                                 </span>{" "}
-                                <span>{new Date().toDateString()}</span>
+                                {new Date().toDateString()}
                             </p>
                         </div>
                     </div>
 
-                    {/* New Icons Section */}
-                    <div className='flex items-center gap-4'>
+                    {/* Actions */}
+                    <div className='flex items-center gap-3'>
                         <TooltipProvider>
+                            {[
+                                {
+                                    icon: <ListTodo className='h-5 w-5' />,
+                                    label: "Todo List",
+                                    onClick: () => navigate("/dashboard/todo"),
+                                },
+                                {
+                                    icon: <Calendar className='h-5 w-5' />,
+                                    label: "Calendar",
+                                    onClick: () =>
+                                        navigate("/dashboard/calendar"),
+                                },
+                                {
+                                    icon: <UserCircle className='h-5 w-5' />,
+                                    label: "Profile",
+                                    onClick: () =>
+                                        (window.location.href =
+                                            "/dashboard/profile"),
+                                },
+                            ].map(({ icon, label, onClick }, index) => (
+                                <Tooltip key={index}>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant='ghost'
+                                            size='icon'
+                                            onClick={onClick}
+                                            className='hover:bg-muted'
+                                        >
+                                            {icon}
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{label}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            ))}
+
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <ModeToggle />
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Theme</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='hover:bg-accent'
-                                        onClick={() =>
-                                            navigate("/dashboard/todo")
-                                        }
-                                    >
-                                        <ListTodo className='h-5 w-5' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Todo List</p>
+                                    <p>Toggle Theme</p>
                                 </TooltipContent>
                             </Tooltip>
 
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='hover:bg-accent'
-                                        onClick={() =>
-                                            navigate("/dashboard/calendar")
-                                        }
-                                    >
-                                        <Calendar className='h-5 w-5' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Calendar</p>
-                                </TooltipContent>
-                            </Tooltip>
-
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='hover:bg-accent'
-                                        onClick={() =>
-                                            (window.location.href =
-                                                "/dashboard/profile")
-                                        }
-                                    >
-                                        <UserCircle className='h-5 w-5' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Profile</p>
-                                </TooltipContent>
-                            </Tooltip>
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <SidebarTrigger />
@@ -167,59 +151,44 @@ export const Header = ({
                     </div>
                 </nav>
 
-                {/* Mobile Menu */}
-                <div className='block w-full lg:hidden'>
-                    <div className='flex items-center justify-between'>
-                        {/* Logo */}
-                        <Link
-                            to={logo.url}
-                            className='flex items-center gap-2'
-                        >
-                            <img
-                                src={logo.src}
-                                className='max-h-8'
-                                alt={logo.alt}
-                            />
-                        </Link>
-                        <div className='flex items-center gap-2'>
-                            {/* Mobile Icons */}
-                            <Button
-                                variant='ghost'
-                                size='icon'
-                                className='hover:bg-accent'
-                            >
-                                <ListTodo className='h-5 w-5' />
-                            </Button>
-                            <Button
-                                variant='ghost'
-                                size='icon'
-                                className='hover:bg-accent'
-                            >
-                                <Calendar className='h-5 w-5' />
-                            </Button>
-                            <Button
-                                variant='ghost'
-                                size='icon'
-                                className='hover:bg-accent'
-                            >
-                                <UserCircle className='h-5 w-5' />
-                            </Button>
-
-                            {/* Mobile Menu Button */}
-                            <Sheet>
-                                <SheetTrigger asChild>
-                                    <Button
-                                        variant='outline'
-                                        size='icon'
-                                    >
-                                        <SidebarTrigger />
-                                    </Button>
-                                </SheetTrigger>
-                            </Sheet>
-                        </div>
+                {/* Mobile Header */}
+                <div className='flex lg:hidden items-center justify-between w-full'>
+                    <Link
+                        to={logo.url}
+                        className='flex items-center gap-2'
+                    >
+                        <img
+                            src={logo.src}
+                            className='h-10'
+                            alt={logo.alt}
+                        />
+                    </Link>
+                    <div className='flex items-center gap-2'>
+                        {[<ListTodo />, <Calendar />, <UserCircle />].map(
+                            (Icon, i) => (
+                                <Button
+                                    key={i}
+                                    variant='ghost'
+                                    size='icon'
+                                    className='hover:bg-muted'
+                                >
+                                    <Icon.type className='h-5 w-5' />
+                                </Button>
+                            )
+                        )}
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button
+                                    variant='outline'
+                                    size='icon'
+                                >
+                                    <SidebarTrigger />
+                                </Button>
+                            </SheetTrigger>
+                        </Sheet>
                     </div>
                 </div>
             </div>
-        </section>
+        </header>
     );
 };

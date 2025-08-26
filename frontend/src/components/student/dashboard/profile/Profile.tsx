@@ -13,16 +13,7 @@ function Profile() {
         error,
         isLoading,
     } = useGetDashboardDetailsQuery();
-    console.log(
-        "🚀 ---------------------------------------------------------------🚀"
-    );
-    console.log(
-        "🚀 ~ Profile.tsx:16 ~ Profile ~ dashboardData==>",
-        dashboardData
-    );
-    console.log(
-        "🚀 ---------------------------------------------------------------🚀"
-    );
+
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {JSON.stringify(error)}</div>;
     if (!dashboardData?.data) return <div>No data found</div>;

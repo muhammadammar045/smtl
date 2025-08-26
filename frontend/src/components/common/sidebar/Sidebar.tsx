@@ -29,22 +29,15 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
+
 import { useAppSelector } from "@/store/hooks/hooks";
 import { selectAuth } from "@/store/slices/auth/auth.slice";
 
+// Dummy children
 const mockChildren = [
-    {
-        id: "1",
-        name: "Muhammad Senan",
-    },
-    {
-        id: "2",
-        name: "Muhammad Ammar",
-    },
-    {
-        id: "3",
-        name: "Muhammad Maaz",
-    },
+    { id: "1", name: "Muhammad Senan" },
+    { id: "2", name: "Muhammad Ammar" },
+    { id: "3", name: "Muhammad Maaz" },
 ];
 
 interface LinkItem {
@@ -55,16 +48,8 @@ interface LinkItem {
 }
 
 const studentLinks: LinkItem[] = [
-    {
-        title: "My Profile",
-        url: "/dashboard/profile",
-        icon: <Users />,
-    },
-    {
-        title: "Notice Board",
-        url: "/dashboard/notice-board",
-        icon: <Bell />,
-    },
+    { title: "My Profile", url: "/dashboard/profile", icon: <Users /> },
+    { title: "Notice Board", url: "/dashboard/notice-board", icon: <Bell /> },
     {
         title: "Attendance",
         url: "/dashboard/attendance",
@@ -75,16 +60,8 @@ const studentLinks: LinkItem[] = [
         url: "/dashboard/live-classes",
         icon: <BookOpen />,
     },
-    {
-        title: "IN/OUT Time Log",
-        url: "/dashboard/time-log",
-        icon: <Clock />,
-    },
-    {
-        title: "Diary",
-        url: "/dashboard/diary",
-        icon: <FileText />,
-    },
+    { title: "IN/OUT Time Log", url: "/dashboard/time-log", icon: <Clock /> },
+    { title: "Diary", url: "/dashboard/diary", icon: <FileText /> },
     {
         title: "Examinations",
         url: "/dashboard/examinations",
@@ -139,67 +116,50 @@ const studentLinks: LinkItem[] = [
             },
         ],
     },
-    {
-        title: "Subjects",
-        url: "/dashboard/subjects",
-        icon: <BookOpen />,
-    },
-    {
-        title: "Transport Routes",
-        url: "/dashboard/transport",
-        icon: <Bus />,
-    },
+    { title: "Subjects", url: "/dashboard/subjects", icon: <BookOpen /> },
+    { title: "Transport Routes", url: "/dashboard/transport", icon: <Bus /> },
 ];
 
 const generateParentLinks = (): LinkItem[] => {
     return studentLinks.map((link) => {
-        const newLink: LinkItem = {
-            title: link.title,
-            url: link.url,
-            icon: link.icon,
-        };
-
         if (link.items) {
-            newLink.items = link.items.map((subItem) => ({
-                ...subItem,
-                // Add children to each sub-item
+            return {
+                ...link,
+                items: link.items.map((subItem) => ({
+                    ...subItem,
+                    items: mockChildren.map((child) => ({
+                        title: child.name,
+                        url: `/parent/child/${child.id}${subItem.url.substring(
+                            "/dashboard".length
+                        )}`,
+                        icon: <User />,
+                    })),
+                })),
+            };
+        } else {
+            return {
+                ...link,
                 items: mockChildren.map((child) => ({
                     title: child.name,
-                    url: `/parent/child/${child.id}${subItem.url.substring(
+                    url: `/parent/child/${child.id}${link.url.substring(
                         "/dashboard".length
                     )}`,
                     icon: <User />,
                 })),
-            }));
-        } else {
-            // For simple links, add children directly
-            newLink.items = mockChildren.map((child) => ({
-                title: child.name,
-                url: `/parent/child/${child.id}${link.url.substring(
-                    "/dashboard".length
-                )}`,
-                icon: <User />,
-            }));
+            };
         }
-
-        return newLink;
     });
 };
 
-const isItemActive = (item: LinkItem, pathname: string) => {
-    if (item.url && pathname.startsWith(item.url)) {
-        return true;
-    }
-    if (item.items) {
-        return item.items.some((subItem: LinkItem) =>
-            pathname.startsWith(subItem.url)
-        );
-    }
-    return false;
+const isItemActive = (item: LinkItem, pathname: string): boolean => {
+    if (pathname.startsWith(item.url)) return true;
+    return (
+        item.items?.some((subItem) => isItemActive(subItem, pathname)) ?? false
+    );
 };
 
 export function AppSidebar() {
-    const location = useLocation();
+    const { pathname } = useLocation();
     const user = useAppSelector(selectAuth);
     const role = user?.role;
 
@@ -207,23 +167,17 @@ export function AppSidebar() {
         () => (role === "parent" ? generateParentLinks() : studentLinks),
         [role]
     );
-
     const [openAccordions, setOpenAccordions] = useState<
         Record<string, boolean>
     >({});
-
-    const toggleAccordion = (title: string) => {
-        setOpenAccordions((prev) => ({
-            ...prev,
-            [title]: !prev[title],
-        }));
-    };
     const { isMobile, setOpenMobile } = useSidebar();
 
+    const toggleAccordion = (key: string) => {
+        setOpenAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
+    };
+
     const handleNavClick = () => {
-        if (isMobile) {
-            setOpenMobile(false);
-        }
+        if (isMobile) setOpenMobile(false);
     };
 
     return (
@@ -231,25 +185,20 @@ export function AppSidebar() {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
-                    <p className='text-sm py-3 text-start px-4 mb-2 bg-primary'>
-                        Current Session :{" "}
+
+                    <p className='text-sm py-2 px-4 text-white bg-primary rounded mb-2'>
+                        Current Session:{" "}
                         <span>
-                            {" "}
-                            <span>
-                                {new Date().getFullYear()}-
-                                {new Date().getFullYear() + 1}
-                            </span>
+                            {new Date().getFullYear()} -{" "}
+                            {new Date().getFullYear() + 1}
                         </span>
                     </p>
+
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {Links.map((item) => {
-                                const active = isItemActive(
-                                    item,
-                                    location.pathname
-                                );
-                                const hasChildren =
-                                    item.items && item.items.length > 0;
+                                const active = isItemActive(item, pathname);
+                                const hasChildren = !!item.items?.length;
 
                                 return (
                                     <SidebarMenuItem key={item.title}>
@@ -261,18 +210,16 @@ export function AppSidebar() {
                                                             item.title
                                                         )
                                                     }
-                                                    className={`flex items-center justify-between w-full px-2 py-2 text-muted-foreground hover:no-underline ${
+                                                    className={`flex items-center justify-between w-full px-2 py-2 rounded hover:bg-muted transition ${
                                                         active
-                                                            ? "bg-primary text-foreground rounded-md"
-                                                            : ""
+                                                            ? "bg-primary text-white"
+                                                            : "text-muted-foreground"
                                                     }`}
                                                 >
-                                                    <div className='flex items-center gap-2'>
+                                                    <span className='flex items-center gap-2'>
                                                         {item.icon}
-                                                        <span>
-                                                            {item.title}
-                                                        </span>
-                                                    </div>
+                                                        {item.title}
+                                                    </span>
                                                     <ChevronDown
                                                         className={`h-4 w-4 transition-transform ${
                                                             openAccordions[
@@ -285,50 +232,48 @@ export function AppSidebar() {
                                                 </button>
 
                                                 {openAccordions[item.title] && (
-                                                    <div className='pl-6'>
+                                                    <div className='pl-4 space-y-1 pt-1'>
                                                         {item.items?.map(
                                                             (subItem) => {
                                                                 const subHasChildren =
-                                                                    subItem.items &&
-                                                                    subItem
+                                                                    !!subItem
                                                                         .items
-                                                                        .length >
-                                                                        0;
+                                                                        ?.length;
+                                                                const subActive =
+                                                                    isItemActive(
+                                                                        subItem,
+                                                                        pathname
+                                                                    );
 
                                                                 return (
                                                                     <div
                                                                         key={
                                                                             subItem.title
                                                                         }
-                                                                        className='mt-1'
+                                                                        className='flex flex-col'
                                                                     >
                                                                         {subHasChildren ? (
-                                                                            <div className='flex flex-col'>
+                                                                            <>
                                                                                 <button
                                                                                     onClick={() =>
                                                                                         toggleAccordion(
                                                                                             subItem.title
                                                                                         )
                                                                                     }
-                                                                                    className={`flex items-center justify-between w-full px-2 py-2 text-sm text-muted-foreground hover:no-underline ${
-                                                                                        isItemActive(
-                                                                                            subItem,
-                                                                                            location.pathname
-                                                                                        )
-                                                                                            ? "text-primary rounded-md"
-                                                                                            : ""
+                                                                                    className={`flex items-center justify-between w-full px-2 py-1 text-sm rounded hover:bg-muted ${
+                                                                                        subActive
+                                                                                            ? "text-primary"
+                                                                                            : "text-muted-foreground"
                                                                                     }`}
                                                                                 >
-                                                                                    <div className='flex items-center gap-2'>
+                                                                                    <span className='flex items-center gap-2'>
                                                                                         {
                                                                                             subItem.icon
                                                                                         }
-                                                                                        <span>
-                                                                                            {
-                                                                                                subItem.title
-                                                                                            }
-                                                                                        </span>
-                                                                                    </div>
+                                                                                        {
+                                                                                            subItem.title
+                                                                                        }
+                                                                                    </span>
                                                                                     <ChevronDown
                                                                                         className={`h-4 w-4 transition-transform ${
                                                                                             openAccordions[
@@ -340,22 +285,21 @@ export function AppSidebar() {
                                                                                         }`}
                                                                                     />
                                                                                 </button>
-
                                                                                 {openAccordions[
                                                                                     subItem
                                                                                         .title
                                                                                 ] && (
-                                                                                    <div className='pl-4'>
+                                                                                    <div className='pl-4 space-y-1'>
                                                                                         {subItem.items?.map(
                                                                                             (
-                                                                                                childItem
+                                                                                                child
                                                                                             ) => (
                                                                                                 <NavLink
                                                                                                     key={
-                                                                                                        childItem.title
+                                                                                                        child.title
                                                                                                     }
                                                                                                     to={
-                                                                                                        childItem.url
+                                                                                                        child.url
                                                                                                     }
                                                                                                     onClick={
                                                                                                         handleNavClick
@@ -363,27 +307,25 @@ export function AppSidebar() {
                                                                                                     className={({
                                                                                                         isActive,
                                                                                                     }) =>
-                                                                                                        `flex items-center gap-2 py-1 px-2 text-xs hover:text-primary ${
+                                                                                                        `flex items-center gap-2 text-xs px-2 py-1 rounded hover:text-primary ${
                                                                                                             isActive
-                                                                                                                ? "text-primary rounded-md"
+                                                                                                                ? "text-primary"
                                                                                                                 : "text-muted-foreground"
                                                                                                         }`
                                                                                                     }
                                                                                                 >
                                                                                                     {
-                                                                                                        childItem.icon
+                                                                                                        child.icon
                                                                                                     }
-                                                                                                    <span>
-                                                                                                        {
-                                                                                                            childItem.title
-                                                                                                        }
-                                                                                                    </span>
+                                                                                                    {
+                                                                                                        child.title
+                                                                                                    }
                                                                                                 </NavLink>
                                                                                             )
                                                                                         )}
                                                                                     </div>
                                                                                 )}
-                                                                            </div>
+                                                                            </>
                                                                         ) : (
                                                                             <NavLink
                                                                                 to={
@@ -395,9 +337,9 @@ export function AppSidebar() {
                                                                                 className={({
                                                                                     isActive,
                                                                                 }) =>
-                                                                                    `flex items-center gap-2 py-1 px-2 text-sm hover:text-primary ${
+                                                                                    `flex items-center gap-2 px-2 py-1 text-sm rounded hover:text-primary ${
                                                                                         isActive
-                                                                                            ? "text-primary rounded-md"
+                                                                                            ? "text-primary"
                                                                                             : "text-muted-foreground"
                                                                                     }`
                                                                                 }
@@ -405,11 +347,9 @@ export function AppSidebar() {
                                                                                 {
                                                                                     subItem.icon
                                                                                 }
-                                                                                <span>
-                                                                                    {
-                                                                                        subItem.title
-                                                                                    }
-                                                                                </span>
+                                                                                {
+                                                                                    subItem.title
+                                                                                }
                                                                             </NavLink>
                                                                         )}
                                                                     </div>
@@ -424,14 +364,16 @@ export function AppSidebar() {
                                                 <NavLink
                                                     to={item.url}
                                                     onClick={handleNavClick}
-                                                    className={`flex items-center gap-2 py-2 hover:text-foreground ${
-                                                        active
-                                                            ? "bg-primary text-foreground rounded-md px-2"
-                                                            : "text-muted-foreground"
-                                                    }`}
+                                                    className={({ isActive }) =>
+                                                        `flex items-center gap-2 py-2 px-2 rounded hover:text-foreground transition ${
+                                                            isActive
+                                                                ? "bg-primary text-white"
+                                                                : "text-muted-foreground"
+                                                        }`
+                                                    }
                                                 >
                                                     {item.icon}
-                                                    <span>{item.title}</span>
+                                                    {item.title}
                                                 </NavLink>
                                             </SidebarMenuButton>
                                         )}
@@ -445,3 +387,5 @@ export function AppSidebar() {
         </Sidebar>
     );
 }
+
+export default Sidebar;

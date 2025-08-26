@@ -5,10 +5,10 @@ import { IGetSetting, IStudent } from "@/store/slices/dashboard/types";
 
 interface InfoRowProps {
     label: string;
-    value: string;
+    value?: string | number;
 }
 
-function InfoRow({ label, value }: InfoRowProps) {
+function InfoRow({ label, value = "-" }: InfoRowProps) {
     return (
         <div className='flex flex-col'>
             <span className='text-sm text-muted-foreground'>{label}</span>
@@ -17,38 +17,38 @@ function InfoRow({ label, value }: InfoRowProps) {
     );
 }
 
-function ProfileTab({
-    student,
-    getSetting,
-}: {
+interface ProfileTabProps {
     student: IStudent;
     getSetting: IGetSetting;
-}) {
+}
+
+export function ProfileTab({ student, getSetting }: ProfileTabProps) {
+    const fullName = `${student.firstname} ${student.lastname}`;
+    const imgBase = envVars.IMAGE_BASE_URL;
+
     return (
         <>
             <PageTitle
                 title='Profile'
-                description=''
                 fontSize='text-2xl'
             />
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
-                {/* Left Profile Card */}
-                <Card className='md:col-span-1'>
-                    <CardContent className='p-6 flex flex-col items-center'>
-                        <div className='w-32 h-32 rounded-full overflow-hidden mb-4'>
+
+            <div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
+                {/* Sidebar Card */}
+                <Card className='lg:col-span-3'>
+                    <CardContent className='flex flex-col items-center py-8'>
+                        <div className='w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-primary'>
                             <img
-                                src={`${envVars.IMAGE_BASE_URL}/${
+                                src={`${imgBase}/${
                                     student.image ||
-                                    "/uploads/student_images/no_image.png"
+                                    "uploads/student_images/no_image.png"
                                 }`}
-                                alt={student.firstname + " " + student.lastname}
+                                alt={fullName}
                                 className='w-full h-full object-cover'
                             />
                         </div>
-                        <h2 className='text-xl font-bold my-2'>
-                            {student.firstname + " " + student.lastname}
-                        </h2>
-                        <div className='w-full my-2 space-y-4'>
+                        <h2 className='text-xl font-bold mb-2'>{fullName}</h2>
+                        <div className='w-full space-y-3'>
                             <InfoRow
                                 label='Roll Number'
                                 value={student.roll_no}
@@ -69,11 +69,11 @@ function ProfileTab({
                     </CardContent>
                 </Card>
 
-                {/* Right Details Cards */}
-                <div className='md:col-span-3 space-y-6'>
-                    {/* Basic Information */}
+                {/* Right Column */}
+                <div className='lg:col-span-9 space-y-6'>
+                    {/* Basic Info */}
                     <Card>
-                        <CardContent className='p-6'>
+                        <CardContent className='py-6'>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                 <InfoRow
                                     label='Campus'
@@ -84,7 +84,7 @@ function ProfileTab({
                                     value={student.group}
                                 />
                                 <InfoRow
-                                    label='Student Mobile No.'
+                                    label='Mobile'
                                     value={student.mobileno}
                                 />
                                 <InfoRow
@@ -99,9 +99,9 @@ function ProfileTab({
                         </CardContent>
                     </Card>
 
-                    {/* Address Information */}
+                    {/* Address Info */}
                     <Card>
-                        <CardContent className='p-6'>
+                        <CardContent className='py-6'>
                             <h3 className='text-lg font-semibold mb-4'>
                                 Address
                             </h3>
@@ -112,7 +112,7 @@ function ProfileTab({
                                 />
                                 <InfoRow
                                     label='Postal Address'
-                                    value={student.postal_address}
+                                    value={student.postal_address ?? "-"}
                                 />
                                 <InfoRow
                                     label='Permanent Address'
@@ -121,183 +121,156 @@ function ProfileTab({
                             </div>
                         </CardContent>
                     </Card>
-                </div>
 
-                {/* Parent/Guardian Details Card - Full Width */}
-                <Card className='md:col-span-4'>
-                    <CardContent className='p-6'>
-                        <h3 className='text-lg font-semibold mb-4'>
-                            Parent / Guardian Details
-                        </h3>
-                        <div className='grid grid-cols-1 md:grid-cols-12 gap-6'>
-                            {/* Left Column */}
-                            <div className='md:col-span-4 space-y-4'>
-                                <div className='w-24 h-24 flex-shrink-0'>
-                                    <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
+                    {/* Parent/Guardian */}
+                    <Card>
+                        <CardContent className='py-6'>
+                            <h3 className='text-lg font-semibold mb-4'>
+                                Parent / Guardian Details
+                            </h3>
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                                {/* Father */}
+                                <div className='space-y-3 text-center'>
+                                    <div className='w-24 h-24 mx-auto rounded-full overflow-hidden bg-gray-100 mb-2 border-2 border-primary'>
                                         <img
-                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                            src={`${imgBase}/${
                                                 student.father_pic ||
-                                                "/uploads/student_images/no_image.png"
+                                                "uploads/student_images/no_image.png"
                                             }`}
-                                            alt="Father's picture"
+                                            alt='Father'
                                             className='w-full h-full object-cover'
                                         />
                                     </div>
+                                    <InfoRow
+                                        label='Father Name'
+                                        value={student.father_name}
+                                    />
+                                    <InfoRow
+                                        label='Mobile No 1'
+                                        value={student.father_phone}
+                                    />
+                                    <InfoRow
+                                        label='Occupation'
+                                        value={student.father_occupation ?? "-"}
+                                    />
                                 </div>
-                                <InfoRow
-                                    label='Father Name'
-                                    value={student.father_name}
-                                />
 
-                                <InfoRow
-                                    label='Father/Guardian Mobile No 2'
-                                    value={student.father_phone}
-                                />
-                                <InfoRow
-                                    label='Father/Guardian Occupation'
-                                    value={student.father_occupation ?? "-"}
-                                />
-                                {/* Additional Details Column */}
-                                <InfoRow
-                                    label='Father/Guardian Mobile No 1'
-                                    value={student.guardian_phone}
-                                />
-                                <InfoRow
-                                    label='Father/Guardian Email'
-                                    value={student.guardian_email}
-                                />
-                                <InfoRow
-                                    label='Guardian Address'
-                                    value={student.guardian_address}
-                                />
-                            </div>
-
-                            {/* Middle Column */}
-                            <div className='md:col-span-4 space-y-4'>
-                                <div className='w-24 h-24 flex-shrink-0'>
-                                    <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
+                                {/* Mother */}
+                                <div className='space-y-3 text-center'>
+                                    <div className='w-24 h-24 mx-auto rounded-full overflow-hidden bg-gray-100 mb-2 border-2 border-primary'>
                                         <img
-                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                            src={`${imgBase}/${
                                                 student.mother_pic ||
-                                                "/uploads/student_images/no_image.png"
+                                                "uploads/student_images/no_image.png"
                                             }`}
-                                            alt="Father's picture"
+                                            alt='Mother'
                                             className='w-full h-full object-cover'
                                         />
                                     </div>
+                                    <InfoRow
+                                        label='Mother Name'
+                                        value={student.mother_name}
+                                    />
+                                    <InfoRow
+                                        label='Mobile'
+                                        value={student.mother_phone}
+                                    />
+                                    <InfoRow
+                                        label='Occupation'
+                                        value={student.mother_occupation}
+                                    />
                                 </div>
-                                <InfoRow
-                                    label='Mother Name'
-                                    value={student.mother_name}
-                                />
 
-                                <InfoRow
-                                    label='Mother Phone'
-                                    value={student.mother_phone}
-                                />
-                                <InfoRow
-                                    label='Mother Occupation'
-                                    value={student.mother_occupation}
-                                />
-                            </div>
-
-                            {/* Right Column */}
-                            <div className='md:col-span-4 space-y-4'>
-                                <div className='w-24 h-24 flex-shrink-0'>
-                                    <div className='w-full h-full rounded-full overflow-hidden bg-gray-100'>
+                                {/* Guardian */}
+                                <div className='space-y-3 text-center'>
+                                    <div className='w-24 h-24 mx-auto rounded-full overflow-hidden bg-gray-100 mb-2 border-2 border-primary'>
                                         <img
-                                            src={`${envVars.IMAGE_BASE_URL}/${
+                                            src={`${imgBase}/${
                                                 student.guardian_pic ||
-                                                "/uploads/student_images/no_image.png"
+                                                "uploads/student_images/no_image.png"
                                             }`}
-                                            alt="Father's picture"
+                                            alt='Guardian'
                                             className='w-full h-full object-cover'
                                         />
                                     </div>
+                                    <InfoRow
+                                        label='Guardian Name'
+                                        value={student.guardian_name}
+                                    />
+                                    <InfoRow
+                                        label='Relation'
+                                        value={student.guardian_relation}
+                                    />
+                                    <InfoRow
+                                        label='Occupation'
+                                        value={student.guardian_occupation}
+                                    />
                                 </div>
-                                <InfoRow
-                                    label='Guardian Name'
-                                    value={student.guardian_name}
-                                />
-
-                                <InfoRow
-                                    label='Guardian Relation'
-                                    value={student.guardian_relation}
-                                />
-                                <InfoRow
-                                    label='Guardian Occupation'
-                                    value={student.guardian_occupation}
-                                />
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
 
-                {/* Miscellaneous Details Card - Full Width */}
-                <Card className='md:col-span-4'>
-                    <CardContent className='p-6'>
-                        <h3 className='text-lg font-semibold mb-4'>
-                            Miscellaneous Details
-                        </h3>
-                        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                            {/* Left Column */}
-                            <div className='space-y-4'>
-                                <InfoRow
-                                    label='Blood Group'
-                                    value={student.blood_group ?? "-"}
-                                />
-                                <InfoRow
-                                    label='Student House'
-                                    value={student.house_name ?? "-"}
-                                />
-                                <InfoRow
-                                    label='Height'
-                                    value={student.height ?? "-"}
-                                />
-                                <InfoRow
-                                    label='Weight'
-                                    value={student.weight ?? "-"}
-                                />
+                    {/* Miscellaneous */}
+                    <Card>
+                        <CardContent className='py-6'>
+                            <h3 className='text-lg font-semibold mb-4'>
+                                Miscellaneous Details
+                            </h3>
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                                <div className='space-y-3'>
+                                    <InfoRow
+                                        label='Blood Group'
+                                        value={student.blood_group ?? "-"}
+                                    />
+                                    <InfoRow
+                                        label='House'
+                                        value={student.house_name ?? "-"}
+                                    />
+                                    <InfoRow
+                                        label='Height'
+                                        value={student.height ?? "-"}
+                                    />
+                                    <InfoRow
+                                        label='Weight'
+                                        value={student.weight ?? "-"}
+                                    />
+                                </div>
+                                <div className='space-y-3'>
+                                    <InfoRow
+                                        label='Measurement Date'
+                                        value={student.measurement_date}
+                                    />
+                                    <InfoRow
+                                        label='Previous School'
+                                        value={student.previous_school ?? "-"}
+                                    />
+                                    <InfoRow
+                                        label='National ID Number'
+                                        value={student.student_cnic}
+                                    />
+                                    <InfoRow
+                                        label='Local ID Number'
+                                        value={student.student_cnic}
+                                    />
+                                </div>
+                                <div className='space-y-3'>
+                                    <InfoRow
+                                        label='Bank Acct. No.'
+                                        value={getSetting.bank_account_1}
+                                    />
+                                    <InfoRow
+                                        label='Bank Name'
+                                        value={getSetting.bank_account_1_name}
+                                    />
+                                    <InfoRow
+                                        label='Branch Code'
+                                        value={getSetting.branch_code}
+                                    />
+                                </div>
                             </div>
-
-                            {/* Middle Column */}
-                            <div className='space-y-4'>
-                                <InfoRow
-                                    label='As on Date'
-                                    value={student.measurement_date}
-                                />
-                                <InfoRow
-                                    label='Previous School Details'
-                                    value={student.previous_school ?? "-"}
-                                />
-                                <InfoRow
-                                    label='National Identification Number'
-                                    value={student.student_cnic}
-                                />
-                                <InfoRow
-                                    label='Local Identification Number'
-                                    value={student.student_cnic}
-                                />
-                            </div>
-
-                            {/* Right Column */}
-                            <div className='space-y-4'>
-                                <InfoRow
-                                    label='Bank Account Number'
-                                    value={getSetting.bank_account_1}
-                                />
-                                <InfoRow
-                                    label='Bank Name'
-                                    value={getSetting.bank_account_1_name}
-                                />
-                                <InfoRow
-                                    label='Branch Code'
-                                    value={getSetting.branch_code}
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </>
     );
