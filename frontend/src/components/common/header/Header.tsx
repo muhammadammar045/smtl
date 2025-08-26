@@ -1,9 +1,6 @@
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link, useNavigate } from "react-router-dom";
 import { Calendar, UserCircle, ListTodo } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
 import { Button } from "@/components/ui/button";
-
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import {
     Tooltip,
@@ -31,14 +28,8 @@ interface HeaderProps {
     };
     menu?: MenuItem[];
     auth?: {
-        login: {
-            title: string;
-            url: string;
-        };
-        signup: {
-            title: string;
-            url: string;
-        };
+        login: { title: string; url: string };
+        signup: { title: string; url: string };
     };
 }
 
@@ -52,14 +43,17 @@ export const Header = ({
 }: HeaderProps) => {
     const navigate = useNavigate();
 
-    const currentYear = new Date().getFullYear();
+    const currentSession = `${new Date().getFullYear()}-${
+        new Date().getFullYear() + 1
+    }`;
+    const todayDate = new Date().toDateString();
 
     return (
-        <header className='h-[100px] w-full bg-background border-b shadow-sm sticky top-0 z-50'>
-            <div className='h-full w-full px-4 flex items-center justify-between max-w-7xl mx-auto'>
+        <header className='h-[100px] w-full bg-background shadow-md relative z-50'>
+            <div className='h-full w-full px-4 flex items-center'>
                 {/* Desktop Header */}
-                <nav className='hidden lg:flex items-center justify-between w-full'>
-                    {/* Logo and School Info */}
+                <nav className='hidden justify-between w-full lg:flex'>
+                    {/* Left Section: Logo + School Info */}
                     <div className='flex items-center gap-6'>
                         <Link
                             to={logo.url}
@@ -67,75 +61,91 @@ export const Header = ({
                         >
                             <img
                                 src={logo.src}
-                                className='h-16'
+                                className='max-h-20'
                                 alt={logo.alt}
                             />
                         </Link>
-                        <div className='flex flex-col'>
-                            <h1 className='text-xl font-semibold text-foreground'>
-                                {logo.title}
-                            </h1>
-                            <p className='text-sm text-muted-foreground'>
-                                <span className='font-medium text-primary'>
+                        <div className='flex flex-col leading-snug'>
+                            <h2 className='text-2xl font-bold'>{logo.title}</h2>
+                            <p className='text-sm'>
+                                <span className='text-primary font-semibold'>
                                     Current Session:
                                 </span>{" "}
-                                {currentYear}-{currentYear + 1}
+                                {currentSession}
                             </p>
-                            <p className='text-sm text-muted-foreground'>
-                                <span className='font-medium text-primary'>
+                            <p className='text-sm'>
+                                <span className='text-primary font-semibold'>
                                     Today:
                                 </span>{" "}
-                                {new Date().toDateString()}
+                                {todayDate}
                             </p>
                         </div>
                     </div>
 
-                    {/* Actions */}
+                    {/* Right Section: Action Icons */}
                     <div className='flex items-center gap-3'>
                         <TooltipProvider>
-                            {[
-                                {
-                                    icon: <ListTodo className='h-5 w-5' />,
-                                    label: "Todo List",
-                                    onClick: () => navigate("/dashboard/todo"),
-                                },
-                                {
-                                    icon: <Calendar className='h-5 w-5' />,
-                                    label: "Calendar",
-                                    onClick: () =>
-                                        navigate("/dashboard/calendar"),
-                                },
-                                {
-                                    icon: <UserCircle className='h-5 w-5' />,
-                                    label: "Profile",
-                                    onClick: () =>
-                                        (window.location.href =
-                                            "/dashboard/profile"),
-                                },
-                            ].map(({ icon, label, onClick }, index) => (
-                                <Tooltip key={index}>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant='ghost'
-                                            size='icon'
-                                            onClick={onClick}
-                                            className='hover:bg-muted'
-                                        >
-                                            {icon}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{label}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            ))}
-
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <ModeToggle />
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Toggle Theme</p>
+                                    <p>Theme</p>
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        className='hover:bg-accent rounded-full'
+                                        onClick={() =>
+                                            navigate("/dashboard/todo")
+                                        }
+                                    >
+                                        <ListTodo className='h-5 w-5' />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Todo List</p>
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        className='hover:bg-accent rounded-full'
+                                        onClick={() =>
+                                            navigate("/dashboard/calendar")
+                                        }
+                                    >
+                                        <Calendar className='h-5 w-5' />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Calendar</p>
+                                </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        className='hover:bg-accent rounded-full'
+                                        onClick={() =>
+                                            (window.location.href =
+                                                "/dashboard/profile")
+                                        }
+                                    >
+                                        <UserCircle className='h-5 w-5' />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Profile</p>
                                 </TooltipContent>
                             </Tooltip>
 
@@ -152,35 +162,55 @@ export const Header = ({
                 </nav>
 
                 {/* Mobile Header */}
-                <div className='flex lg:hidden items-center justify-between w-full'>
+                <div className='flex items-center justify-between w-full lg:hidden'>
+                    {/* Logo */}
                     <Link
                         to={logo.url}
                         className='flex items-center gap-2'
                     >
                         <img
                             src={logo.src}
-                            className='h-10'
+                            className='max-h-10'
                             alt={logo.alt}
                         />
                     </Link>
+
+                    {/* Mobile Actions */}
                     <div className='flex items-center gap-2'>
-                        {[<ListTodo />, <Calendar />, <UserCircle />].map(
-                            (Icon, i) => (
-                                <Button
-                                    key={i}
-                                    variant='ghost'
-                                    size='icon'
-                                    className='hover:bg-muted'
-                                >
-                                    <Icon.type className='h-5 w-5' />
-                                </Button>
-                            )
-                        )}
+                        <Button
+                            variant='ghost'
+                            size='icon'
+                            className='hover:bg-accent rounded-full'
+                            onClick={() => navigate("/dashboard/todo")}
+                        >
+                            <ListTodo className='h-5 w-5' />
+                        </Button>
+                        <Button
+                            variant='ghost'
+                            size='icon'
+                            className='hover:bg-accent rounded-full'
+                            onClick={() => navigate("/dashboard/calendar")}
+                        >
+                            <Calendar className='h-5 w-5' />
+                        </Button>
+                        <Button
+                            variant='ghost'
+                            size='icon'
+                            className='hover:bg-accent rounded-full'
+                            onClick={() =>
+                                (window.location.href = "/dashboard/profile")
+                            }
+                        >
+                            <UserCircle className='h-5 w-5' />
+                        </Button>
+
+                        {/* Mobile Menu Button */}
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button
                                     variant='outline'
                                     size='icon'
+                                    className='rounded-full'
                                 >
                                     <SidebarTrigger />
                                 </Button>
