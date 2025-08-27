@@ -49,7 +49,7 @@ export const Header = ({
     const todayDate = new Date().toDateString();
 
     return (
-        <header className='h-[100px] w-full bg-background shadow-md relative z-50'>
+        <header className='h-[100px] w-full border-b border-border bg-background text-foreground relative z-50'>
             <div className='h-full w-full px-4 flex items-center'>
                 {/* Desktop Header */}
                 <nav className='hidden justify-between w-full lg:flex'>
@@ -66,15 +66,17 @@ export const Header = ({
                             />
                         </Link>
                         <div className='flex flex-col leading-snug'>
-                            <h2 className='text-2xl font-bold'>{logo.title}</h2>
-                            <p className='text-sm'>
-                                <span className='text-primary font-semibold'>
+                            <h2 className='text-2xl font-bold text-primary'>
+                                {logo.title}
+                            </h2>
+                            <p className='text-sm text-muted-foreground'>
+                                <span className='font-semibold text-foreground'>
                                     Current Session:
                                 </span>{" "}
                                 {currentSession}
                             </p>
-                            <p className='text-sm'>
-                                <span className='text-primary font-semibold'>
+                            <p className='text-sm text-muted-foreground'>
+                                <span className='font-semibold text-foreground'>
                                     Today:
                                 </span>{" "}
                                 {todayDate}
@@ -86,9 +88,7 @@ export const Header = ({
                     <div className='flex items-center gap-3'>
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <ModeToggle />
-                                </TooltipTrigger>
+                                <ModeToggle />
                                 <TooltipContent>
                                     <p>Theme</p>
                                 </TooltipContent>
@@ -99,7 +99,7 @@ export const Header = ({
                                     <Button
                                         variant='ghost'
                                         size='icon'
-                                        className='hover:bg-accent rounded-full'
+                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
                                         onClick={() =>
                                             navigate("/dashboard/todo")
                                         }
@@ -117,7 +117,7 @@ export const Header = ({
                                     <Button
                                         variant='ghost'
                                         size='icon'
-                                        className='hover:bg-accent rounded-full'
+                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
                                         onClick={() =>
                                             navigate("/dashboard/calendar")
                                         }
@@ -135,7 +135,7 @@ export const Header = ({
                                     <Button
                                         variant='ghost'
                                         size='icon'
-                                        className='hover:bg-accent rounded-full'
+                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
                                         onClick={() =>
                                             (window.location.href =
                                                 "/dashboard/profile")
@@ -180,7 +180,7 @@ export const Header = ({
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='hover:bg-accent rounded-full'
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
                             onClick={() => navigate("/dashboard/todo")}
                         >
                             <ListTodo className='h-5 w-5' />
@@ -188,7 +188,7 @@ export const Header = ({
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='hover:bg-accent rounded-full'
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
                             onClick={() => navigate("/dashboard/calendar")}
                         >
                             <Calendar className='h-5 w-5' />
@@ -196,7 +196,7 @@ export const Header = ({
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='hover:bg-accent rounded-full'
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
                             onClick={() =>
                                 (window.location.href = "/dashboard/profile")
                             }
@@ -210,7 +210,7 @@ export const Header = ({
                                 <Button
                                     variant='outline'
                                     size='icon'
-                                    className='rounded-full'
+                                    className='rounded-full border-border text-foreground hover:bg-accent hover:text-accent-foreground'
                                 >
                                     <SidebarTrigger />
                                 </Button>

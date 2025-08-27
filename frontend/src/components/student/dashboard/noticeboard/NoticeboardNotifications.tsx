@@ -19,55 +19,57 @@ function NoticeboardNotifications() {
         selectNoticeBoardNotifications
     );
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error</div>;
+    if (isLoading) return <div className='text-center py-10'>Loading...</div>;
+    if (error)
+        return <div className='text-center py-10'>Something went wrong.</div>;
 
     return (
         <>
             <PageTitle
-                title='Notice Board'
-                description=''
+                title='📢 Notice Board'
+                description='Latest updates and important announcements.'
             />
 
-            <Card className='p-4'>
-                <Accordion
-                    type='single'
-                    collapsible
-                    className='w-full'
-                >
-                    {noticeboardNotifications?.map((notification) => (
-                        <AccordionItem
-                            key={notification.id}
-                            value={`item-${notification.id}`}
-                            className='border-b'
-                        >
-                            <AccordionTrigger className='flex justify-between items-center gap-2'>
-                                <div className='flex items-center gap-2 text-left'>
-                                    <span className='text-primary font-medium'>
-                                        {notification.title}
-                                    </span>
-                                    {notification.notification_id ===
-                                        "unread" && (
-                                        <span className='bg-red-500 text-white text-xs px-1.5 py-0.5 rounded'>
-                                            New
-                                        </span>
-                                    )}
-                                </div>
-                            </AccordionTrigger>
+            <Card className='p-6 shadow-md rounded-lg'>
+                {noticeboardNotifications?.length === 0 ? (
+                    <div className='text-center'>No notices available.</div>
+                ) : (
+                    <Accordion
+                        type='single'
+                        collapsible
+                        className='space-y-4'
+                    >
+                        {noticeboardNotifications.map((notification) => (
+                            <AccordionItem
+                                key={notification.id}
+                                value={`item-${notification.id}`}
+                                className='border rounded-lg overflow-hidden'
+                            >
+                                <AccordionTrigger className='flex justify-between items-center w-full px-4 py-3 transition-colors'>
+                                    <div className='flex items-center gap-3 text-left font-semibold'>
+                                        <span>{notification.title}</span>
+                                        {notification.notification_id ===
+                                            "unread" && (
+                                            <span className='text-xs font-bold px-2 py-0.5 rounded-full shadow-sm'>
+                                                NEW
+                                            </span>
+                                        )}
+                                    </div>
+                                </AccordionTrigger>
 
-                            <AccordionContent>
-                                <div
-                                    className='text-sm text-muted-foreground mt-2'
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(
-                                            notification.message
-                                        ),
-                                    }}
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                                <AccordionContent className='px-5 py-4 text-sm leading-relaxed border-t'>
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                notification.message
+                                            ),
+                                        }}
+                                    />
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                )}
             </Card>
         </>
     );

@@ -14,9 +14,16 @@ function Profile() {
         isLoading,
     } = useGetDashboardDetailsQuery();
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {JSON.stringify(error)}</div>;
-    if (!dashboardData?.data) return <div>No data found</div>;
+    if (isLoading)
+        return <div className='text-muted-foreground'>Loading...</div>;
+    if (error)
+        return (
+            <div className='text-destructive'>
+                Error: {JSON.stringify(error)}
+            </div>
+        );
+    if (!dashboardData?.data)
+        return <div className='text-muted-foreground'>No data found</div>;
 
     return (
         <>
@@ -29,15 +36,37 @@ function Profile() {
                     defaultValue='profile'
                     className='w-full'
                 >
-                    <TabsList className='grid w-full grid-cols-4 max-w-[400px]'>
-                        <TabsTrigger value='profile'>Profile</TabsTrigger>
-                        <TabsTrigger value='fee'>Fee</TabsTrigger>
-                        <TabsTrigger value='documents'>Documents</TabsTrigger>
-                        <TabsTrigger value='timeline'>Timeline</TabsTrigger>
+                    {/* Tabs header */}
+                    <TabsList className='grid w-full grid-cols-4 max-w-[400px] bg-card text-card-foreground rounded-lg border border-border'>
+                        <TabsTrigger
+                            value='profile'
+                            className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground'
+                        >
+                            Profile
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value='fee'
+                            className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground'
+                        >
+                            Fee
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value='documents'
+                            className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground'
+                        >
+                            Documents
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value='timeline'
+                            className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground'
+                        >
+                            Timeline
+                        </TabsTrigger>
                     </TabsList>
 
+                    {/* Profile Tab */}
                     <TabsContent value='profile'>
-                        <Card>
+                        <Card className='bg-card text-card-foreground border border-border shadow-sm'>
                             <CardContent className='p-6'>
                                 <ProfileTab
                                     student={dashboardData.data.student}
@@ -47,8 +76,9 @@ function Profile() {
                         </Card>
                     </TabsContent>
 
+                    {/* Fee Tab */}
                     <TabsContent value='fee'>
-                        <Card>
+                        <Card className='bg-card text-card-foreground border border-border shadow-sm'>
                             <CardContent className='p-6'>
                                 <FeeTab
                                     studentFee={
@@ -59,16 +89,18 @@ function Profile() {
                         </Card>
                     </TabsContent>
 
+                    {/* Documents Tab */}
                     <TabsContent value='documents'>
-                        <Card>
+                        <Card className='bg-card text-card-foreground border border-border shadow-sm'>
                             <CardContent className='p-6'>
                                 <DocumentTab />
                             </CardContent>
                         </Card>
                     </TabsContent>
 
+                    {/* Timeline Tab */}
                     <TabsContent value='timeline'>
-                        <Card>
+                        <Card className='bg-card text-card-foreground border border-border shadow-sm'>
                             <CardContent className='p-6'>
                                 <TimelineTab />
                             </CardContent>

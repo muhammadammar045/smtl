@@ -115,7 +115,7 @@ function Calendar() {
     const renderMonthView = () => {
         const days = getDaysInMonth(currentDate);
         return (
-            <div className='grid grid-cols-7 gap-px bg-muted'>
+            <div className='grid grid-cols-7 gap-px '>
                 {daysOfWeek.map((day) => (
                     <div
                         key={day}
@@ -137,7 +137,7 @@ function Calendar() {
                             key={index}
                             className={`min-h-[100px] p-1 border ${
                                 day.isCurrentMonth
-                                    ? "bg-background"
+                                    ? "bg-surface dark:bg-surface-dark"
                                     : "bg-muted/50"
                             }`}
                         >
@@ -170,11 +170,11 @@ function Calendar() {
         const days = getDaysInWeek(currentDate);
         return (
             <div className='grid grid-cols-8 gap-px bg-muted h-[600px] overflow-y-auto'>
-                <div className='sticky top-0 bg-background'></div>
+                <div className='sticky top-0 bg-surface dark:bg-surface-dark'></div>
                 {days.map((day, index) => (
                     <div
                         key={index}
-                        className='sticky top-0 bg-background p-2 text-center'
+                        className='sticky top-0 bg-surface dark:bg-surface-dark p-2 text-center'
                     >
                         <div className='font-medium'>{daysOfWeek[index]}</div>
                         <div className='text-sm'>{day.date.getDate()}</div>
@@ -205,8 +205,8 @@ function Calendar() {
 
     const renderDayView = () => {
         return (
-            <div className='grid grid-cols-1 gap-px bg-muted h-[600px] overflow-y-auto'>
-                <div className='text-center p-2 font-medium sticky top-0 bg-background'>
+            <div className='grid grid-cols-1 gap-px  h-[600px] overflow-y-auto'>
+                <div className='text-center p-2 font-medium sticky top-0 '>
                     {currentDate.toLocaleDateString("default", {
                         weekday: "long",
                     })}

@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 export function DashboardLayout() {
     return (
-        <div className='flex flex-col h-screen'>
+        <div className=' flex flex-col h-screen'>
             <SidebarProvider>
                 <div className='fixed top-0 left-0 right-0 z-50'>
                     <Header />

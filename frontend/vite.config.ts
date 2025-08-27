@@ -11,13 +11,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // server: {
-  //   proxy: {
-  //     '/site': {
-  //       target: 'https://nodejs.smtl.com.pk',
-  //       changeOrigin: true,
-  //       secure: true
-  //     }
-  //   }
-  // }
+
 })

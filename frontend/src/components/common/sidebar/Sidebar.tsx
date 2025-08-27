@@ -180,7 +180,7 @@ export function AppSidebar() {
                         Application
                     </SidebarGroupLabel>
 
-                    <p className='text-sm py-2 px-3 bg-primary text-white rounded-lg mb-3 shadow'>
+                    <p className='text-sm py-2 px-3 rounded-lg mb-3 shadow'>
                         Current Session:{" "}
                         <span>
                             {new Date().getFullYear()} -{" "}
@@ -207,11 +207,7 @@ export function AppSidebar() {
                                                             item.title
                                                         )
                                                     }
-                                                    className={`flex items-center justify-between w-full px-3 py-2 rounded-lg transition ${
-                                                        active
-                                                            ? "bg-primary text-white shadow"
-                                                            : "text-muted-foreground hover:bg-muted"
-                                                    }`}
+                                                    className={`flex items-center justify-between w-full px-3 py-2 rounded-lg transition`}
                                                 >
                                                     <span className='flex items-center gap-2'>
                                                         {item.icon}
@@ -257,11 +253,7 @@ export function AppSidebar() {
                                                                                             subItem.title
                                                                                         )
                                                                                     }
-                                                                                    className={`flex items-center justify-between w-full px-3 py-1 text-sm rounded-lg transition ${
-                                                                                        subActive
-                                                                                            ? "bg-muted font-medium"
-                                                                                            : "text-muted-foreground hover:bg-muted/50"
-                                                                                    }`}
+                                                                                    className={`flex items-center justify-between w-full px-3 py-1 text-sm rounded-lg transition `}
                                                                                 >
                                                                                     <span className='flex items-center gap-2'>
                                                                                         {
@@ -304,11 +296,7 @@ export function AppSidebar() {
                                                                                                     className={({
                                                                                                         isActive,
                                                                                                     }) =>
-                                                                                                        `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition ${
-                                                                                                            isActive
-                                                                                                                ? "bg-primary text-white"
-                                                                                                                : "text-muted-foreground hover:text-primary"
-                                                                                                        }`
+                                                                                                        `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition`
                                                                                                     }
                                                                                                 >
                                                                                                     {
@@ -334,11 +322,7 @@ export function AppSidebar() {
                                                                                 className={({
                                                                                     isActive,
                                                                                 }) =>
-                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition ${
-                                                                                        isActive
-                                                                                            ? "bg-primary text-white"
-                                                                                            : "text-muted-foreground hover:text-primary"
-                                                                                    }`
+                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition`
                                                                                 }
                                                                             >
                                                                                 {
@@ -362,11 +346,7 @@ export function AppSidebar() {
                                                     to={item.url}
                                                     onClick={handleNavClick}
                                                     className={({ isActive }) =>
-                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
-                                                            isActive
-                                                                ? "bg-primary text-white shadow"
-                                                                : "text-muted-foreground hover:bg-muted"
-                                                        }`
+                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition`
                                                     }
                                                 >
                                                     {item.icon}

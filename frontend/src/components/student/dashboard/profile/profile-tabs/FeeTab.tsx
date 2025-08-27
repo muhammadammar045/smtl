@@ -28,24 +28,26 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                     {studentFee.map((fee) => (
                         <Card
                             key={fee.id}
-                            className='shadow-md overflow-hidden'
+                            className='shadow-md overflow-hidden border border-border'
                         >
-                            <div className='bg-primary text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+                            {/* Card header */}
+                            <div className='bg-primary text-primary-foreground px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
                                 <div className='font-medium text-base'>
                                     {fee.fee_monthly_code}
                                 </div>
                                 <div className='flex items-center gap-3'>
-                                    <Badge className='bg-white text-primary hover:bg-white'>
+                                    <Badge className='bg-accent text-accent-foreground hover:bg-accent/80'>
                                         Balance: Rs. {fee.amount}
                                     </Badge>
                                     {fee.fee_master_due && (
-                                        <span className='text-sm opacity-90'>
+                                        <span className='text-sm text-muted-foreground'>
                                             Due Date: {fee.fee_master_due}
                                         </span>
                                     )}
                                 </div>
                             </div>
 
+                            {/* Card body */}
                             <CardContent className='p-0'>
                                 <div className='overflow-x-auto'>
                                     <Table>
@@ -142,8 +144,8 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                                                                 className={
                                                                     status ===
                                                                     "Paid"
-                                                                        ? "bg-green-600 hover:bg-green-700"
-                                                                        : "bg-red-600 hover:bg-red-700"
+                                                                        ? "bg-success text-success-foreground hover:bg-success/90"
+                                                                        : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                                                 }
                                                             >
                                                                 {status}
