@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, UserCircle, ListTodo } from "lucide-react";
+import { Calendar, UserCircle, ListTodo, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/tooltip";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/contexts/themeContext/toggleButton";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface MenuItem {
     title: string;
@@ -49,7 +55,7 @@ export const Header = ({
     const todayDate = new Date().toDateString();
 
     return (
-        <header className='h-[100px] w-full border-b border-border bg-background text-foreground relative z-50'>
+        <header className='h-[100px] w-full border-b border-border bg-background text-foreground relative z-50 shadow-sm'>
             <div className='h-full w-full px-4 flex items-center'>
                 {/* Desktop Header */}
                 <nav className='hidden justify-between w-full lg:flex'>
@@ -70,13 +76,13 @@ export const Header = ({
                                 {logo.title}
                             </h2>
                             <p className='text-sm text-muted-foreground'>
-                                <span className='font-semibold text-foreground'>
+                                <span className='font-semibold text-primary'>
                                     Current Session:
                                 </span>{" "}
                                 {currentSession}
                             </p>
                             <p className='text-sm text-muted-foreground'>
-                                <span className='font-semibold text-foreground'>
+                                <span className='font-semibold text-primary'>
                                     Today:
                                 </span>{" "}
                                 {todayDate}
@@ -90,7 +96,9 @@ export const Header = ({
                             <Tooltip>
                                 <ModeToggle />
                                 <TooltipContent>
-                                    <p>Theme</p>
+                                    <p className='text-sm text-foreground'>
+                                        Theme
+                                    </p>
                                 </TooltipContent>
                             </Tooltip>
 
@@ -99,12 +107,12 @@ export const Header = ({
                                     <Button
                                         variant='ghost'
                                         size='icon'
-                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
+                                        className='rounded-full hover:bg-accent hover:text-accent-foreground text-foreground'
                                         onClick={() =>
                                             navigate("/dashboard/todo")
                                         }
                                     >
-                                        <ListTodo className='h-5 w-5' />
+                                        <ListTodo className='h-5 w-5 text-primary' />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -117,12 +125,12 @@ export const Header = ({
                                     <Button
                                         variant='ghost'
                                         size='icon'
-                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
+                                        className='rounded-full hover:bg-accent hover:text-accent-foreground text-foreground'
                                         onClick={() =>
                                             navigate("/dashboard/calendar")
                                         }
                                     >
-                                        <Calendar className='h-5 w-5' />
+                                        <Calendar className='h-5 w-5 text-primary' />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -132,17 +140,49 @@ export const Header = ({
 
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='rounded-full hover:bg-accent hover:text-accent-foreground'
-                                        onClick={() =>
-                                            (window.location.href =
-                                                "/dashboard/profile")
-                                        }
-                                    >
-                                        <UserCircle className='h-5 w-5' />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant='ghost'
+                                                size='icon'
+                                                className='rounded-full hover:bg-accent hover:text-accent-foreground'
+                                            >
+                                                <UserCircle className='h-5 w-5 text-primary' />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                            align='end'
+                                            className='w-44 bg-card text-card-foreground border border-border rounded-lg shadow-lg shadow-muted/20'
+                                        >
+                                            <DropdownMenuItem
+                                                className='flex items-center gap-2 cursor-pointer rounded-md px-2 py-2 hover:bg-accent hover:text-accent-foreground'
+                                                onClick={() =>
+                                                    navigate(
+                                                        "/dashboard/profile"
+                                                    )
+                                                }
+                                            >
+                                                <UserCircle className='h-4 w-4 text-primary' />
+                                                <span className='font-medium'>
+                                                    Profile
+                                                </span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                className='flex items-center gap-2 cursor-pointer rounded-md px-2 py-2 hover:bg-destructive hover:text-destructive-foreground'
+                                                onClick={() => {
+                                                    // handle logout
+                                                    console.log(
+                                                        "Logout clicked"
+                                                    );
+                                                }}
+                                            >
+                                                <LogOut className='h-4 w-4 text-primary' />
+                                                <span className='font-medium'>
+                                                    Logout
+                                                </span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>Profile</p>
@@ -151,7 +191,7 @@ export const Header = ({
 
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <SidebarTrigger />
+                                    <SidebarTrigger className='text-primary' />
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>Sidebar</p>
@@ -180,28 +220,26 @@ export const Header = ({
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground text-foreground'
                             onClick={() => navigate("/dashboard/todo")}
                         >
-                            <ListTodo className='h-5 w-5' />
+                            <ListTodo className='h-5 w-5 text-primary' />
                         </Button>
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground text-foreground'
                             onClick={() => navigate("/dashboard/calendar")}
                         >
-                            <Calendar className='h-5 w-5' />
+                            <Calendar className='h-5 w-5 text-primary' />
                         </Button>
                         <Button
                             variant='ghost'
                             size='icon'
-                            className='rounded-full hover:bg-accent hover:text-accent-foreground'
-                            onClick={() =>
-                                (window.location.href = "/dashboard/profile")
-                            }
+                            className='rounded-full hover:bg-accent hover:text-accent-foreground text-foreground'
+                            onClick={() => navigate("/dashboard/profile")}
                         >
-                            <UserCircle className='h-5 w-5' />
+                            <UserCircle className='h-5 w-5 text-primary' />
                         </Button>
 
                         {/* Mobile Menu Button */}

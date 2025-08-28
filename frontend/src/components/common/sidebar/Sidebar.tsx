@@ -180,7 +180,7 @@ export function AppSidebar() {
                         Application
                     </SidebarGroupLabel>
 
-                    <p className='text-sm py-2 px-3 rounded-lg mb-3 shadow'>
+                    <p className='bg-primary text-sm text-foreground py-2 px-3 rounded-lg mb-3 shadow'>
                         Current Session:{" "}
                         <span>
                             {new Date().getFullYear()} -{" "}

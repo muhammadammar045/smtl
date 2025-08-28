@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import { useGetAttendanceQuery } from "@/store/slices/attendance/attendance.slice";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
 import AttendanceDetailModal from "./AttendanceDetailModal";
+import { Button } from "@/components/ui/button"; // using your theme-based Button
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type AttendanceRow = {
     id: number;
@@ -25,8 +26,15 @@ function Attendance() {
         year: number;
     } | null>(null);
 
-    if (isLoading) return <p>Loading...</p>;
-    if (!attendanceData) return <p>No data found</p>;
+    if (isLoading)
+        return (
+            <p className='text-center py-6 text-muted-foreground'>Loading...</p>
+        );
+
+    if (!attendanceData)
+        return (
+            <p className='text-center py-6 text-destructive'>No data found.</p>
+        );
 
     const apiData = attendanceData.data.attendance_student;
 
@@ -49,19 +57,19 @@ function Attendance() {
         {
             accessorKey: "action",
             header: "Action",
-            cell: ({ row }) => (
-                <button
-                    className='btn btn-primary'
-                    onClick={() => {
-                        const [year, month] = row.original.month
-                            .split("-")
-                            .map(Number);
-                        setSelectedMonthYear({ month, year });
-                    }}
-                >
-                    View Detail
-                </button>
-            ),
+            cell: ({ row }) => {
+                const [year, month] = row.original.month.split("-").map(Number);
+
+                return (
+                    <Button
+                        variant='default'
+                        size='sm'
+                        onClick={() => setSelectedMonthYear({ month, year })}
+                    >
+                        View Detail
+                    </Button>
+                );
+            },
         },
         { accessorKey: "month", header: "Months" },
         { accessorKey: "workingDays", header: "Working Days" },
@@ -76,15 +84,19 @@ function Attendance() {
 
     return (
         <>
-            <PageTitle
-                title='Attendance'
-                description=''
-            />
-            <TenStackReactTable
-                data={tableData}
-                columns={columns}
-            />
-
+            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Attendance
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-4'>
+                    <TenStackReactTable
+                        data={tableData}
+                        columns={columns}
+                    />
+                </CardContent>
+            </Card>
             {/* Modal */}
             {selectedMonthYear && (
                 <AttendanceDetailModal

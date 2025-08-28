@@ -1,4 +1,3 @@
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -7,6 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ExamScheduleData {
     subject: string;
@@ -127,43 +127,47 @@ function ExamSchedule() {
 
     return (
         <>
-            <PageTitle
-                title='Exam Schedule'
-                description=''
-                fontSize='text-2xl'
-            />
-
-            <Accordion
-                type='single'
-                collapsible
-                className='w-full'
-            >
-                {Object.entries(examScheduleData).map(
-                    ([testName, testData]) => (
-                        <AccordionItem
-                            key={testName}
-                            value={testName}
-                        >
-                            <AccordionTrigger className='px-4'>
-                                <div className='flex flex-col items-start'>
-                                    <span className='text-base font-semibold'>
-                                        {testName}
-                                    </span>
-                                    <span className='text-sm text-muted-foreground'>
-                                        Result Date: {testData.resultDate}
-                                    </span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className='px-4'>
-                                <TenStackReactTable
-                                    data={testData.schedule}
-                                    columns={columns}
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-                    )
-                )}
-            </Accordion>
+            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Exam Schedule
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-4'>
+                    <Accordion
+                        type='single'
+                        collapsible
+                        className='w-full'
+                    >
+                        {Object.entries(examScheduleData).map(
+                            ([testName, testData]) => (
+                                <AccordionItem
+                                    key={testName}
+                                    value={testName}
+                                >
+                                    <AccordionTrigger className='px-4'>
+                                        <div className='flex flex-col items-start'>
+                                            <span className='text-base font-semibold'>
+                                                {testName}
+                                            </span>
+                                            <span className='text-sm text-muted-foreground'>
+                                                Result Date:{" "}
+                                                {testData.resultDate}
+                                            </span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className='px-4'>
+                                        <TenStackReactTable
+                                            data={testData.schedule}
+                                            columns={columns}
+                                        />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            )
+                        )}
+                    </Accordion>
+                </CardContent>
+            </Card>
         </>
     );
 }

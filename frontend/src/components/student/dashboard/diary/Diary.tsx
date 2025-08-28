@@ -1,4 +1,4 @@
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -65,15 +65,19 @@ function Diary() {
     ];
     return (
         <>
-            <PageTitle
-                title='Diary'
-                description=''
-            />
-
-            <TenStackReactTable
-                data={data}
-                columns={columns}
-            />
+            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Diary
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-4'>
+                    <TenStackReactTable
+                        data={data}
+                        columns={columns}
+                    />
+                </CardContent>
+            </Card>
         </>
     );
 }

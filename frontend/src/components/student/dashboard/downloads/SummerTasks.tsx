@@ -1,9 +1,10 @@
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useGetOtherSummerTasksQuery } from "@/store/slices/download/download.slice"; // ✅ assume this hook exists
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import envVars from "@/envExporter";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ✅ Local interface
 interface SummerTaskRow {
@@ -36,21 +37,21 @@ function SummerTasks() {
                 const fileUrl = row.original.file;
                 return fileUrl ? (
                     <a
-                        href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/${fileUrl}`}
+                        href={`${envVars.BACKEND_URL}/${fileUrl}`}
                         download
                         target='_blank'
                         rel='noopener noreferrer'
                     >
                         <Button
-                            size='icon'
-                            variant='ghost'
-                            className='rounded-full hover:bg-blue-100'
+                            variant='outline'
+                            className='flex items-center gap-2 rounded-lg border-border text-primary hover:bg-muted hover:text-primary'
                         >
                             <Download className='h-4 w-4' />
+                            <span>Download</span>
                         </Button>
                     </a>
                 ) : (
-                    <span className='text-gray-400'>—</span> // show dash if no file
+                    <span className='text-muted-foreground'>—</span>
                 );
             },
         },
@@ -58,15 +59,19 @@ function SummerTasks() {
 
     return (
         <>
-            <PageTitle
-                title='Summer Tasks'
-                description=''
-            />
-
-            <TenStackReactTable
-                data={summerTasks}
-                columns={columns}
-            />
+            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Summer Tasks
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-4'>
+                    <TenStackReactTable
+                        data={summerTasks}
+                        columns={columns}
+                    />
+                </CardContent>
+            </Card>
         </>
     );
 }
