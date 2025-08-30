@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import {
     BookOpen,
@@ -33,12 +33,14 @@ import {
 import { useAppSelector } from "@/store/hooks/hooks";
 import { selectAuth } from "@/store/slices/auth/auth.slice";
 
+// Mocked children
 const mockChildren = [
     { id: "1", name: "Muhammad Senan" },
     { id: "2", name: "Muhammad Ammar" },
     { id: "3", name: "Muhammad Maaz" },
 ];
 
+// Sidebar link type
 interface LinkItem {
     title: string;
     url: string;
@@ -46,6 +48,7 @@ interface LinkItem {
     items?: LinkItem[];
 }
 
+// Base student links
 const studentLinks: LinkItem[] = [
     { title: "My Profile", url: "/dashboard/profile", icon: <Users /> },
     { title: "Notice Board", url: "/dashboard/notice-board", icon: <Bell /> },
@@ -119,6 +122,7 @@ const studentLinks: LinkItem[] = [
     { title: "Transport Routes", url: "/dashboard/transport", icon: <Bus /> },
 ];
 
+// Generate dynamic links for parents
 const generateParentLinks = (): LinkItem[] =>
     studentLinks.map((link) =>
         link.items
@@ -147,6 +151,7 @@ const generateParentLinks = (): LinkItem[] =>
               }
     );
 
+// Recursively detect active items
 const isItemActive = (item: LinkItem, pathname: string): boolean =>
     pathname.startsWith(item.url) ||
     (item.items?.some((sub) => isItemActive(sub, pathname)) ?? false);
@@ -160,6 +165,7 @@ export function AppSidebar() {
         () => (role === "parent" ? generateParentLinks() : studentLinks),
         [role]
     );
+
     const [openAccordions, setOpenAccordions] = useState<
         Record<string, boolean>
     >({});
@@ -172,6 +178,25 @@ export function AppSidebar() {
         if (isMobile) setOpenMobile(false);
     };
 
+    // Auto expand accordions based on current route
+    useEffect(() => {
+        const expandActiveItems = (
+            items: LinkItem[],
+            acc: Record<string, boolean> = {}
+        ) => {
+            items.forEach((item) => {
+                if (isItemActive(item, pathname)) {
+                    acc[item.title] = true;
+                    if (item.items) {
+                        expandActiveItems(item.items, acc);
+                    }
+                }
+            });
+            return acc;
+        };
+        setOpenAccordions(expandActiveItems(Links));
+    }, [pathname, Links]);
+
     return (
         <Sidebar>
             <SidebarContent className='px-2 py-3 space-y-3'>
@@ -180,7 +205,7 @@ export function AppSidebar() {
                         Application
                     </SidebarGroupLabel>
 
-                    <p className='bg-primary text-sm text-foreground py-2 px-3 rounded-lg mb-3 shadow'>
+                    <p className='bg-primary text-sm text-primary-foreground py-2 px-3 rounded-lg mb-3 shadow'>
                         Current Session:{" "}
                         <span>
                             {new Date().getFullYear()} -{" "}
@@ -191,7 +216,6 @@ export function AppSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu className='space-y-1'>
                             {Links.map((item) => {
-                                const active = isItemActive(item, pathname);
                                 const hasChildren = !!item.items?.length;
 
                                 return (
@@ -207,7 +231,7 @@ export function AppSidebar() {
                                                             item.title
                                                         )
                                                     }
-                                                    className={`flex items-center justify-between w-full px-3 py-2 rounded-lg transition`}
+                                                    className='flex items-center justify-between w-full px-3 py-2 rounded-lg transition hover:bg-muted'
                                                 >
                                                     <span className='flex items-center gap-2'>
                                                         {item.icon}
@@ -232,11 +256,6 @@ export function AppSidebar() {
                                                                     !!subItem
                                                                         .items
                                                                         ?.length;
-                                                                const subActive =
-                                                                    isItemActive(
-                                                                        subItem,
-                                                                        pathname
-                                                                    );
 
                                                                 return (
                                                                     <div
@@ -253,7 +272,7 @@ export function AppSidebar() {
                                                                                             subItem.title
                                                                                         )
                                                                                     }
-                                                                                    className={`flex items-center justify-between w-full px-3 py-1 text-sm rounded-lg transition `}
+                                                                                    className='flex items-center justify-between w-full px-3 py-1 text-sm rounded-lg transition hover:bg-muted'
                                                                                 >
                                                                                     <span className='flex items-center gap-2'>
                                                                                         {
@@ -296,7 +315,11 @@ export function AppSidebar() {
                                                                                                     className={({
                                                                                                         isActive,
                                                                                                     }) =>
-                                                                                                        `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition`
+                                                                                                        `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition ${
+                                                                                                            isActive
+                                                                                                                ? "bg-primary text-primary-foreground"
+                                                                                                                : "hover:bg-muted"
+                                                                                                        }`
                                                                                                     }
                                                                                                 >
                                                                                                     {
@@ -322,7 +345,11 @@ export function AppSidebar() {
                                                                                 className={({
                                                                                     isActive,
                                                                                 }) =>
-                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition`
+                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition ${
+                                                                                        isActive
+                                                                                            ? "bg-primary text-primary-foreground"
+                                                                                            : "hover:bg-muted"
+                                                                                    }`
                                                                                 }
                                                                             >
                                                                                 {
@@ -346,7 +373,11 @@ export function AppSidebar() {
                                                     to={item.url}
                                                     onClick={handleNavClick}
                                                     className={({ isActive }) =>
-                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition`
+                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
+                                                            isActive
+                                                                ? "bg-primary text-primary-foreground"
+                                                                : "hover:bg-muted"
+                                                        }`
                                                     }
                                                 >
                                                     {item.icon}

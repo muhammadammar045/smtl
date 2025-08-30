@@ -1,27 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "@/store/service/rtk-service";
 import { RootState } from "@/store/store";
-import { Subject, SubjectData } from "./types";
+import { SubjectData, Student } from "./types"; // <-- add Student type here
 import { CommonApiResponse } from "@/store/commonApiResponse";
 import { apiRoutes } from "@/store/routes";
 
 interface SubjectState {
     subjects: SubjectData[];
-    subject: Subject;
+    student: Student | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: SubjectState = {
     subjects: [],
-    subject: {} as Subject,
+    student: null,
     loading: false,
-    error: null
+    error: null,
 };
 
 export const subjectApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getSubjects: builder.query<CommonApiResponse<SubjectData[]>, void>({
+        getSubjects: builder.query<
+            CommonApiResponse<{ subjectlist: SubjectData[]; student: Student }>,
+            void
+        >({
             query: () => `${apiRoutes.subjects.getSubjects}`,
         }),
     }),
@@ -31,30 +34,28 @@ const subjectSlice = createSlice({
     name: "subject",
     initialState,
     reducers: {
-        setSubject: (state, action: PayloadAction<Subject>) => {
-            state.subject = action.payload;
-        },
         setError: (state, action: PayloadAction<string>) => {
             state.error = action.payload;
             state.loading = false;
         },
     },
     extraReducers: (builder) => {
-        builder
-            .addMatcher(
-                subjectApi.endpoints.getSubjects.matchFulfilled,
-                (state, { payload }) => {
-                    state.subjects = payload.data;
-                    state.loading = false;
-                    state.error = null;
-                }
-            );
+        builder.addMatcher(
+            subjectApi.endpoints.getSubjects.matchFulfilled,
+            (state, { payload }) => {
+                state.subjects = payload.data.subjectlist;
+                state.student = payload.data.student;
+                state.loading = false;
+                state.error = null;
+            }
+        );
     },
 });
 
-
 export const { useGetSubjectsQuery } = subjectApi;
-export const { setSubject, setError } = subjectSlice.actions;
+export const { setError } = subjectSlice.actions;
 export default subjectSlice.reducer;
 
-export const selectSubjects = (state: RootState) => state.subjects.subjects
+// ✅ Selectors
+export const selectSubjects = (state: RootState) => state.subjects.subjects;
+export const selectStudent = (state: RootState) => state.subjects.student;
