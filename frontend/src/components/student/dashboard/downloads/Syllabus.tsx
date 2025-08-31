@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import envVars from "@/envExporter";
+import Loader from "@/components/common/loader/Loader";
 
 interface SyllabusRow {
     name: string;
@@ -14,7 +15,7 @@ interface SyllabusRow {
 }
 
 function Syllabus() {
-    const { data } = useGetSyllabusQuery();
+    const { data, isLoading, isError } = useGetSyllabusQuery();
 
     const syllabusList: SyllabusRow[] =
         data?.data?.syllabus.map((item: any) => ({
@@ -54,6 +55,39 @@ function Syllabus() {
             },
         },
     ];
+
+    if (isLoading) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Syllabus
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isError || !data) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Syllabus
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading syllabus
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <>

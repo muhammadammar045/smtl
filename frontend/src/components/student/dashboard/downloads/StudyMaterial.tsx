@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import envVars from "@/envExporter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Loader from "@/components/common/loader/Loader";
 
 // ✅ Local interface (separate from backend type)
 interface StudyMaterialRow {
@@ -15,7 +16,7 @@ interface StudyMaterialRow {
 }
 
 function StudyMaterial() {
-    const { data } = useGetStudyMaterialQuery();
+    const { data, isLoading, isError } = useGetStudyMaterialQuery();
 
     // ✅ Transform API response into table rows
     const studyMaterials: StudyMaterialRow[] =
@@ -57,6 +58,39 @@ function StudyMaterial() {
             },
         },
     ];
+
+    if (isLoading) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Study Material
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isError || !data) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Study Material
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading study material
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <>

@@ -5,24 +5,47 @@ import FeeTab from "./profile-tabs/FeeTab";
 import DocumentTab from "./profile-tabs/DocumentTab";
 import TimelineTab from "./profile-tabs/TimelineTab";
 import { useGetDashboardDetailsQuery } from "@/store/slices/dashboard/dashboard.slice";
+import Loader from "@/components/common/loader/Loader";
 
 function Profile() {
     const {
         data: dashboardData,
-        error,
+        isError,
         isLoading,
     } = useGetDashboardDetailsQuery();
 
-    if (isLoading)
-        return <div className='text-muted-foreground'>Loading...</div>;
-    if (error)
+    if (isLoading) {
         return (
-            <div className='text-destructive'>
-                Error: {JSON.stringify(error)}
-            </div>
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Dashboard
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
         );
-    if (!dashboardData?.data)
-        return <div className='text-muted-foreground'>No data found</div>;
+    }
+
+    if (isError || !dashboardData) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Dashboard
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading dashboard
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <>

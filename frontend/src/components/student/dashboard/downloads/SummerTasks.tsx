@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import envVars from "@/envExporter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Loader from "@/components/common/loader/Loader";
 
 // ✅ Local interface
 interface SummerTaskRow {
@@ -15,7 +16,7 @@ interface SummerTaskRow {
 }
 
 function SummerTasks() {
-    const { data } = useGetOtherSummerTasksQuery();
+    const { data, isLoading, isError } = useGetOtherSummerTasksQuery();
 
     // ✅ Transform API response → rows
     const summerTasks: SummerTaskRow[] =
@@ -56,6 +57,39 @@ function SummerTasks() {
             },
         },
     ];
+
+    if (isLoading) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Summer Tasks
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isError || !summerTasks) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Summer Tasks
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading summer tasks
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <>

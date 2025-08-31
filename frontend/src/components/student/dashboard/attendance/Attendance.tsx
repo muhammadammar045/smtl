@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import AttendanceDetailModal from "./AttendanceDetailModal";
 import { Button } from "@/components/ui/button"; // using your theme-based Button
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Loader from "@/components/common/loader/Loader";
 
 type AttendanceRow = {
     id: number;
@@ -20,22 +21,48 @@ type AttendanceRow = {
 };
 
 function Attendance() {
-    const { data: attendanceData, isLoading } = useGetAttendanceQuery();
+    const {
+        data: attendanceData,
+        isLoading,
+        isError,
+    } = useGetAttendanceQuery();
     const [selectedMonthYear, setSelectedMonthYear] = useState<{
         month: number;
         year: number;
     } | null>(null);
 
-    if (isLoading)
+    if (isLoading) {
         return (
-            <p className='text-center py-6 text-muted-foreground'>Loading...</p>
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Subjects
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
         );
+    }
 
-    if (!attendanceData)
+    if (isError || !attendanceData) {
         return (
-            <p className='text-center py-6 text-destructive'>No data found.</p>
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Attendance
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading attendance
+                </CardContent>
+            </Card>
         );
-
+    }
     const apiData = attendanceData.data.attendance_student;
 
     const tableData: AttendanceRow[] = Object.entries(apiData).map(

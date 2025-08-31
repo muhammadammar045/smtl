@@ -1,3 +1,5 @@
+import Loader from "@/components/common/loader/Loader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetAttendanceDetailsQuery } from "@/store/slices/attendance/attendance.slice";
 
 interface AttendanceDetailModalProps {
@@ -12,11 +14,44 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
     onClose,
 }) => {
     // call your RTK Query
-    const { data, isLoading, error } = useGetAttendanceDetailsQuery({
+    const { data, isLoading, isError } = useGetAttendanceDetailsQuery({
         month,
         year,
         search: "", // or pass student id if required
     });
+
+    if (isLoading) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Attendance Detail
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <Loader
+                        variant='dots'
+                        size={36}
+                    />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isError || !data) {
+        return (
+            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
+                <CardHeader className='border-b border-border pb-3'>
+                    <CardTitle className='text-3xl font-bold text-primary'>
+                        Attendance Detail
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='p-8 flex justify-center items-center text-destructive'>
+                    Error loading attendance details
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <div className='fixed inset-0 flex items-center justify-center bg-black/50 z-50'>
@@ -33,14 +68,6 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
                 <h2 className='text-xl font-semibold mb-4'>
                     Attendance Detail – {month}/{year}
                 </h2>
-
-                {/* States */}
-                {isLoading && (
-                    <p className='text-muted-foreground'>Loading details...</p>
-                )}
-                {error && (
-                    <p className='text-destructive'>Failed to load details.</p>
-                )}
 
                 {/* Table */}
                 {data && (
