@@ -16,6 +16,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLogoutMutation } from "@/store/slices/auth/auth.slice";
+import Loader from "../loader/Loader";
 
 interface MenuItem {
     title: string;
@@ -53,6 +55,19 @@ export const Header = ({
         new Date().getFullYear() + 1
     }`;
     const todayDate = new Date().toDateString();
+
+    const [logout, { isLoading, error }] = useLogoutMutation();
+
+    isLoading && Loader;
+
+    if (error) {
+        console.log(error);
+    }
+
+    const handleLogout = async () => {
+        await logout();
+        navigate("/auth/login");
+    };
 
     return (
         <header className='h-[100px] w-full border-b border-border bg-background text-foreground relative z-50 shadow-sm'>
@@ -169,12 +184,7 @@ export const Header = ({
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 className='flex items-center gap-2 cursor-pointer rounded-md px-2 py-2 hover:bg-destructive hover:text-destructive-foreground'
-                                                onClick={() => {
-                                                    // handle logout
-                                                    console.log(
-                                                        "Logout clicked"
-                                                    );
-                                                }}
+                                                onClick={handleLogout}
                                             >
                                                 <LogOut className='h-4 w-4 text-primary' />
                                                 <span className='font-medium'>

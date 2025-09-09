@@ -28,6 +28,12 @@ export const authApi = api.injectEndpoints({
         body: credentials,
       }),
     }),
+    logout: builder.mutation<CommonApiResponse<IUser>, void>({
+      query: () => ({
+        url: `${apiRoutes.auth.logout}`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -81,12 +87,30 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       }
     );
+
+    builder.addMatcher(
+      authApi.endpoints.logout.matchFulfilled,
+      (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      }
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.logout.matchRejected,
+      (state, { error }) => {
+        state.loading = false;
+        state.error = error?.message || "Logout failed";
+      }
+    );
   },
 });
 
 export const { setUser, clearUser, setError, setLoading } = authSlice.actions;
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
 
 export const selectAuth = (state: RootState) => state.auth.user;
 

@@ -1,6 +1,7 @@
 export const apiRoutes = {
     auth: {
-        login: "/site/userlogin_api"
+        login: "/site/userlogin_api",
+        logout: "/site/logout_api"
     },
     dashboard: {
         getDashboardDetails: "/user/user/dashboard_api",
