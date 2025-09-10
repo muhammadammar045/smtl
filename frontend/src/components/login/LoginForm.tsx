@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { useLoginMutation } from "@/store/slices/auth/auth.slice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -14,10 +13,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { loginSchema } from "@/schema/user.schema";
+import { LoginFormValues, loginSchema } from "@/schema/user.schema";
 import { toast } from "react-toastify";
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm({
     className,
