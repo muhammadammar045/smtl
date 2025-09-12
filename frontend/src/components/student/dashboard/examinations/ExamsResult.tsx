@@ -50,9 +50,7 @@ interface ExamSession {
 
 function ExamsResult() {
     const { data } = useGetExamResultsQuery();
-    console.log("🚀 -----------------------------------------------------🚀");
-    console.log("🚀 ~ ExamsResult.tsx:53 ~ ExamsResult ~ data==>", data);
-    console.log("🚀 -----------------------------------------------------🚀");
+
     const examSessions: ExamSession[] = [
         {
             title: "Result: Weekly Test 2 Session (2025-26)",
