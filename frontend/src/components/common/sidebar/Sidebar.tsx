@@ -1,23 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import { useLocation, NavLink } from "react-router-dom";
 import {
+    Bell,
+    Book,
+    BookCopy,
     BookOpen,
+    Bus,
+    Calendar,
+    CalendarSearchIcon,
+    ChevronDown,
+    ClipboardList,
     Clock,
     Download,
-    Bus,
-    Bell,
     FileText,
-    Users,
-    ClipboardList,
-    Calendar,
-    BookCopy,
-    Book,
     Sun,
-    CalendarSearchIcon,
     User,
-    ChevronDown,
+    Users,
 } from "lucide-react";
-
+import { NavLink, useLocation } from "react-router-dom";
 import {
     Sidebar,
     SidebarContent,
@@ -25,13 +23,13 @@ import {
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
-    SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
+import { useEffect, useMemo, useState } from "react";
 
-import { useAppSelector } from "@/store/hooks/hooks";
 import { selectAuth } from "@/store/slices/auth/auth.slice";
+import { useAppSelector } from "@/store/hooks/hooks";
 
 // Mocked children
 const mockChildren = [
@@ -40,7 +38,6 @@ const mockChildren = [
     { id: "3", name: "Muhammad Maaz" },
 ];
 
-// Sidebar link type
 interface LinkItem {
     title: string;
     url: string;
@@ -48,7 +45,6 @@ interface LinkItem {
     items?: LinkItem[];
 }
 
-// Base student links
 const studentLinks: LinkItem[] = [
     { title: "My Profile", url: "/dashboard/profile", icon: <Users /> },
     { title: "Notice Board", url: "/dashboard/notice-board", icon: <Bell /> },
@@ -66,7 +62,7 @@ const studentLinks: LinkItem[] = [
     { title: "Diary", url: "/dashboard/diary", icon: <FileText /> },
     {
         title: "Examinations",
-        url: "/dashboard/examinations",
+        url: "/dashboard/exams/schedule",
         icon: <FileText />,
         items: [
             {
@@ -88,7 +84,7 @@ const studentLinks: LinkItem[] = [
     },
     {
         title: "Download Center",
-        url: "/dashboard/downloads",
+        url: "/dashboard/downloads/timetable",
         icon: <Download />,
         items: [
             {
@@ -122,7 +118,6 @@ const studentLinks: LinkItem[] = [
     { title: "Transport Routes", url: "/dashboard/transport", icon: <Bus /> },
 ];
 
-// Generate dynamic links for parents
 const generateParentLinks = (): LinkItem[] =>
     studentLinks.map((link) =>
         link.items
@@ -151,7 +146,7 @@ const generateParentLinks = (): LinkItem[] =>
               }
     );
 
-// Recursively detect active items
+// recursively check if active
 const isItemActive = (item: LinkItem, pathname: string): boolean =>
     pathname.startsWith(item.url) ||
     (item.items?.some((sub) => isItemActive(sub, pathname)) ?? false);
@@ -178,7 +173,6 @@ export function AppSidebar() {
         if (isMobile) setOpenMobile(false);
     };
 
-    // Auto expand accordions based on current route
     useEffect(() => {
         const expandActiveItems = (
             items: LinkItem[],
@@ -200,14 +194,14 @@ export function AppSidebar() {
     return (
         <Sidebar>
             <SidebarContent className='px-2 py-3 space-y-3'>
-                <SidebarGroup className='rounded-xl bg-muted/30 p-3'>
-                    <SidebarGroupLabel className='text-lg font-semibold mb-2'>
+                <SidebarGroup className='rounded-xl bg-card shadow-sm border border-border p-3'>
+                    <SidebarGroupLabel className='text-lg font-semibold mb-3 text-card-foreground'>
                         Application
                     </SidebarGroupLabel>
 
-                    <p className='bg-primary text-sm text-primary-foreground py-2 px-3 rounded-lg mb-3 shadow'>
+                    <p className='bg-primary text-sm text-primary-foreground py-2 px-3 rounded-lg mb-4 shadow-sm'>
                         Current Session:{" "}
-                        <span>
+                        <span className='font-semibold'>
                             {new Date().getFullYear()} -{" "}
                             {new Date().getFullYear() + 1}
                         </span>
@@ -217,41 +211,62 @@ export function AppSidebar() {
                         <SidebarMenu className='space-y-1'>
                             {Links.map((item) => {
                                 const hasChildren = !!item.items?.length;
+                                const active = isItemActive(item, pathname);
 
                                 return (
                                     <SidebarMenuItem
                                         key={item.title}
                                         className='rounded-lg overflow-hidden'
                                     >
-                                        {hasChildren ? (
-                                            <div className='flex flex-col'>
-                                                <button
-                                                    onClick={() =>
-                                                        toggleAccordion(
-                                                            item.title
-                                                        )
+                                        <div className='flex flex-col'>
+                                            <div className='flex items-center justify-between w-full'>
+                                                <NavLink
+                                                    to={item.url}
+                                                    onClick={handleNavClick}
+                                                    className={({ isActive }) =>
+                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors w-full 
+                            ${
+                                isActive || active
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "hover:bg-muted hover:text-foreground"
+                            }`
                                                     }
-                                                    className='flex items-center justify-between w-full px-3 py-2 rounded-lg transition hover:bg-muted'
                                                 >
-                                                    <span className='flex items-center gap-2'>
-                                                        {item.icon}
-                                                        {item.title}
-                                                    </span>
-                                                    <ChevronDown
-                                                        className={`h-4 w-4 transition-transform ${
-                                                            openAccordions[
+                                                    {item.icon}
+                                                    {item.title}
+                                                </NavLink>
+                                                {hasChildren && (
+                                                    <button
+                                                        onClick={() =>
+                                                            toggleAccordion(
                                                                 item.title
-                                                            ]
-                                                                ? "rotate-180"
-                                                                : ""
-                                                        }`}
-                                                    />
-                                                </button>
+                                                            )
+                                                        }
+                                                        className='px-2 text-muted-foreground hover:text-foreground transition-colors'
+                                                    >
+                                                        <ChevronDown
+                                                            className={`h-4 w-4 transition-transform ${
+                                                                openAccordions[
+                                                                    item.title
+                                                                ]
+                                                                    ? "rotate-180"
+                                                                    : ""
+                                                            }`}
+                                                        />
+                                                    </button>
+                                                )}
+                                            </div>
 
-                                                {openAccordions[item.title] && (
-                                                    <div className='pl-3 border-l mt-1 space-y-1'>
+                                            {hasChildren &&
+                                                openAccordions[item.title] && (
+                                                    <div className='pl-3 border-l border-border mt-1 space-y-1'>
                                                         {item.items?.map(
                                                             (subItem) => {
+                                                                const subActive =
+                                                                    isItemActive(
+                                                                        subItem,
+                                                                        pathname
+                                                                    );
                                                                 const subHasChildren =
                                                                     !!subItem
                                                                         .items
@@ -264,24 +279,41 @@ export function AppSidebar() {
                                                                         }
                                                                         className='flex flex-col'
                                                                     >
-                                                                        {subHasChildren ? (
-                                                                            <>
+                                                                        <div className='flex items-center justify-between w-full'>
+                                                                            <NavLink
+                                                                                to={
+                                                                                    subItem.url
+                                                                                }
+                                                                                onClick={
+                                                                                    handleNavClick
+                                                                                }
+                                                                                className={({
+                                                                                    isActive,
+                                                                                }) =>
+                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition-colors w-full 
+                                      ${
+                                          isActive || subActive
+                                              ? "bg-primary text-primary-foreground shadow-sm"
+                                              : "hover:bg-muted hover:text-foreground"
+                                      }`
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    subItem.icon
+                                                                                }
+                                                                                {
+                                                                                    subItem.title
+                                                                                }
+                                                                            </NavLink>
+                                                                            {subHasChildren && (
                                                                                 <button
                                                                                     onClick={() =>
                                                                                         toggleAccordion(
                                                                                             subItem.title
                                                                                         )
                                                                                     }
-                                                                                    className='flex items-center justify-between w-full px-3 py-1 text-sm rounded-lg transition hover:bg-muted'
+                                                                                    className='px-2 text-muted-foreground hover:text-foreground transition-colors'
                                                                                 >
-                                                                                    <span className='flex items-center gap-2'>
-                                                                                        {
-                                                                                            subItem.icon
-                                                                                        }
-                                                                                        {
-                                                                                            subItem.title
-                                                                                        }
-                                                                                    </span>
                                                                                     <ChevronDown
                                                                                         className={`h-4 w-4 transition-transform ${
                                                                                             openAccordions[
@@ -293,98 +325,58 @@ export function AppSidebar() {
                                                                                         }`}
                                                                                     />
                                                                                 </button>
-                                                                                {openAccordions[
-                                                                                    subItem
-                                                                                        .title
-                                                                                ] && (
-                                                                                    <div className='pl-3 border-l mt-1 space-y-1'>
-                                                                                        {subItem.items?.map(
-                                                                                            (
-                                                                                                child
-                                                                                            ) => (
-                                                                                                <NavLink
-                                                                                                    key={
-                                                                                                        child.title
-                                                                                                    }
-                                                                                                    to={
-                                                                                                        child.url
-                                                                                                    }
-                                                                                                    onClick={
-                                                                                                        handleNavClick
-                                                                                                    }
-                                                                                                    className={({
-                                                                                                        isActive,
-                                                                                                    }) =>
-                                                                                                        `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition ${
-                                                                                                            isActive
-                                                                                                                ? "bg-primary text-primary-foreground"
-                                                                                                                : "hover:bg-muted"
-                                                                                                        }`
-                                                                                                    }
-                                                                                                >
-                                                                                                    {
-                                                                                                        child.icon
-                                                                                                    }
-                                                                                                    {
-                                                                                                        child.title
-                                                                                                    }
-                                                                                                </NavLink>
-                                                                                            )
-                                                                                        )}
-                                                                                    </div>
-                                                                                )}
-                                                                            </>
-                                                                        ) : (
-                                                                            <NavLink
-                                                                                to={
-                                                                                    subItem.url
-                                                                                }
-                                                                                onClick={
-                                                                                    handleNavClick
-                                                                                }
-                                                                                className={({
-                                                                                    isActive,
-                                                                                }) =>
-                                                                                    `flex items-center gap-2 px-3 py-1 text-sm rounded-lg transition ${
-                                                                                        isActive
-                                                                                            ? "bg-primary text-primary-foreground"
-                                                                                            : "hover:bg-muted"
-                                                                                    }`
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    subItem.icon
-                                                                                }
-                                                                                {
-                                                                                    subItem.title
-                                                                                }
-                                                                            </NavLink>
-                                                                        )}
+                                                                            )}
+                                                                        </div>
+
+                                                                        {subHasChildren &&
+                                                                            openAccordions[
+                                                                                subItem
+                                                                                    .title
+                                                                            ] && (
+                                                                                <div className='pl-3 border-l border-border mt-1 space-y-1'>
+                                                                                    {subItem.items?.map(
+                                                                                        (
+                                                                                            child
+                                                                                        ) => (
+                                                                                            <NavLink
+                                                                                                key={
+                                                                                                    child.title
+                                                                                                }
+                                                                                                to={
+                                                                                                    child.url
+                                                                                                }
+                                                                                                onClick={
+                                                                                                    handleNavClick
+                                                                                                }
+                                                                                                className={({
+                                                                                                    isActive,
+                                                                                                }) =>
+                                                                                                    `flex items-center gap-2 text-xs px-3 py-1 rounded-lg transition-colors 
+                                          ${
+                                              isActive
+                                                  ? "bg-primary text-primary-foreground shadow-sm"
+                                                  : "hover:bg-muted hover:text-foreground"
+                                          }`
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    child.icon
+                                                                                                }
+                                                                                                {
+                                                                                                    child.title
+                                                                                                }
+                                                                                            </NavLink>
+                                                                                        )
+                                                                                    )}
+                                                                                </div>
+                                                                            )}
                                                                     </div>
                                                                 );
                                                             }
                                                         )}
                                                     </div>
                                                 )}
-                                            </div>
-                                        ) : (
-                                            <SidebarMenuButton asChild>
-                                                <NavLink
-                                                    to={item.url}
-                                                    onClick={handleNavClick}
-                                                    className={({ isActive }) =>
-                                                        `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
-                                                            isActive
-                                                                ? "bg-primary text-primary-foreground"
-                                                                : "hover:bg-muted"
-                                                        }`
-                                                    }
-                                                >
-                                                    {item.icon}
-                                                    {item.title}
-                                                </NavLink>
-                                            </SidebarMenuButton>
-                                        )}
+                                        </div>
                                     </SidebarMenuItem>
                                 );
                             })}

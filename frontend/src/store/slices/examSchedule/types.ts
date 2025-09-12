@@ -8,12 +8,13 @@ export interface ExamScheduleData {
     exam_schedule: ExamSchedule[];
 }
 
+// Main exam schedule object
 export interface ExamSchedule {
     id: string;
     name: string;
     campus_id: string;
     result_template: string;
-    sesion_id: string; // typo in API, keeping as is
+    sesion_id: string;
     result_date: string;
     note: string | null;
     is_active: string;
@@ -37,6 +38,7 @@ export interface ExamSchedule {
     exam_schedule_details: ExamScheduleDetail[];
 }
 
+// Single subject/row inside exam_schedule_details
 export interface ExamScheduleDetail {
     staff_name: string;
     id: string;
@@ -48,8 +50,8 @@ export interface ExamScheduleDetail {
     end_from: string;
     room_no: string | null;
     coefficient: string | null;
-    full_marks: string;
-    passing_marks: string;
+    full_marks: string; // API sends as string
+    passing_marks: string; // API sends as string
     note: string | null;
     is_active: string;
     created_at: string;
@@ -57,11 +59,13 @@ export interface ExamScheduleDetail {
     exam_schedule_id: string;
     sub_full_marks: string;
     program_applied_for: string;
-    name: string; // subject name (English, Urdu, etc.)
+    name: string; // subject name
     subject_id: string;
-    type: string;
-    sub_modules: any[]; // replace `any` if you know structure
+    type: string; // e.g. "Theory"
+    sub_modules: any[]; // array but empty for now
 }
+
+
 
 
 

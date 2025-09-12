@@ -1,11 +1,13 @@
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
-import { ColumnDef } from "@tanstack/react-table";
-import { useGetStudyMaterialQuery } from "@/store/slices/download/download.slice";
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
-import envVars from "@/envExporter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { Download } from "lucide-react";
 import Loader from "@/components/common/loader/Loader";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import envVars from "@/envExporter";
+import { useGetStudyMaterialQuery } from "@/store/slices/download/download.slice";
 
 // ✅ Local interface (separate from backend type)
 interface StudyMaterialRow {
@@ -30,7 +32,18 @@ function StudyMaterial() {
     const columns: ColumnDef<StudyMaterialRow>[] = [
         { accessorKey: "name", header: "Name" },
         { accessorKey: "date", header: "Date" },
-        { accessorKey: "type", header: "Type" },
+        {
+            accessorKey: "type",
+            header: "Type",
+            cell: ({ row }) => (
+                <Badge
+                    variant='default'
+                    className='px-3 py-1'
+                >
+                    {row.original.type}
+                </Badge>
+            ),
+        },
         {
             accessorKey: "action",
             header: "Action",
@@ -46,7 +59,8 @@ function StudyMaterial() {
                     >
                         <Button
                             variant='outline'
-                            className='flex items-center gap-2 rounded-lg border-border text-primary hover:bg-muted hover:text-primary'
+                            size='sm'
+                            className='flex items-center gap-2 rounded-lg'
                         >
                             <Download className='h-4 w-4' />
                             <span>Download</span>
@@ -85,29 +99,35 @@ function StudyMaterial() {
                         Study Material
                     </CardTitle>
                 </CardHeader>
-                <CardContent className='p-8 flex justify-center items-center text-destructive'>
-                    Error loading study material
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <span className='text-destructive font-medium'>
+                        Error loading study material
+                    </span>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <>
-            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Study Material
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-4'>
+        <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl transition hover:shadow-lg'>
+            <CardHeader className='border-b border-border pb-3'>
+                <CardTitle className='text-3xl font-bold text-primary'>
+                    Study Material
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='p-4'>
+                {studyMaterials.length > 0 ? (
                     <TenStackReactTable
                         data={studyMaterials}
                         columns={columns}
                     />
-                </CardContent>
-            </Card>
-        </>
+                ) : (
+                    <p className='text-center text-muted-foreground py-6'>
+                        No study material available
+                    </p>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 

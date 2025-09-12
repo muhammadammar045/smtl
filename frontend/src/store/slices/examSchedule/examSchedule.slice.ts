@@ -1,118 +1,98 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { api } from "@/store/service/rtk-service";
-import { RootState } from "@/store/store";
-import { ExamSchedule, ExamProgressReportData } from "./types";
+import { ExamProgressReportData, ExamScheduleData } from "./types";
+
 import { CommonApiResponse } from "@/store/commonApiResponse";
+import { RootState } from "@/store/store";
+import { api } from "@/store/service/rtk-service";
 import { apiRoutes } from "@/store/routes";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface ExamState {
-    examSchedules: ExamSchedule[];
-    selectedExamSchedule: ExamSchedule | null;
+    examSchedules: ExamScheduleData[]; // ✅ should be array
     examProgressReport: ExamProgressReportData[];
+    examResults: ExamProgressReportData[];
     loading: boolean;
     error: string | null;
 }
 
 const initialState: ExamState = {
-    examSchedules: [],
-    selectedExamSchedule: null,
+    examSchedules: [], // ✅ empty array
     examProgressReport: [],
+    examResults: [],
     loading: false,
     error: null,
 };
 
-// API slice
+// ✅ Inject RTK Query endpoints
 export const examApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        getExamSchedules: builder.query<CommonApiResponse<ExamSchedule[]>, void>({
-            query: () => `${apiRoutes.exam.examSchedule}`,
+        getExamSchedules: builder.query<
+            CommonApiResponse<ExamScheduleData[]>,
+            void
+        >({
+            query: () => apiRoutes.exam.examSchedule,
         }),
-        getResultProgress: builder.query<CommonApiResponse<ExamProgressReportData[]>, void>({
-            query: () => `${apiRoutes.exam.examProgressReport}`,
+        getResultProgress: builder.query<
+            CommonApiResponse<ExamProgressReportData[]>,
+            void
+        >({
+            query: () => apiRoutes.exam.examProgressReport,
         }),
+        getExamResults: builder.query<
+            CommonApiResponse<ExamProgressReportData[]>,
+            void
+        >({
+            query: () => apiRoutes.exam.examResults,
+        })
     }),
 });
 
-// Slice
+// ✅ Slice
 const examSlice = createSlice({
     name: "exam",
     initialState,
-    reducers: {
-        setSelectedExamSchedule: (state, action: PayloadAction<ExamSchedule>) => {
-            state.selectedExamSchedule = action.payload;
-        },
-        setExamProgressReport: (state, action: PayloadAction<ExamProgressReportData[]>) => {
-            state.examProgressReport = action.payload;
-        },
-        setExamScheduleError: (state, action: PayloadAction<string>) => {
-            state.error = action.payload;
-            state.loading = false;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
-        // ExamSchedules
         builder.addMatcher(
             examApi.endpoints.getExamSchedules.matchFulfilled,
             (state, { payload }) => {
-                state.examSchedules = payload.data;
+                state.examSchedules = payload.data ?? [];
                 state.loading = false;
                 state.error = null;
             }
         );
-        builder.addMatcher(
-            examApi.endpoints.getExamSchedules.matchPending,
-            (state) => {
-                state.loading = true;
-            }
-        );
-        builder.addMatcher(
-            examApi.endpoints.getExamSchedules.matchRejected,
-            (state, { error }) => {
-                state.loading = false;
-                state.error = error?.message || "Failed to fetch exam schedules";
-            }
-        );
-
-        // Exam Progress Report
         builder.addMatcher(
             examApi.endpoints.getResultProgress.matchFulfilled,
             (state, { payload }) => {
-                state.examProgressReport = payload.data;
+                state.examProgressReport = payload.data ?? [];
                 state.loading = false;
                 state.error = null;
             }
         );
         builder.addMatcher(
-            examApi.endpoints.getResultProgress.matchPending,
-            (state) => {
-                state.loading = true;
-            }
-        );
-        builder.addMatcher(
-            examApi.endpoints.getResultProgress.matchRejected,
-            (state, { error }) => {
+            examApi.endpoints.getExamResults.matchFulfilled,
+            (state, { payload }) => {
+                state.examResults = payload.data ?? [];
                 state.loading = false;
-                state.error = error?.message || "Failed to fetch exam progress report";
+                state.error = null;
             }
         );
     },
 });
 
-// Hooks from API
+// ✅ Export hooks for components
 export const {
     useGetExamSchedulesQuery,
     useGetResultProgressQuery,
+    useGetExamResultsQuery,
 } = examApi;
-
-// Actions
-export const { setSelectedExamSchedule, setExamProgressReport, setExamScheduleError } =
-    examSlice.actions;
 
 export default examSlice.reducer;
 
-// Selectors
-export const selectExamSchedules = (state: RootState) => state.exam.examSchedules;
-export const selectSelectedExamSchedule = (state: RootState) => state.exam.selectedExamSchedule;
-export const selectExamProgressReport = (state: RootState) => state.exam.examProgressReport;
-export const selectExamScheduleLoading = (state: RootState) => state.exam.loading;
-export const selectExamScheduleError = (state: RootState) => state.exam.error;
+// ✅ Selectors
+export const selectExam = (state: RootState) => state.exam;
+export const selectExamSchedules = (state: RootState) =>
+    state.exam.examSchedules;
+export const selectExamProgressReport = (state: RootState) =>
+    state.exam.examProgressReport;
+export const selectExamLoading = (state: RootState) => state.exam.loading;
+export const selectExamError = (state: RootState) => state.exam.error;

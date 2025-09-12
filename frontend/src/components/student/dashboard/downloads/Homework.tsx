@@ -1,8 +1,11 @@
-import Loader from "@/components/common/loader/Loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { useEffect, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import Loader from "@/components/common/loader/Loader";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
 
 interface HomeWorkI {
     name: string;
@@ -15,9 +18,10 @@ function Homework() {
     const [isLoading, setIsLoading] = useState(true);
     const isError = false;
 
-    setTimeout(() => {
-        setIsLoading(false);
-    }, 2000);
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const data: HomeWorkI[] = [
         {
@@ -45,22 +49,33 @@ function Homework() {
             action: "View Details",
         },
     ];
+
     const columns: ColumnDef<HomeWorkI>[] = [
-        {
-            accessorKey: "name",
-            header: "Name",
-        },
-        {
-            accessorKey: "date",
-            header: "Date",
-        },
+        { accessorKey: "name", header: "Subject" },
+        { accessorKey: "date", header: "Date" },
         {
             accessorKey: "type",
             header: "Type",
+            cell: ({ row }) => (
+                <Badge
+                    variant='default'
+                    className='px-3 py-1'
+                >
+                    {row.original.type}
+                </Badge>
+            ),
         },
         {
             accessorKey: "action",
             header: "Action",
+            cell: ({ row }) => (
+                <Button
+                    size='sm'
+                    variant='outline'
+                >
+                    {row.original.action}
+                </Button>
+            ),
         },
     ];
 
@@ -69,7 +84,7 @@ function Homework() {
             <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
                 <CardHeader className='border-b border-border pb-3'>
                     <CardTitle className='text-3xl font-bold text-primary'>
-                        Home Work
+                        Homework
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='p-8 flex justify-center items-center'>
@@ -87,32 +102,32 @@ function Homework() {
             <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
                 <CardHeader className='border-b border-border pb-3'>
                     <CardTitle className='text-3xl font-bold text-primary'>
-                        Home Work
+                        Homework
                     </CardTitle>
                 </CardHeader>
-                <CardContent className='p-8 flex justify-center items-center text-destructive'>
-                    Error loading Home work
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <span className='text-destructive font-medium'>
+                        Error loading homework
+                    </span>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <>
-            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Homework
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-4'>
-                    <TenStackReactTable
-                        data={data}
-                        columns={columns}
-                    />
-                </CardContent>
-            </Card>
-        </>
+        <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl transition hover:shadow-lg'>
+            <CardHeader className='border-b border-border pb-3'>
+                <CardTitle className='text-3xl font-bold text-primary'>
+                    Homework
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='p-4'>
+                <TenStackReactTable
+                    data={data}
+                    columns={columns}
+                />
+            </CardContent>
+        </Card>
     );
 }
 

@@ -1,10 +1,3 @@
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useLoginMutation } from "@/store/slices/auth/auth.slice";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Form,
     FormControl,
@@ -14,7 +7,15 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { LoginFormValues, loginSchema } from "@/schema/user.schema";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { useLoginMutation } from "@/store/slices/auth/auth.slice";
+import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export function LoginForm({
     className,
@@ -46,7 +47,7 @@ export function LoginForm({
                 success: "Login successful",
                 error: "Login failed",
             });
-            if (result.data.role === "student") navigate("/dashboard");
+            if (result.data.role === "student") navigate("/dashboard/profile");
             else if (result.data.role === "parent")
                 navigate("/parent/dashboard");
         } catch (err) {

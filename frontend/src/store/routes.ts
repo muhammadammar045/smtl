@@ -42,6 +42,7 @@ export const apiRoutes = {
     exam: {
         examSchedule: "/user/examschedule/exam_schedule_api",
         examProgressReport: "/user/user/results_progress_api",
+        examResults: "/user/user/results_api",
     },
 
     calendar: {

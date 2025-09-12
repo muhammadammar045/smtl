@@ -1,4 +1,5 @@
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Trophy, Users, XCircle } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -7,9 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, Trophy, Users } from "lucide-react";
+import { PageTitle } from "@/components/common/parts/BreadCrumb";
+import { useGetExamResultsQuery } from "@/store/slices/examSchedule/examSchedule.slice";
 
 interface ExamResult {
     subject: string;
@@ -47,6 +49,10 @@ interface ExamSession {
 }
 
 function ExamsResult() {
+    const { data } = useGetExamResultsQuery();
+    console.log("🚀 -----------------------------------------------------🚀");
+    console.log("🚀 ~ ExamsResult.tsx:53 ~ ExamsResult ~ data==>", data);
+    console.log("🚀 -----------------------------------------------------🚀");
     const examSessions: ExamSession[] = [
         {
             title: "Result: Weekly Test 2 Session (2025-26)",
@@ -128,37 +134,32 @@ function ExamsResult() {
                     <PageTitle title={session.title} />
 
                     {/* Subject Results */}
-                    <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                        <CardHeader className='border-b border-border pb-3'>
-                            <CardTitle className='text-lg font-semibold text-primary'>
-                                Subject-wise Results
+                    <Card className='shadow-md shadow-muted/20 border border-border bg-card text-card-foreground rounded-2xl hover:shadow-lg hover:shadow-primary/20 transition-shadow'>
+                        <CardHeader className='border-b border-border py-3'>
+                            <CardTitle className='text-xl font-bold text-primary'>
+                                📚 Subject-wise Results
                             </CardTitle>
                         </CardHeader>
                         <CardContent className='p-4'>
                             <Table>
                                 <TableHeader>
-                                    <TableRow className='bg-muted/30'>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Subject
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Full Marks
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Passing Marks
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Obtained
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Result
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Position
-                                        </TableHead>
-                                        <TableHead className='font-semibold text-foreground'>
-                                            Grade
-                                        </TableHead>
+                                    <TableRow className='bg-muted/40'>
+                                        {[
+                                            "Subject",
+                                            "Full Marks",
+                                            "Passing Marks",
+                                            "Obtained",
+                                            "Result",
+                                            "Position",
+                                            "Grade",
+                                        ].map((head) => (
+                                            <TableHead
+                                                key={head}
+                                                className='font-semibold text-foreground'
+                                            >
+                                                {head}
+                                            </TableHead>
+                                        ))}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -178,13 +179,20 @@ function ExamsResult() {
                                                     {result.passingMarks}
                                                 </TableCell>
                                                 <TableCell className='font-medium'>
-                                                    {result.obtainedMarks}
+                                                    {result.obtainedMarks ===
+                                                    "Absent" ? (
+                                                        <span className='italic text-muted-foreground'>
+                                                            Absent
+                                                        </span>
+                                                    ) : (
+                                                        result.obtainedMarks
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {result.result ===
                                                     "Pass" ? (
                                                         <Badge
-                                                            variant='secondary'
+                                                            variant='default'
                                                             className='flex items-center gap-1 px-2 py-1'
                                                         >
                                                             <CheckCircle className='w-4 h-4' />
@@ -203,7 +211,7 @@ function ExamsResult() {
                                                 <TableCell>
                                                     {result.subjectPosition ? (
                                                         <div className='flex items-center gap-1 text-primary font-medium'>
-                                                            <Trophy className='w-4 h-4' />{" "}
+                                                            <Trophy className='w-4 h-4' />
                                                             {
                                                                 result.subjectPosition
                                                             }
@@ -226,54 +234,51 @@ function ExamsResult() {
                     {/* Summaries */}
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         {/* Student Summary */}
-                        <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                            <CardHeader className='border-b border-border pb-3'>
-                                <CardTitle className='text-primary font-semibold flex items-center gap-2'>
-                                    <Users className='w-5 h-5' />
+                        <Card className='shadow-md shadow-muted/20 border border-border bg-card text-card-foreground rounded-2xl'>
+                            <CardHeader className='border-b border-border py-3'>
+                                <CardTitle className='text-primary font-bold flex items-center gap-2'>
+                                    <Users className='w-5 h-5 text-primary' />
                                     Student Summary
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className='p-4'>
                                 <ul className='space-y-3 text-sm text-muted-foreground'>
-                                    <li className='flex justify-between'>
-                                        <span>Obtained Marks</span>
-                                        <span className='font-medium text-foreground'>
-                                            {
-                                                session.studentSummary
-                                                    .obtainedMarks
-                                            }
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Full Marks</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.studentSummary.fullMarks}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Percentage</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.studentSummary.percentage}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Position</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.studentSummary.position}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Grade</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.studentSummary.grade}
-                                        </span>
-                                    </li>
+                                    {[
+                                        [
+                                            "Obtained Marks",
+                                            session.studentSummary
+                                                .obtainedMarks,
+                                        ],
+                                        [
+                                            "Full Marks",
+                                            session.studentSummary.fullMarks,
+                                        ],
+                                        [
+                                            "Percentage",
+                                            session.studentSummary.percentage,
+                                        ],
+                                        [
+                                            "Position",
+                                            session.studentSummary.position,
+                                        ],
+                                        ["Grade", session.studentSummary.grade],
+                                    ].map(([label, value]) => (
+                                        <li
+                                            key={label}
+                                            className='flex justify-between'
+                                        >
+                                            <span>{label}</span>
+                                            <span className='font-medium text-foreground'>
+                                                {value}
+                                            </span>
+                                        </li>
+                                    ))}
                                     <li className='flex justify-between'>
                                         <span>Result</span>
                                         {session.studentSummary.result ===
                                         "PASS" ? (
                                             <Badge
-                                                variant='secondary'
+                                                variant='success'
                                                 className='flex items-center gap-1 px-2 py-1'
                                             >
                                                 <CheckCircle className='w-4 h-4' />
@@ -294,54 +299,52 @@ function ExamsResult() {
                         </Card>
 
                         {/* Class Summary */}
-                        <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                            <CardHeader className='border-b border-border pb-3'>
-                                <CardTitle className='text-primary font-semibold flex items-center gap-2'>
-                                    <Trophy className='w-5 h-5' />
+                        <Card className='shadow-md shadow-muted/20 border border-border bg-card text-card-foreground rounded-2xl'>
+                            <CardHeader className='border-b border-border py-3'>
+                                <CardTitle className='text-primary font-bold flex items-center gap-2'>
+                                    <Trophy className='w-5 h-5 text-primary' />
                                     Class Summary
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className='p-4'>
                                 <ul className='space-y-3 text-sm text-muted-foreground'>
-                                    <li className='flex justify-between'>
-                                        <span>First Position</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.classSummary.firstPosition}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Last Position</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.classSummary.lastPosition}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>No. Students Passed</span>
-                                        <span className='font-medium text-foreground'>
-                                            {
-                                                session.classSummary
-                                                    .noStudentsPassed
-                                            }
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Class Size</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.classSummary.classSize}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Pass Rate</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.classSummary.passRate}
-                                        </span>
-                                    </li>
-                                    <li className='flex justify-between'>
-                                        <span>Class Average</span>
-                                        <span className='font-medium text-foreground'>
-                                            {session.classSummary.classAverage}
-                                        </span>
-                                    </li>
+                                    {[
+                                        [
+                                            "First Position",
+                                            session.classSummary.firstPosition,
+                                        ],
+                                        [
+                                            "Last Position",
+                                            session.classSummary.lastPosition,
+                                        ],
+                                        [
+                                            "No. Students Passed",
+                                            session.classSummary
+                                                .noStudentsPassed,
+                                        ],
+                                        [
+                                            "Class Size",
+                                            session.classSummary.classSize,
+                                        ],
+                                        [
+                                            "Pass Rate",
+                                            session.classSummary.passRate,
+                                        ],
+                                        [
+                                            "Class Average",
+                                            session.classSummary.classAverage,
+                                        ],
+                                    ].map(([label, value]) => (
+                                        <li
+                                            key={label}
+                                            className='flex justify-between'
+                                        >
+                                            <span>{label}</span>
+                                            <span className='font-medium text-foreground'>
+                                                {value}
+                                            </span>
+                                        </li>
+                                    ))}
                                 </ul>
                             </CardContent>
                         </Card>

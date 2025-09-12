@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { IGetSetting, IStudent } from "@/store/slices/dashboard/types";
+
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import envVars from "@/envExporter";
-import { IGetSetting, IStudent } from "@/store/slices/dashboard/types";
 
 interface InfoRowProps {
     label: string;
@@ -28,15 +29,16 @@ export function ProfileTab({ student, getSetting }: ProfileTabProps) {
 
     return (
         <>
+            {/* Title */}
             <PageTitle
                 title='🎓 Student Profile'
                 fontSize='text-3xl text-primary'
             />
 
             {/* Profile Header */}
-            <div className='w-full shadow-md shadow-muted/40 rounded-xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6 mb-8 border border-border bg-card text-card-foreground'>
+            <div className='w-full shadow-md shadow-muted/40 rounded-2xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6 mb-10 border border-border bg-card text-card-foreground'>
                 {/* Profile Image */}
-                <div className='w-32 h-32 rounded-full overflow-hidden border-4 border-border ring-2 ring-ring ring-offset-2 hover:scale-105 transition-transform duration-300'>
+                <div className='w-32 h-32 rounded-full overflow-hidden border-4 border-border ring-2 ring-ring ring-offset-2 transition-transform duration-300 hover:scale-105'>
                     <img
                         src={`${imgBase}/${
                             student.image ||
@@ -47,12 +49,12 @@ export function ProfileTab({ student, getSetting }: ProfileTabProps) {
                     />
                 </div>
 
-                {/* Info */}
+                {/* Student Info */}
                 <div className='flex-1 text-center md:text-left space-y-2'>
-                    <h2 className='text-3xl font-semibold text-foreground'>
+                    <h2 className='text-3xl font-bold text-foreground'>
                         {fullName}
                     </h2>
-                    <div className='text-sm text-muted-foreground'>
+                    <div className='text-sm text-muted-foreground space-y-1'>
                         <p>
                             <span className='font-medium text-foreground'>
                                 Class:
@@ -75,7 +77,7 @@ export function ProfileTab({ student, getSetting }: ProfileTabProps) {
                 </div>
             </div>
 
-            {/* Responsive Grid of Cards */}
+            {/* Info Grid */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                 {[
                     {
@@ -182,10 +184,10 @@ export function ProfileTab({ student, getSetting }: ProfileTabProps) {
                 ].map((section, idx) => (
                     <Card
                         key={idx}
-                        className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground'
+                        className=''
                     >
-                        <CardContent className='p-4 space-y-2'>
-                            <h3 className='text-lg font-semibold mb-2 text-primary'>
+                        <CardContent className='p-5 space-y-2'>
+                            <h3 className='text-lg font-semibold text-primary mb-2'>
                                 {section.title}
                             </h3>
                             {section.rows.map((row, i) => (

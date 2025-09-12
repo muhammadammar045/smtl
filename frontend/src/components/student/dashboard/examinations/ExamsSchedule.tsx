@@ -1,5 +1,3 @@
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
-import { ColumnDef } from "@tanstack/react-table";
 import {
     Accordion,
     AccordionContent,
@@ -7,9 +5,19 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    ExamScheduleDetail,
+    ExamSchedule as IExamSchedule,
+} from "@/store/slices/examSchedule/types";
 
-interface ExamScheduleData {
+import { ColumnDef } from "@tanstack/react-table";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { useGetExamSchedulesQuery } from "@/store/slices/examSchedule/examSchedule.slice";
+
+// 🔹 Table row type for UI
+interface ExamScheduleRow {
     subject: string;
+    teacher: string;
     date: string;
     startTime: string;
     endTime: string;
@@ -17,158 +25,101 @@ interface ExamScheduleData {
     passingMarks: number;
 }
 
-const examScheduleData = {
-    "Weekly Test 1 Session 2025-26": {
-        resultDate: "24-03-2025 11:13",
-        schedule: [
-            {
-                subject: "Computer",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "English",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Islamiat",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Mathematics",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Science",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Social Studies",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Urdu",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 10,
-                passingMarks: 4,
-            },
-            {
-                subject: "Values",
-                date: "2025-02-24",
-                startTime: "08:30 AM",
-                endTime: "11:30 AM",
-                fullMarks: 0,
-                passingMarks: 0,
-            },
-        ],
-    },
-    "Weekly Test 2 Session(2025-26)": {
-        resultDate: "07-04-2025 10:07",
-        schedule: [],
-    },
-    "Weekly Test 3 Session (2025-26)": {
-        resultDate: "14-04-2025 10:05",
-        schedule: [],
-    },
-};
+// 🔹 Transformed accordion item type
+interface TransformedExam {
+    id: string;
+    testName: string;
+    resultDate: string;
+    schedule: ExamScheduleRow[];
+}
 
 function ExamSchedule() {
-    const columns: ColumnDef<ExamScheduleData>[] = [
-        {
-            accessorKey: "subject",
-            header: "Subject",
-        },
-        {
-            accessorKey: "date",
-            header: "Date",
-        },
-        {
-            accessorKey: "startTime",
-            header: "Start Time",
-        },
-        {
-            accessorKey: "endTime",
-            header: "End Time",
-        },
-        {
-            accessorKey: "fullMarks",
-            header: "Full Marks",
-        },
-        {
-            accessorKey: "passingMarks",
-            header: "Passing Marks",
-        },
+    const { data, isLoading } = useGetExamSchedulesQuery();
+
+    const columns: ColumnDef<ExamScheduleRow>[] = [
+        { accessorKey: "subject", header: "Subject" },
+        { accessorKey: "teacher", header: "Teacher" },
+        { accessorKey: "date", header: "Date" },
+        { accessorKey: "startTime", header: "Start Time" },
+        { accessorKey: "endTime", header: "End Time" },
+        { accessorKey: "fullMarks", header: "Full Marks" },
+        { accessorKey: "passingMarks", header: "Passing Marks" },
     ];
 
+    // 🔹 Transform API response into UI-friendly format
+    const examScheduleData: TransformedExam[] =
+        data?.data?.exam_schedule?.map((exam: IExamSchedule) => ({
+            id: exam.id,
+            testName: exam.name,
+            resultDate: exam.result_date || "—",
+            schedule:
+                exam.exam_schedule_details?.map((d: ExamScheduleDetail) => ({
+                    subject: d.name,
+                    teacher: d.staff_name,
+                    date: new Date(d.date_of_exam).toLocaleDateString("en-GB"),
+                    startTime: d.start_to,
+                    endTime: d.end_from,
+                    fullMarks: Number(d.full_marks) || 0,
+                    passingMarks: Number(d.passing_marks) || 0,
+                })) ?? [],
+        })) ?? [];
+
     return (
-        <>
-            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Exam Schedule
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-4'>
+        <Card className='shadow-md shadow-muted/20 border border-border bg-card text-card-foreground rounded-2xl hover:shadow-lg hover:shadow-primary/20 transition-shadow'>
+            <CardHeader className='border-b border-border pb-3'>
+                <CardTitle className='text-2xl font-bold text-primary'>
+                    📝 Exam Schedule
+                </CardTitle>
+            </CardHeader>
+
+            <CardContent className='p-4'>
+                {isLoading ? (
+                    <div className='text-center py-6 text-muted-foreground animate-pulse'>
+                        Loading exam schedules...
+                    </div>
+                ) : examScheduleData.length === 0 ? (
+                    <div className='text-center text-muted-foreground py-6'>
+                        No exam schedules available.
+                    </div>
+                ) : (
                     <Accordion
                         type='single'
                         collapsible
-                        className='w-full'
+                        className='w-full space-y-4'
                     >
-                        {Object.entries(examScheduleData).map(
-                            ([testName, testData]) => (
-                                <AccordionItem
-                                    key={testName}
-                                    value={testName}
-                                >
-                                    <AccordionTrigger className='px-4'>
-                                        <div className='flex flex-col items-start'>
-                                            <span className='text-base font-semibold'>
-                                                {testName}
-                                            </span>
-                                            <span className='text-sm text-muted-foreground'>
-                                                Result Date:{" "}
-                                                {testData.resultDate}
-                                            </span>
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className='px-4'>
+                        {examScheduleData.map((exam) => (
+                            <AccordionItem
+                                key={exam.id}
+                                value={exam.id}
+                                className='border border-border rounded-xl bg-background overflow-hidden hover:shadow-md hover:shadow-muted/30 transition'
+                            >
+                                <AccordionTrigger className='px-4 py-3 flex flex-col items-start text-left font-semibold text-foreground hover:bg-accent hover:text-accent-foreground transition-colors'>
+                                    <span className='text-base font-semibold'>
+                                        {exam.testName}
+                                    </span>
+                                    <span className='text-sm text-muted-foreground'>
+                                        📅 Result Date: {exam.resultDate}
+                                    </span>
+                                </AccordionTrigger>
+
+                                <AccordionContent className='px-4 py-3'>
+                                    {exam.schedule.length > 0 ? (
                                         <TenStackReactTable
-                                            data={testData.schedule}
+                                            data={exam.schedule}
                                             columns={columns}
                                         />
-                                    </AccordionContent>
-                                </AccordionItem>
-                            )
-                        )}
+                                    ) : (
+                                        <div className='text-center text-muted-foreground py-4'>
+                                            No subjects scheduled for this test.
+                                        </div>
+                                    )}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
                     </Accordion>
-                </CardContent>
-            </Card>
-        </>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 

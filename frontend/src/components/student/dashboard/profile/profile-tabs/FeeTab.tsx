@@ -1,5 +1,4 @@
-import { PageTitle } from "@/components/common/parts/BreadCrumb";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
     Table,
     TableBody,
@@ -8,15 +7,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
+
+import { Badge } from "@/components/ui/badge";
 import { IStudentDueFee } from "@/store/slices/dashboard/types";
+import { PageTitle } from "@/components/common/parts/BreadCrumb";
 
 function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
     return (
         <>
             <PageTitle
-                title='Fee'
-                fontSize='text-2xl'
+                title='💰 Fee'
+                fontSize='text-2xl text-primary'
             />
 
             {studentFee.length === 0 ? (
@@ -28,15 +29,15 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                     {studentFee.map((fee) => (
                         <Card
                             key={fee.id}
-                            className='shadow-md overflow-hidden border border-border'
+                            className='shadow-md shadow-muted/20 overflow-hidden border border-border bg-card text-card-foreground rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-shadow'
                         >
                             {/* Card header */}
                             <div className='bg-primary text-primary-foreground px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
-                                <div className='font-medium text-base'>
+                                <div className='font-semibold text-base'>
                                     {fee.fee_monthly_code}
                                 </div>
                                 <div className='flex items-center gap-3'>
-                                    <Badge className='bg-accent text-accent-foreground hover:bg-accent/80'>
+                                    <Badge className='bg-accent text-accent-foreground hover:bg-accent/90'>
                                         Balance: Rs. {fee.amount}
                                     </Badge>
                                     {fee.fee_master_due && (
@@ -52,7 +53,7 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                                 <div className='overflow-x-auto'>
                                     <Table>
                                         <TableHeader>
-                                            <TableRow>
+                                            <TableRow className='bg-muted/20'>
                                                 <TableHead>
                                                     Installment
                                                 </TableHead>
@@ -112,7 +113,7 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                                                         className={
                                                             index % 2 === 0
                                                                 ? "bg-muted/30"
-                                                                : ""
+                                                                : "bg-background"
                                                         }
                                                     >
                                                         <TableCell>
@@ -135,12 +136,6 @@ function FeeTab({ studentFee }: { studentFee: IStudentDueFee[] }) {
                                                         </TableCell>
                                                         <TableCell>
                                                             <Badge
-                                                                variant={
-                                                                    status ===
-                                                                    "Paid"
-                                                                        ? "default"
-                                                                        : "destructive"
-                                                                }
                                                                 className={
                                                                     status ===
                                                                     "Paid"
