@@ -1,3 +1,4 @@
+
 export const apiRoutes = {
     auth: {
         login: "/site/userlogin_api",
@@ -11,7 +12,7 @@ export const apiRoutes = {
     },
     attendance: {
         getAttendance: "/user/attendence/attendance_api",
-        getAttendanceDetails: (month: number, year: number, search: string) => `user/attendence/detail_attendance_api?month=${month}&year=${year}&std_id=&search=${search}`
+        getAttendanceDetails: (month: string, year: number, search: string) => `user/attendence/detail_attendance_api?month=${month}&year=${year}&std_id=&search=${search}`
     },
     conference: {
         getConference: "user/conference/conference_api"
@@ -35,7 +36,8 @@ export const apiRoutes = {
 
     },
 
-    bioLog: {
+    timelog: {
+        getTimeLogs: "/user/user/bio_log_api",
 
     },
 

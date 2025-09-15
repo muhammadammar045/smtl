@@ -1,13 +1,14 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { api } from "@/store/service/rtk-service";
-import { RootState } from "@/store/store";
-import { AttendanceData, AttendanceDetailData } from "./types";
-import { apiRoutes } from "@/store/routes";
+import { AttendanceData, AttendanceDetailsData } from "./types";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+
 import { CommonApiResponse } from "@/store/commonApiResponse";
+import { RootState } from "@/store/store";
+import { api } from "@/store/service/rtk-service";
+import { apiRoutes } from "@/store/routes";
 
 interface AttendanceState {
     attendance: AttendanceData | null;
-    attendanceDetails: AttendanceDetailData | null;
+    attendanceDetails: AttendanceDetailsData | null;
     loading: boolean;
     error: string | null;
 }
@@ -25,7 +26,7 @@ export const attendanceApi = api.injectEndpoints({
         getAttendance: builder.query<CommonApiResponse<AttendanceData>, void>({
             query: () => `${apiRoutes.attendance.getAttendance}`,
         }),
-        getAttendanceDetails: builder.query<CommonApiResponse<AttendanceDetailData>, { month: number, year: number, search: string }>({
+        getAttendanceDetails: builder.query<CommonApiResponse<AttendanceDetailsData>, { month: string, year: number, search: string }>({
             query: (args) => `${apiRoutes.attendance.getAttendanceDetails(args.month, args.year, args.search)}`,
         }),
     }),
@@ -39,7 +40,7 @@ const attendanceSlice = createSlice({
             state.attendance = action.payload;
         },
 
-        setAttendanceDetails: (state, action: PayloadAction<AttendanceDetailData>) => {
+        setAttendanceDetails: (state, action: PayloadAction<AttendanceDetailsData>) => {
             state.attendanceDetails = action.payload;
         },
         setAttendanceError: (state, action: PayloadAction<string>) => {

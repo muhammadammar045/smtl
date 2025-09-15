@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { useGetAttendanceQuery } from "@/store/slices/attendance/attendance.slice";
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
-import { ColumnDef } from "@tanstack/react-table";
-import AttendanceDetailModal from "./AttendanceDetailModal";
-import { Button } from "@/components/ui/button"; // using your theme-based Button
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import AttendanceDetailModal from "./AttendanceDetailModal";
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
 import Loader from "@/components/common/loader/Loader";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { useGetAttendanceQuery } from "@/store/slices/attendance/attendance.slice";
+import { useState } from "react";
 
 type AttendanceRow = {
     id: number;
-    month: string; // e.g. "2025-04"
+    month: string;
     workingDays: number;
     present: number;
     late: number;
@@ -26,8 +27,9 @@ function Attendance() {
         isLoading,
         isError,
     } = useGetAttendanceQuery();
+
     const [selectedMonthYear, setSelectedMonthYear] = useState<{
-        month: number;
+        month: string; // This will now be month name, e.g., "April"
         year: number;
     } | null>(null);
 
@@ -36,7 +38,7 @@ function Attendance() {
             <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
                 <CardHeader className='border-b border-border pb-3'>
                     <CardTitle className='text-3xl font-bold text-primary'>
-                        Subjects
+                        Attendance
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='p-8 flex justify-center items-center'>
@@ -63,12 +65,13 @@ function Attendance() {
             </Card>
         );
     }
+
     const apiData = attendanceData.data.attendance_student;
 
     const tableData: AttendanceRow[] = Object.entries(apiData).map(
         ([month, values]: [string, any], index) => ({
             id: index + 1,
-            month, // "2025-04"
+            month,
             workingDays: values.working_days,
             present: values.count_present,
             late: values.count_late,
@@ -85,13 +88,23 @@ function Attendance() {
             accessorKey: "action",
             header: "Action",
             cell: ({ row }) => {
-                const [year, month] = row.original.month.split("-").map(Number);
+                const [year, monthNumber] = row.original.month
+                    .split("-")
+                    .map(Number);
+                const monthName = new Date(
+                    year,
+                    monthNumber - 1
+                ).toLocaleString("default", {
+                    month: "long",
+                });
 
                 return (
                     <Button
                         variant='default'
                         size='sm'
-                        onClick={() => setSelectedMonthYear({ month, year })}
+                        onClick={() =>
+                            setSelectedMonthYear({ month: monthName, year })
+                        }
                     >
                         View Detail
                     </Button>
@@ -124,6 +137,7 @@ function Attendance() {
                     />
                 </CardContent>
             </Card>
+
             {/* Modal */}
             {selectedMonthYear && (
                 <AttendanceDetailModal

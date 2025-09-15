@@ -1,72 +1,53 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { TimeLog as ITimeLog, TimeLogRow } from "@/store/slices/timelog/types";
+
 import { ColumnDef } from "@tanstack/react-table";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { useGetTimeLogsQuery } from "@/store/slices/timelog/timelog.slice";
 
-interface TimeLog {
-    sr: string;
-    date: string;
-    classSection: string;
-    startTime: string;
-    endTime: string;
-}
+const TimeLog = () => {
+    // Fetch raw API response (with rows inside `data.data`)
+    const { data, isLoading, error } = useGetTimeLogsQuery();
 
-function TimeLog() {
-    const data: TimeLog[] = [
-        {
-            sr: "1",
-            date: "17-04-2025",
-            classSection: "I",
-            startTime: "10:00 AM",
-            endTime: "11:00 AM",
-        },
-        {
-            sr: "2",
-            date: "17-04-2025",
-            classSection: "I",
-            startTime: "10:00 AM",
-            endTime: "11:00 AM",
-        },
+    // Map raw row arrays into formatted TimeLog objects for the table
+    const timeLogRows: ITimeLog[] =
+        data?.data?.data?.map((row: TimeLogRow) => ({
+            id: row[0],
+            attendanceDate: row[1],
+            inTime: row[2],
+            outTime: row[3],
+            fullName: row[4].trim(),
+            className: row[5],
+        })) || [];
+
+    // Define columns for TanStack Table
+    const columns: ColumnDef<ITimeLog>[] = [
+        { header: "ID", accessorKey: "id" },
+        { header: "Date", accessorKey: "attendanceDate" },
+        { header: "In Time", accessorKey: "inTime" },
+        { header: "Out Time", accessorKey: "outTime" },
+        { header: "Student Name", accessorKey: "fullName" },
+        { header: "Class", accessorKey: "className" },
     ];
-    const columns: ColumnDef<TimeLog>[] = [
-        {
-            accessorKey: "sr",
-            header: "Sr.",
-        },
-        {
-            accessorKey: "date",
-            header: "Date",
-        },
-        {
-            accessorKey: "classSection",
-            header: "Class Section",
-        },
-        {
-            accessorKey: "startTime",
-            header: "Start Time",
-        },
-        {
-            accessorKey: "endTime",
-            header: "End Time",
-        },
-    ];
+
+    if (isLoading) return <div>Loading time logs...</div>;
+    if (error) return <div>Error loading time logs</div>;
 
     return (
-        <>
-            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Time Log
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-4'>
-                    <TenStackReactTable
-                        data={data}
-                        columns={columns}
-                    />
-                </CardContent>
-            </Card>
-        </>
+        <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
+            <CardHeader className='border-b border-border pb-3'>
+                <CardTitle className='text-3xl font-bold text-primary'>
+                    Time Log
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='p-4'>
+                <TenStackReactTable
+                    data={timeLogRows}
+                    columns={columns}
+                />
+            </CardContent>
+        </Card>
     );
-}
+};
 
 export default TimeLog;

@@ -1,58 +1,70 @@
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { api } from "@/store/service/rtk-service";
-// import { RootState } from "@/store/store";
-// import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { Conference, LiveClasses } from "./types";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-// interface NoticeBoardState {
-//     notifications: NoticeBoardData[];
-//     notification: NoticeBoardData | null;
-//     loading: boolean;
-//     error: string | null;
-// }
+import { CommonApiResponse } from "@/store/commonApiResponse";
+import { RootState } from "@/store/store";
+import { api } from "@/store/service/rtk-service";
+import { apiRoutes } from "@/store/routes";
 
-// const initialState: NoticeBoardState = {
-//     notifications: [],
-//     notification: null,
-//     loading: false,
-//     error: null
-// };
+// State Interface
+interface LiveClassesState {
+    liveClasses: LiveClasses | null;
+    liveClass: Conference | null;
+    loading: boolean;
+    error: string | null;
+}
 
-// export const noticeboardApi = api.injectEndpoints({
-//     endpoints: (builder) => ({
-//         getNoticeBoardNotifications: builder.query<any, void>({
-//             query: () => `/notifications/get-dashboard-notifications`,
-//         }),
-//     }),
-// });
+// Initial State
+const initialState: LiveClassesState = {
+    liveClasses: null,
+    liveClass: null,
+    loading: false,
+    error: null,
+};
 
-// const noticeboardSlice = createSlice({
-//     name: "noticeboard",
-//     initialState,
-//     reducers: {
-//         setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-//             state.notification = action.payload;
-//         },
-//         setError: (state, action: PayloadAction<string>) => {
-//             state.error = action.payload;
-//             state.loading = false;
-//         },
-//     },
-//     extraReducers: (builder) => {
-//         builder
-//             .addMatcher(
-//                 noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
-//                 (state, { payload }) => {
-//                     state.notifications = payload.data;
-//                     state.loading = false;
-//                     state.error = null;
-//                 }
-//             );
-//     },
-// });
+// ✅ RTK Query API slice
+export const liveClassApi = api.injectEndpoints({
+    endpoints: (builder) => ({
+        getLiveClasses: builder.query<CommonApiResponse<LiveClasses>, void>({
+            query: () => apiRoutes.conference.getConference,
+        }),
+    }),
+});
 
+// ✅ Redux slice
+const liveClassSlice = createSlice({
+    name: "liveClass",
+    initialState,
+    reducers: {
+        setLiveClass: (state, action: PayloadAction<LiveClasses>) => {
+            state.liveClass = action.payload;
+        },
+        setError: (state, action: PayloadAction<string>) => {
+            state.error = action.payload;
+            state.loading = false;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            liveClassApi.endpoints.getLiveClasses.matchFulfilled,
+            (state, { payload }) => {
+                state.liveClasses = payload.data;
+                state.loading = false;
+                state.error = null;
+            }
+        );
+    },
+});
 
-// export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-// export const { setNotification, setError } = noticeboardSlice.actions;
-// export default noticeboardSlice.reducer;
+// ✅ Export hook from API, not slice
+export const { useGetLiveClassesQuery } = liveClassApi;
 
-// export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+// ✅ Export actions
+export const { setLiveClass, setError } = liveClassSlice.actions;
+
+// ✅ Export reducer
+export default liveClassSlice.reducer;
+
+// ✅ Selectors
+export const selectLiveClasses = (state: RootState) => state.liveClass.liveClasses;
+export const selectLiveClass = (state: RootState) => state.liveClass.liveClass;
