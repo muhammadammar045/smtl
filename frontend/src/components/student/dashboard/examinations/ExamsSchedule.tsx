@@ -48,7 +48,7 @@ function ExamSchedule() {
 
     // 🔹 Transform API response into UI-friendly format
     const examScheduleData: TransformedExam[] =
-        data?.data?.exam_schedule?.map((exam: IExamSchedule) => ({
+        data?.data?.examSchedule?.map((exam: IExamSchedule) => ({
             id: exam.id,
             testName: exam.name,
             resultDate: exam.result_date || "—",

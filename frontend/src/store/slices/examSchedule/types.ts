@@ -5,7 +5,7 @@ export interface ExamScheduleData {
     class_id: string;
     section_id: string;
     campus_id: string;
-    exam_schedule: ExamSchedule[];
+    examSchedule: ExamSchedule[];
 }
 
 // Main exam schedule object

@@ -20,7 +20,7 @@ function Syllabus() {
     const { data, isLoading, isError } = useGetSyllabusQuery();
 
     const syllabusList: SyllabusRow[] =
-        data?.data?.syllabus.map((item: any) => ({
+        data?.data?.list.map((item: any) => ({
             name: item.title,
             date: new Date(item.date).toLocaleDateString("en-GB"),
             type: item.type,
