@@ -62,7 +62,7 @@ export interface ExamScheduleDetail {
     name: string; // subject name
     subject_id: string;
     type: string; // e.g. "Theory"
-    sub_modules: any[]; // array but empty for now
+    sub_modules: unknown[]; // array but empty for now
 }
 
 
@@ -173,7 +173,7 @@ export interface ExamScheduleCombine {
         [gradeId: string]: {
             [studentId: string]: {
                 studentDetails: StudentDetails;
-                ExamData: any[]; // Can refine if ExamData structure is known
+                ExamData: unknown[]; // Can refine if ExamData structure is known
             };
         };
     };

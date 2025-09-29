@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Diary, DiaryEntry, SessionMonth } from "@/store/slices/diary/types";
+import { DiaryEntry, SessionMonth } from "@/store/slices/diary/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
