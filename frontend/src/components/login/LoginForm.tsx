@@ -47,9 +47,9 @@ export function LoginForm({
                 success: "Login successful",
                 error: "Login failed",
             });
-            if (result.data.role === "student") navigate("/dashboard/profile");
+            if (result.data.role === "student") navigate("/dashboard");
             else if (result.data.role === "parent")
-                navigate("/parent/dashboard");
+                navigate("/parent");
         } catch (err) {
             console.error("Login failed:", err);
         }

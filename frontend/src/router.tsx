@@ -18,6 +18,8 @@ import TimeLog from "./pages/dashboard/TimeLog";
 import LiveClasses from "./pages/dashboard/LiveClasses";
 import ExamsResult from "./pages/dashboard/examinations/ExamsResult";
 import Noticeboard from "./pages/dashboard/Noticeboard";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import ParentDashboardHome from "./pages/parent/ParentDashboardHome";
 import Login from "./pages/Login/Login";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import Calendar from "./components/student/dashboard/calendar/Calendar";
@@ -62,6 +64,10 @@ export const router = createBrowserRouter([
                 path: "dashboard",
                 element: <DashboardLayout />,
                 children: [
+                    {
+                        path: "",
+                        element: <DashboardHome />,
+                    },
                     {
                         path: "calendar",
                         element: <Calendar />,
@@ -140,6 +146,10 @@ export const router = createBrowserRouter([
                 path: "parent",
                 element: <ParentDashboardLayout />,
                 children: [
+                    {
+                        path: "",
+                        element: <ParentDashboardHome />,
+                    },
                     {
                         path: "calendar/child/:childId",
                         element: <Calendar />,
