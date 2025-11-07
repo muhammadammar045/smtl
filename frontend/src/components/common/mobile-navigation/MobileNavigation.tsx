@@ -166,16 +166,15 @@ export function MobileNavigation() {
     }, [Links]);
 
     const handleItemClick = (item: LinkItem) => {
-        // Always navigate to the item's URL
-        navigate(item.url);
-        
         if (item.items && item.items.length > 0) {
-            // If item has children, also push them to the stack so they're visible
+            // If item has children, show them without leaving the navigation
             setNavStack((prev) => [...prev, item.items!]);
-        } else {
-            // If no children, reset to root level
-            setNavStack([Links]);
+            return;
         }
+
+        // Leaf items navigate away from the navigation overlay
+        navigate(item.url);
+        setNavStack([Links]);
     };
 
     const handleBack = () => {
