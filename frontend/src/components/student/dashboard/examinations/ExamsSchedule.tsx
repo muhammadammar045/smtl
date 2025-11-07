@@ -48,21 +48,23 @@ function ExamSchedule() {
 
     // 🔹 Transform API response into UI-friendly format
     const examScheduleData: TransformedExam[] =
-        data?.data?.exam_schedule?.map((exam: IExamSchedule) => ({
-            id: exam.id,
-            testName: exam.name,
-            resultDate: exam.result_date || "—",
-            schedule:
-                exam.exam_schedule_details?.map((d: ExamScheduleDetail) => ({
-                    subject: d.name,
-                    teacher: d.staff_name,
-                    date: new Date(d.date_of_exam).toLocaleDateString("en-GB"),
-                    startTime: d.start_to,
-                    endTime: d.end_from,
-                    fullMarks: Number(d.full_marks) || 0,
-                    passingMarks: Number(d.passing_marks) || 0,
-                })) ?? [],
-        })) ?? [];
+        data?.data?.flatMap((examData) =>
+            examData.examSchedule?.map((exam: IExamSchedule) => ({
+                id: exam.id,
+                testName: exam.name,
+                resultDate: exam.result_date || "—",
+                schedule:
+                    exam.exam_schedule_details?.map((d: ExamScheduleDetail) => ({
+                        subject: d.name,
+                        teacher: d.staff_name,
+                        date: new Date(d.date_of_exam).toLocaleDateString("en-GB"),
+                        startTime: d.start_to,
+                        endTime: d.end_from,
+                        fullMarks: Number(d.full_marks) || 0,
+                        passingMarks: Number(d.passing_marks) || 0,
+                    })) ?? [],
+            })) ?? []
+        ) ?? [];
 
     return (
         <Card className='shadow-md shadow-muted/20 border border-border bg-card text-card-foreground rounded-2xl hover:shadow-lg hover:shadow-primary/20 transition-shadow'>

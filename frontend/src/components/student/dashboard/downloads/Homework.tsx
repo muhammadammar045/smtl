@@ -1,57 +1,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
+import { Download } from "lucide-react";
 import Loader from "@/components/common/loader/Loader";
 import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import envVars from "@/envExporter";
+import { useGetTimetableQuery } from "@/store/slices/download/download.slice";
 
-interface HomeWorkI {
+// ✅ Local interface (separate from backend type)
+interface TimeTableRow {
     name: string;
     date: string;
     type: string;
-    action: string;
+    file?: string; // optional now
 }
 
-function Homework() {
-    const [isLoading, setIsLoading] = useState(true);
-    const isError = false;
+function HomeWork() {
+    const { data, isLoading, isError } = useGetTimetableQuery();
 
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 2000);
-        return () => clearTimeout(timer);
-    }, []);
+    // ✅ Transform API response into table rows
+    const studyMaterials: TimeTableRow[] =
+        data?.data?.list.map((item: any) => ({
+            name: item.title,
+            date: new Date(item.date).toLocaleDateString("en-GB"),
+            type: item.type,
+            file: item.file, // may be undefined
+        })) || [];
 
-    const data: HomeWorkI[] = [
-        {
-            name: "Mathematics",
-            date: "17-04-2025",
-            type: "Theory",
-            action: "View Details",
-        },
-        {
-            name: "English",
-            date: "17-04-2025",
-            type: "Theory",
-            action: "View Details",
-        },
-        {
-            name: "Physics",
-            date: "17-04-2025",
-            type: "Theory",
-            action: "View Details",
-        },
-        {
-            name: "Chemistry",
-            date: "17-04-2025",
-            type: "Theory",
-            action: "View Details",
-        },
-    ];
-
-    const columns: ColumnDef<HomeWorkI>[] = [
-        { accessorKey: "name", header: "Subject" },
+    const columns: ColumnDef<TimeTableRow>[] = [
+        { accessorKey: "name", header: "Name" },
         { accessorKey: "date", header: "Date" },
         {
             accessorKey: "type",
@@ -68,14 +47,29 @@ function Homework() {
         {
             accessorKey: "action",
             header: "Action",
-            cell: ({ row }) => (
-                <Button
-                    size='sm'
-                    variant='outline'
-                >
-                    {row.original.action}
-                </Button>
-            ),
+            cell: ({ row }) => {
+                const fileUrl = row.original.file;
+
+                return fileUrl ? (
+                    <a
+                        href={`${envVars.BACKEND_URL}/${fileUrl}`}
+                        download
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        <Button
+                            variant='outline'
+                            size='sm'
+                            className='flex items-center gap-2 rounded-lg'
+                        >
+                            <Download className='h-4 w-4' />
+                            <span>Download</span>
+                        </Button>
+                    </a>
+                ) : (
+                    <span className='text-muted-foreground'>—</span>
+                );
+            },
         },
     ];
 
@@ -84,7 +78,7 @@ function Homework() {
             <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
                 <CardHeader className='border-b border-border pb-3'>
                     <CardTitle className='text-3xl font-bold text-primary'>
-                        Homework
+                        Home Work
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='p-8 flex justify-center items-center'>
@@ -102,12 +96,12 @@ function Homework() {
             <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
                 <CardHeader className='border-b border-border pb-3'>
                     <CardTitle className='text-3xl font-bold text-primary'>
-                        Homework
+                        Home Work
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='p-8 flex justify-center items-center'>
                     <span className='text-destructive font-medium'>
-                        Error loading homework
+                        Error loading home work
                     </span>
                 </CardContent>
             </Card>
@@ -118,17 +112,23 @@ function Homework() {
         <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl transition hover:shadow-lg'>
             <CardHeader className='border-b border-border pb-3'>
                 <CardTitle className='text-3xl font-bold text-primary'>
-                    Homework
+                    Home Work
                 </CardTitle>
             </CardHeader>
             <CardContent className='p-4'>
-                <TenStackReactTable
-                    data={data}
-                    columns={columns}
-                />
+                {studyMaterials.length > 0 ? (
+                    <TenStackReactTable
+                        data={studyMaterials}
+                        columns={columns}
+                    />
+                ) : (
+                    <p className='text-center text-muted-foreground py-6'>
+                        No home work found
+                    </p>
+                )}
             </CardContent>
         </Card>
     );
 }
 
-export default Homework;
+export default HomeWork;

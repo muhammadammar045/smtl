@@ -1,46 +1,26 @@
-import Loader from "@/components/common/loader/Loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
-import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 
-interface TransportRoute {
-    routeTitle: string;
-    Vehicle: string;
-}
+import { ColumnDef } from "@tanstack/react-table";
+import Loader from "@/components/common/loader/Loader";
+import { Route } from "@/store/slices/transport/types";
+import TenStackReactTable from "@/utilities/tenstack-reacttable/TenStackReactTable";
+import { useGetTransportQuery } from "@/store/slices/transport/transport.slice";
 
 function TransportRoutes() {
-    const [isLoading, setIsLoading] = useState(true);
-    const isError = false;
+    const { data, isLoading, isError } = useGetTransportQuery();
 
-    const data: TransportRoute[] = [
+    const routes: Route[] = data?.data?.listroute || [];
+
+    const columns: ColumnDef<Route>[] = [
         {
-            routeTitle: "Route 1",
-            Vehicle: "Bus 1",
+            accessorKey: "route_id",
+            header: "ID",
         },
         {
-            routeTitle: "Route 2",
-            Vehicle: "Bus 2",
-        },
-        {
-            routeTitle: "Route 3",
-            Vehicle: "Bus 3",
+            accessorKey: "route_name",
+            header: "Route Name",
         },
     ];
-    const columns: ColumnDef<TransportRoute>[] = [
-        {
-            accessorKey: "routeTitle",
-            header: "Route Title",
-        },
-        {
-            accessorKey: "Vehicle",
-            header: "Vehicle",
-        },
-    ];
-
-    setTimeout(() => {
-        setIsLoading(false);
-    }, 1000);
 
     if (isLoading) {
         return (
@@ -68,29 +48,35 @@ function TransportRoutes() {
                         Transport Routes
                     </CardTitle>
                 </CardHeader>
-                <CardContent className='p-8 flex justify-center items-center text-destructive'>
-                    Error loading transport routes
+                <CardContent className='p-8 flex justify-center items-center'>
+                    <span className='text-destructive font-medium'>
+                        Error loading transport routes
+                    </span>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <>
-            <Card className='shadow-md shadow-muted/30 border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Transport Routes
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-4'>
+        <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl transition hover:shadow-lg'>
+            <CardHeader className='border-b border-border pb-3'>
+                <CardTitle className='text-3xl font-bold text-primary'>
+                    Transport Routes
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='p-4'>
+                {routes.length > 0 ? (
                     <TenStackReactTable
-                        data={data}
+                        data={routes}
                         columns={columns}
                     />
-                </CardContent>
-            </Card>
-        </>
+                ) : (
+                    <p className='text-center text-muted-foreground py-6'>
+                        No transport routes found
+                    </p>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 

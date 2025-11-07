@@ -20,24 +20,23 @@ export interface IDownload {
 }
 
 export interface IDownloadStudyMaterial {
-    title: string;
-    study_material: IDownload[]
+    title_list: string;
+    list: IDownload[]
 }
-export interface IDownloadSyllabus {
-    title: string;
-    syllabus: IDownload[]
+export interface IDownloadHomeWork {
+    title_list: string;
+    list: IDownload[]
 }
 export interface IDownloadSummerTasks {
-    title: string;
-    downloads: IDownload[]
+    title_list: string;
+    list: IDownload[]
 }
 
-
 export interface IDownloadSyllabus {
-    title: string;
-    syllabus: IDownload[]
+    title_list: string;
+    list: IDownload[]
 }
-export interface IDownloadSyllabus {
-    title: string;
-    syllabus: IDownload[]
+export interface IDownloadTimeTable {
+    title_list: string;
+    list: IDownload[]
 }

@@ -1,58 +1,70 @@
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { api } from "@/store/service/rtk-service";
-// import { RootState } from "@/store/store";
-// import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-// interface NoticeBoardState {
-//     notifications: NoticeBoardData[];
-//     notification: NoticeBoardData | null;
-//     loading: boolean;
-//     error: string | null;
-// }
+import { CommonApiResponse } from "@/store/commonApiResponse";
+import { RootState } from "@/store/store";
+import { Transport } from "./types";
+import { api } from "@/store/service/rtk-service";
+import { apiRoutes } from "@/store/routes";
 
-// const initialState: NoticeBoardState = {
-//     notifications: [],
-//     notification: null,
-//     loading: false,
-//     error: null
-// };
+// State Interface
+interface TransportState {
+    transports: Transport | null;
+    transport: Transport | null;
+    loading: boolean;
+    error: string | null;
+}
 
-// export const noticeboardApi = api.injectEndpoints({
-//     endpoints: (builder) => ({
-//         getNoticeBoardNotifications: builder.query<any, void>({
-//             query: () => `/notifications/get-dashboard-notifications`,
-//         }),
-//     }),
-// });
+// Initial State
+const initialState: TransportState = {
+    transports: null,
+    transport: null,
+    loading: false,
+    error: null,
+};
 
-// const noticeboardSlice = createSlice({
-//     name: "noticeboard",
-//     initialState,
-//     reducers: {
-//         setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-//             state.notification = action.payload;
-//         },
-//         setError: (state, action: PayloadAction<string>) => {
-//             state.error = action.payload;
-//             state.loading = false;
-//         },
-//     },
-//     extraReducers: (builder) => {
-//         builder
-//             .addMatcher(
-//                 noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
-//                 (state, { payload }) => {
-//                     state.notifications = payload.data;
-//                     state.loading = false;
-//                     state.error = null;
-//                 }
-//             );
-//     },
-// });
+// ✅ RTK Query API slice
+export const transportApi = api.injectEndpoints({
+    endpoints: (builder) => ({
+        getTransport: builder.query<CommonApiResponse<Transport>, void>({
+            query: () => apiRoutes.routes.getRoutes,
+        }),
+    }),
+});
 
+// ✅ Redux slice
+const transportSlice = createSlice({
+    name: "transport",
+    initialState,
+    reducers: {
+        setTransport: (state, action: PayloadAction<Transport>) => {
+            state.transport = action.payload;
+        },
+        setError: (state, action: PayloadAction<string>) => {
+            state.error = action.payload;
+            state.loading = false;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            transportApi.endpoints.getTransport.matchFulfilled,
+            (state, { payload }) => {
+                state.transports = payload.data;
+                state.loading = false;
+                state.error = null;
+            }
+        );
+    },
+});
 
-// export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-// export const { setNotification, setError } = noticeboardSlice.actions;
-// export default noticeboardSlice.reducer;
+// ✅ Export hook from API, not slice
+export const { useGetTransportQuery } = transportApi;
 
-// export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+// ✅ Export actions
+export const { setTransport, setError } = transportSlice.actions;
+
+// ✅ Export reducer
+export default transportSlice.reducer;
+
+// ✅ Selectors
+export const selectTransports = (state: RootState) => state.transport.transports;
+export const selectTransport = (state: RootState) => state.transport.transport;

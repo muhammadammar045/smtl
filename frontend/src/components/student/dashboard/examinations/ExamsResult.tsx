@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PageTitle } from "@/components/common/parts/BreadCrumb";
 import { useGetExamResultsQuery } from "@/store/slices/examSchedule/examSchedule.slice";
+import { ExamProgressReportData } from "@/store/slices/examSchedule/types";
 
 interface ExamResult {
     subject: string;
@@ -48,78 +49,135 @@ interface ExamSession {
     classSummary: ClassSummary;
 }
 
+// API Response interfaces for exam results
+interface ExamResultApiData {
+    exam_name: string;
+    get_marks: string;
+    full_marks: string;
+    passing_marks: string;
+    attendence: string;
+    sub_position?: string;
+    appr?: string;
+}
+
+interface StudentApiData {
+    position_new_x?: string;
+    board_grade?: string;
+}
+
+interface ExamApiData {
+    exam_name: string;
+    exam_result: ExamResultApiData[];
+    student?: StudentApiData;
+    class_first?: string;
+    class_last?: string;
+    std_passed?: number;
+    class_size?: number;
+    pass_rate?: string;
+    class_avg?: string;
+}
+
 function ExamsResult() {
     const { data } = useGetExamResultsQuery();
+    console.log("🚀 -----------------------------------------------------🚀");
+    console.log("🚀 ~ ExamsResult.tsx:53 ~ ExamsResult ~ data==>", data);
+    console.log("🚀 -----------------------------------------------------🚀");
 
-    const examSessions: ExamSession[] = [
-        {
-            title: "Result: Weekly Test 2 Session (2025-26)",
-            examResults: [
-                {
-                    subject: "Science",
-                    fullMarks: 10,
-                    passingMarks: 4,
-                    obtainedMarks: "Absent",
-                    result: "Fail",
-                    grade: "-",
-                },
-            ],
-            studentSummary: {
-                obtainedMarks: 0,
-                fullMarks: 10,
-                percentage: "N/A",
-                position: "22/22",
-                grade: "-",
-                result: "FAIL",
-            },
-            classSummary: {
-                firstPosition: "100%",
-                lastPosition: "0%",
-                noStudentsPassed: 13,
-                classSize: 22,
-                passRate: "45.97%",
-                classAverage: "37.25",
-            },
-        },
-        {
-            title: "Result: Weekly Test 1 Session (2025-26)",
-            examResults: [
-                {
-                    subject: "Science",
-                    fullMarks: 10,
-                    passingMarks: 4,
-                    obtainedMarks: "Absent",
-                    result: "Fail",
-                    grade: "-",
-                },
-                {
-                    subject: "English",
-                    fullMarks: 10,
-                    passingMarks: 4,
-                    obtainedMarks: 10,
-                    result: "Pass",
-                    subjectPosition: 1,
-                    grade: "A++",
-                },
-            ],
-            studentSummary: {
-                obtainedMarks: 10,
-                fullMarks: 20,
-                percentage: "50.00%",
-                position: "7/22",
-                grade: "B",
-                result: "PASS",
-            },
-            classSummary: {
-                firstPosition: "100%",
-                lastPosition: "0%",
-                noStudentsPassed: 13,
-                classSize: 22,
-                passRate: "59.09%",
-                classAverage: "45.83",
-            },
-        },
-    ];
+    const examSessions: ExamSession[] =
+        data?.data?.map((examData: ExamProgressReportData) => {
+            // Access the examSchedule data from the API response
+            const examSchedule = examData.examSchedule_combine?.examSchedule;
+
+            // Get the first available exam data (assuming single student for now)
+            const examKeys = Object.keys(examSchedule || {});
+            const firstGradeKey = examKeys[0];
+            const studentKeys = firstGradeKey ? Object.keys(examSchedule[firstGradeKey] || {}) : [];
+            const firstStudentKey = studentKeys[0];
+
+            if (!firstGradeKey || !firstStudentKey || !examSchedule[firstGradeKey][firstStudentKey]) {
+                return null;
+            }
+
+            const examDataForStudent = examSchedule[firstGradeKey][firstStudentKey];
+            const exams = examDataForStudent.ExamData as ExamApiData[];
+
+            return exams.map((exam: ExamApiData) => {
+                let studentTotalObtained = 0;
+                let studentTotalFull = 0;
+                let studentResultStatus: "PASS" | "FAIL" = "PASS";
+
+                exam.exam_result?.forEach((result: ExamResultApiData) => {
+                    const obtained = parseFloat(result.get_marks) || 0;
+                    const full = parseFloat(result.full_marks) || 0;
+                    const passing = parseFloat(result.passing_marks) || 0;
+
+                    if (result.attendence !== "pre") {
+                        studentResultStatus = "FAIL";
+                    } else {
+                        studentTotalFull += full;
+                        studentTotalObtained += obtained;
+
+                        if (obtained < passing) {
+                            studentResultStatus = "FAIL";
+                        }
+                    }
+                });
+
+                const studentPercentage =
+                    studentTotalFull > 0
+                        ? ((studentTotalObtained / studentTotalFull) * 100).toFixed(
+                            2
+                        ) + "%"
+                        : "N/A";
+
+                const studentSummary: ResultSummary = {
+                    obtainedMarks: studentTotalObtained,
+                    fullMarks: studentTotalFull,
+                    percentage: studentPercentage,
+                    position: exam.student?.position_new_x || "-",
+                    grade: exam.student?.board_grade || "-",
+                    result: studentResultStatus,
+                };
+
+                const classSummary: ClassSummary = {
+                    firstPosition: exam.class_first || "-",
+                    lastPosition: exam.class_last || "-",
+                    noStudentsPassed: exam.std_passed || 0,
+                    classSize: exam.class_size || 0,
+                    passRate: exam.pass_rate || "-",
+                    classAverage: exam.class_avg || "-",
+                };
+
+                const examResults: ExamResult[] = exam.exam_result.map(
+                    (result: ExamResultApiData) => ({
+                        subject: result.exam_name,
+                        fullMarks: parseFloat(result.full_marks) || 0,
+                        passingMarks: parseFloat(result.passing_marks) || 0,
+                        obtainedMarks:
+                            result.attendence !== "pre"
+                                ? "Absent"
+                                : parseFloat(result.get_marks) || 0,
+                        result:
+                            result.attendence !== "pre" ||
+                                (parseFloat(result.get_marks) || 0) <
+                                (parseFloat(result.passing_marks) || 0)
+                                ? "Fail"
+                                : "Pass",
+                        subjectPosition: result.sub_position
+                            ? parseInt(result.sub_position, 10)
+                            : undefined,
+                        grade: result.appr || "-",
+                    })
+                );
+
+                return {
+                    title: exam.exam_name,
+                    examResults,
+                    studentSummary,
+                    classSummary,
+                };
+            });
+        }).flat().filter((session): session is ExamSession => session !== null) || [];
 
     return (
         <div className='space-y-12'>
@@ -178,7 +236,7 @@ function ExamsResult() {
                                                 </TableCell>
                                                 <TableCell className='font-medium'>
                                                     {result.obtainedMarks ===
-                                                    "Absent" ? (
+                                                        "Absent" ? (
                                                         <span className='italic text-muted-foreground'>
                                                             Absent
                                                         </span>
@@ -188,7 +246,7 @@ function ExamsResult() {
                                                 </TableCell>
                                                 <TableCell>
                                                     {result.result ===
-                                                    "Pass" ? (
+                                                        "Pass" ? (
                                                         <Badge
                                                             variant='default'
                                                             className='flex items-center gap-1 px-2 py-1'
@@ -274,9 +332,9 @@ function ExamsResult() {
                                     <li className='flex justify-between'>
                                         <span>Result</span>
                                         {session.studentSummary.result ===
-                                        "PASS" ? (
+                                            "PASS" ? (
                                             <Badge
-                                                variant='success'
+                                                variant='default'
                                                 className='flex items-center gap-1 px-2 py-1'
                                             >
                                                 <CheckCircle className='w-4 h-4' />

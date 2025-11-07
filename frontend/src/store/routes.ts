@@ -33,7 +33,7 @@ export const apiRoutes = {
     },
 
     diary: {
-
+        getDiary: "/user/diary/student_diary_desc_api",
     },
 
     timelog: {

@@ -1,58 +1,70 @@
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { api } from "@/store/service/rtk-service";
-// import { RootState } from "@/store/store";
-// import { NoticeBoardData } from "@/interfaces/noticeboard";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-// interface NoticeBoardState {
-//     notifications: NoticeBoardData[];
-//     notification: NoticeBoardData | null;
-//     loading: boolean;
-//     error: string | null;
-// }
+import { CommonApiResponse } from "@/store/commonApiResponse";
+import { Diary } from "./types";
+import { RootState } from "@/store/store";
+import { api } from "@/store/service/rtk-service";
+import { apiRoutes } from "@/store/routes";
 
-// const initialState: NoticeBoardState = {
-//     notifications: [],
-//     notification: null,
-//     loading: false,
-//     error: null
-// };
+// State Interface
+interface DiaryState {
+    diaries: Diary | null;
+    diary: Diary | null;
+    loading: boolean;
+    error: string | null;
+}
 
-// export const noticeboardApi = api.injectEndpoints({
-//     endpoints: (builder) => ({
-//         getNoticeBoardNotifications: builder.query<any, void>({
-//             query: () => `/notifications/get-dashboard-notifications`,
-//         }),
-//     }),
-// });
+// Initial State
+const initialState: DiaryState = {
+    diaries: null,
+    diary: null,
+    loading: false,
+    error: null,
+};
 
-// const noticeboardSlice = createSlice({
-//     name: "noticeboard",
-//     initialState,
-//     reducers: {
-//         setNotification: (state, action: PayloadAction<NoticeBoardData>) => {
-//             state.notification = action.payload;
-//         },
-//         setError: (state, action: PayloadAction<string>) => {
-//             state.error = action.payload;
-//             state.loading = false;
-//         },
-//     },
-//     extraReducers: (builder) => {
-//         builder
-//             .addMatcher(
-//                 noticeboardApi.endpoints.getNoticeBoardNotifications.matchFulfilled,
-//                 (state, { payload }) => {
-//                     state.notifications = payload.data;
-//                     state.loading = false;
-//                     state.error = null;
-//                 }
-//             );
-//     },
-// });
+// ✅ RTK Query API slice
+export const diaryApi = api.injectEndpoints({
+    endpoints: (builder) => ({
+        getDiary: builder.query<CommonApiResponse<Diary>, void>({
+            query: () => apiRoutes.diary.getDiary,
+        }),
+    }),
+});
 
+// ✅ Redux slice
+const diarySlice = createSlice({
+    name: "diary",
+    initialState,
+    reducers: {
+        setDiary: (state, action: PayloadAction<Diary>) => {
+            state.diary = action.payload;
+        },
+        setError: (state, action: PayloadAction<string>) => {
+            state.error = action.payload;
+            state.loading = false;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            diaryApi.endpoints.getDiary.matchFulfilled,
+            (state, { payload }) => {
+                state.diaries = payload.data;
+                state.loading = false;
+                state.error = null;
+            }
+        );
+    },
+});
 
-// export const { useGetNoticeBoardNotificationsQuery } = noticeboardApi;
-// export const { setNotification, setError } = noticeboardSlice.actions;
-// export default noticeboardSlice.reducer;
+// ✅ Export hook from API, not slice
+export const { useGetDiaryQuery } = diaryApi;
 
-// export const selectNoticeBoardNotifications = (state: RootState) => state.noticeboard.notifications
+// ✅ Export actions
+export const { setDiary, setError } = diarySlice.actions;
+
+// ✅ Export reducer
+export default diarySlice.reducer;
+
+// ✅ Selectors
+export const selectDiaryes = (state: RootState) => state.diary.diaries;
+export const selectDiary = (state: RootState) => state.diary.diary;
