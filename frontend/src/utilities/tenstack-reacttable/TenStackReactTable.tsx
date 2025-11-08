@@ -39,10 +39,21 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import Loader from "@/components/common/loader/Loader";
+
+type ColumnMeta = {
+    headerClassName?: string;
+    cellClassName?: string;
+};
 
 interface TenStackReactTableProps<TData> {
     data: TData[];
     columns: ColumnDef<TData>[];
+    className?: string;
+    emptyMessage?: string;
+    isLoading?: boolean;
+    loadingMessage?: string;
 }
 
 const actions = [
@@ -56,6 +67,10 @@ const actions = [
 function TenStackReactTable<TData>({
     data,
     columns,
+    className,
+    emptyMessage = "No results.",
+    isLoading = false,
+    loadingMessage = "Fetching latest records…",
 }: TenStackReactTableProps<TData>) {
     const table = useReactTable({
         data,
@@ -156,23 +171,23 @@ function TenStackReactTable<TData>({
     };
 
     return (
-        <div className='p-2'>
+        <div className={cn("space-y-4", className)}>
             {/* Search + Actions */}
-            <div className='flex flex-col md:flex-row gap-4 justify-between mb-4'>
+            <div className='flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm shadow-muted/40 backdrop-blur-sm md:flex-row md:items-center md:justify-between'>
                 <Input
                     placeholder='Search...'
                     value={table.getState().globalFilter ?? ""}
                     onChange={(e) => table.setGlobalFilter(e.target.value)}
-                    className='max-w-sm'
+                    className='min-h-[48px] max-w-md rounded-xl border-border/60 bg-background text-sm placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-primary/40 md:text-base'
                 />
                 <div className='flex items-center gap-2'>
                     {actions.map(({ icon: Icon, label }, idx) => (
                         <Button
                             key={idx}
-                            variant='outline'
+                            variant='secondary'
                             size='sm'
                             title={label}
-                            className='flex items-center justify-center'
+                            className='flex h-10 w-10 items-center justify-center rounded-xl border-border/40 bg-muted/30 text-muted-foreground transition hover:bg-primary/10 hover:text-primary'
                             onClick={() => handleAction(label)}
                         >
                             <Icon className='w-4 h-4' />
@@ -183,9 +198,10 @@ function TenStackReactTable<TData>({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                variant='outline'
+                                variant='secondary'
                                 size='sm'
                                 title='Columns'
+                                className='flex h-10 w-10 items-center justify-center rounded-xl border-border/40 bg-muted/30 text-muted-foreground transition hover:bg-primary/10 hover:text-primary'
                             >
                                 <SlidersHorizontal className='w-4 h-4' />
                             </Button>
@@ -198,14 +214,23 @@ function TenStackReactTable<TData>({
             </div>
 
             {/* Table */}
-            <div className='grid grid-cols-12 max-w-screen overflow-x-hidden'>
-                <div className='col-span-12 overflow-x-hidden'>
-                    <Table>
+            <div className='relative overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-muted/40'>
+                <div className={cn("overflow-x-auto", isLoading && "pointer-events-none opacity-50 blur-[0.2px] transition")}>
+                    <Table className='min-w-full'>
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
-                                        <TableHead key={header.id}>
+                                        <TableHead
+                                            key={header.id}
+                                            className={cn(
+                                                "bg-muted/30 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80 sm:text-xs",
+                                                (
+                                                    header.column.columnDef
+                                                        .meta as ColumnMeta | undefined
+                                                )?.headerClassName
+                                            )}
+                                        >
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -222,9 +247,21 @@ function TenStackReactTable<TData>({
                         <TableBody>
                             {table.getRowModel().rows.length ? (
                                 table.getRowModel().rows.map((row) => (
-                                    <TableRow key={row.id}>
+                                    <TableRow
+                                        key={row.id}
+                                        className='border-b border-border/50 last:border-none hover:bg-primary/5'
+                                    >
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
+                                            <TableCell
+                                                key={cell.id}
+                                                className={cn(
+                                                    "px-4 py-4 text-xs font-medium text-muted-foreground sm:text-sm",
+                                                    (
+                                                        cell.column.columnDef
+                                                            .meta as ColumnMeta | undefined
+                                                    )?.cellClassName
+                                                )}
+                                            >
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
                                                     cell.getContext()
@@ -237,9 +274,9 @@ function TenStackReactTable<TData>({
                                 <TableRow>
                                     <TableCell
                                         colSpan={columns.length}
-                                        className='h-24 text-center'
+                                        className='h-24 px-4 text-center text-sm font-medium text-muted-foreground'
                                     >
-                                        No results.
+                                        {emptyMessage}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -248,13 +285,10 @@ function TenStackReactTable<TData>({
                         {/* Footer */}
                         <TableFooter>
                             <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className='pt-5'
-                                >
-                                    <div className='flex flex-col sm:flex-row justify-between items-center gap-2 p-2'>
+                                <TableCell colSpan={columns.length}>
+                                    <div className='flex flex-col items-center gap-3 rounded-b-3xl bg-muted/10 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-sm'>
                                         {/* Records count */}
-                                        <div className='text-sm text-muted-foreground'>
+                                        <div>
                                             Records:{" "}
                                             {table.getState().pagination
                                                 .pageIndex *
@@ -279,8 +313,8 @@ function TenStackReactTable<TData>({
                                         </div>
 
                                         {/* Pagination */}
-                                        <Pagination className='justify-end'>
-                                            <PaginationContent className='flex-wrap'>
+                                        <Pagination className='justify-center sm:justify-end'>
+                                            <PaginationContent className='flex-wrap gap-1'>
                                                 <PaginationItem>
                                                     <PaginationPrevious
                                                         onClick={() => {
@@ -292,11 +326,11 @@ function TenStackReactTable<TData>({
                                                         aria-disabled={
                                                             !table.getCanPreviousPage()
                                                         }
-                                                        className={
+                                                        className={cn(
                                                             !table.getCanPreviousPage()
                                                                 ? "pointer-events-none opacity-50"
                                                                 : "cursor-pointer"
-                                                        }
+                                                        )}
                                                     />
                                                 </PaginationItem>
 
@@ -306,7 +340,7 @@ function TenStackReactTable<TData>({
                                                 </div>
 
                                                 {/* Mobile pagination (just page info) */}
-                                                <div className='sm:hidden px-2 text-sm'>
+                                                <div className='px-2 text-xs sm:hidden'>
                                                     Page{" "}
                                                     {table.getState().pagination
                                                         .pageIndex + 1}{" "}
@@ -324,11 +358,11 @@ function TenStackReactTable<TData>({
                                                         aria-disabled={
                                                             !table.getCanNextPage()
                                                         }
-                                                        className={
+                                                        className={cn(
                                                             !table.getCanNextPage()
                                                                 ? "pointer-events-none opacity-50"
                                                                 : "cursor-pointer"
-                                                        }
+                                                        )}
                                                     />
                                                 </PaginationItem>
                                             </PaginationContent>
@@ -339,6 +373,17 @@ function TenStackReactTable<TData>({
                         </TableFooter>
                     </Table>
                 </div>
+                {isLoading && (
+                    <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/75 backdrop-blur-sm'>
+                        <Loader
+                            variant='dots'
+                            size={32}
+                        />
+                        <p className='text-sm font-medium text-muted-foreground'>
+                            {loadingMessage}
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

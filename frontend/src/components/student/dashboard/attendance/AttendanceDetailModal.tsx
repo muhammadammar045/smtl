@@ -1,4 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge"; // Import Badge from shadcn
+import Loader from "@/components/common/loader/Loader";
+import { useGetAttendanceDetailsQuery } from "@/store/slices/attendance/attendance.slice";
 import {
     Table,
     TableBody,
@@ -7,10 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-
-import { Badge } from "@/components/ui/badge"; // Import Badge from shadcn
-import Loader from "@/components/common/loader/Loader";
-import { useGetAttendanceDetailsQuery } from "@/store/slices/attendance/attendance.slice";
 
 interface AttendanceDetailModalProps {
     month: string;
@@ -39,40 +37,6 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
         search: "", // Optional: pass student ID if required
     });
 
-    if (isLoading) {
-        return (
-            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Attendance Detail
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-8 flex justify-center items-center'>
-                    <Loader
-                        variant='dots'
-                        size={36}
-                    />
-                </CardContent>
-            </Card>
-        );
-    }
-
-    if (isError || !data) {
-        return (
-            <Card className='shadow-md border border-border bg-card text-card-foreground rounded-xl'>
-                <CardHeader className='border-b border-border pb-3'>
-                    <CardTitle className='text-3xl font-bold text-primary'>
-                        Attendance Detail
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='p-8 flex justify-center items-center text-destructive'>
-                    Error loading attendance details
-                </CardContent>
-            </Card>
-        );
-    }
-
-    // Extract all days from data
     const attendanceData =
         data?.data?.table_data?.flatMap((monthData: any) =>
             monthData.weeks.flatMap((week: any) =>
@@ -87,7 +51,6 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
             )
         ) ?? [];
 
-    // Group dates by dayName
     const groupedByDay: Record<
         string,
         { date: string; status: string; remarks: string }[]
@@ -107,12 +70,11 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
         }
     });
 
-    // Find max length of dates in any day to create rows accordingly
     const maxLength = Math.max(
+        1,
         ...Object.values(groupedByDay).map((arr) => arr.length)
     );
 
-    // Map status to badge variants
     const statusVariant = (status: string) => {
         switch (status.toLowerCase()) {
             case "present":
@@ -129,71 +91,98 @@ const AttendanceDetailModal: React.FC<AttendanceDetailModalProps> = ({
     };
 
     return (
-        <div className='fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4 sm:p-6 md:p-10'>
-            <div className='bg-background text-foreground rounded-lg shadow-lg w-full max-w-5xl p-6 relative border border-border overflow-x-auto'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 md:p-10'>
+            <div className='relative w-full max-w-5xl overflow-hidden rounded-3xl border border-border/60 bg-background/95 shadow-2xl shadow-black/20 backdrop-blur-sm'>
                 {/* Close Button */}
                 <button
-                    className='absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors text-xl'
+                    className='absolute right-4 top-4 rounded-full border border-border/60 bg-background/80 p-2 text-muted-foreground transition hover:scale-105 hover:text-foreground'
                     onClick={onClose}
                     aria-label='Close modal'
                 >
-                    ✖
+                    ✕
                 </button>
 
-                {/* Title */}
-                <h2 className='text-2xl font-semibold mb-6 text-center sm:text-left'>
-                    Attendance Detail – {month}/{year}
-                </h2>
+                <div className='space-y-6 px-5 py-6 sm:px-8 sm:py-8'>
+                    <header className='space-y-1 text-center sm:text-left'>
+                        <h2 className='text-xl font-semibold text-primary sm:text-2xl'>
+                            Attendance detail — {month} {year}
+                        </h2>
+                        <p className='text-sm text-muted-foreground sm:text-base'>
+                            Review daily statuses to understand your attendance
+                            pattern for the month.
+                        </p>
+                    </header>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {daysOfWeek.map((day) => (
-                                <TableHead
-                                    key={day}
-                                    className='text-center'
-                                >
-                                    {day}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {[...Array(maxLength)].map((_, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                                {daysOfWeek.map((day) => {
-                                    const dayEntry =
-                                        groupedByDay[day][rowIndex];
-                                    return (
-                                        <TableCell
-                                            key={day}
-                                            className='align-top text-center p-2'
+                    {isLoading ? (
+                        <div className='flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed border-border/60 bg-muted/10'>
+                            <Loader
+                                variant='dots'
+                                size={36}
+                            />
+                        </div>
+                    ) : isError || !data ? (
+                        <div className='rounded-2xl border border-dashed border-border/60 bg-destructive/5 p-6 text-center text-sm text-destructive sm:text-base'>
+                            We couldn&apos;t load the attendance detail this
+                            time. Please try again shortly.
+                        </div>
+                    ) : (
+                        <div className='overflow-x-auto'>
+                            <Table className='min-w-[680px] rounded-2xl border border-border/60'>
+                                <TableHeader>
+                                    <TableRow className='bg-muted/30'>
+                                        {daysOfWeek.map((day) => (
+                                            <TableHead
+                                                key={day}
+                                                className='px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground sm:text-sm'
+                                            >
+                                                {day}
+                                            </TableHead>
+                                        ))}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {[...Array(maxLength)].map((_, rowIndex) => (
+                                        <TableRow
+                                            key={rowIndex}
+                                            className='border-border/50'
                                         >
-                                            {dayEntry ? (
-                                                <>
-                                                    <div className='font-medium'>
-                                                        {dayEntry.date}
-                                                    </div>
-                                                    <Badge
-                                                        variant={statusVariant(
-                                                            dayEntry.status
-                                                        )}
+                                            {daysOfWeek.map((day) => {
+                                                const dayEntry =
+                                                    groupedByDay[day][rowIndex];
+                                                return (
+                                                    <TableCell
+                                                        key={`${day}-${rowIndex}`}
+                                                        className='h-full px-4 py-5 text-center align-top text-xs text-muted-foreground sm:text-sm'
                                                     >
-                                                        {dayEntry.status}
-                                                    </Badge>
-                                                </>
-                                            ) : (
-                                                <span className='text-muted-foreground'>
-                                                    -
-                                                </span>
-                                            )}
-                                        </TableCell>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                                        {dayEntry ? (
+                                                            <div className='space-y-2'>
+                                                                <div className='text-sm font-semibold text-foreground'>
+                                                                    {dayEntry.date}
+                                                                </div>
+                                                                <Badge
+                                                                    className='px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]'
+                                                                    variant={statusVariant(
+                                                                        dayEntry.status
+                                                                    )}
+                                                                >
+                                                                    {dayEntry.status}
+                                                                </Badge>
+                                                            </div>
+                                                        ) : (
+                                                            <span className='text-muted-foreground/60'>
+                                                                —
+                                                            </span>
+                                                        )}
+                                                    </TableCell>
+                                                );
+                                            })}
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
