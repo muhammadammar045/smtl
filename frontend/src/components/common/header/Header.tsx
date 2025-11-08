@@ -252,18 +252,6 @@ export const Header = ({
                             <UserCircle className='h-5 w-5 text-primary' />
                         </Button>
 
-                        {/* Mobile Menu Button */}
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button
-                                    variant='outline'
-                                    size='icon'
-                                    className='rounded-full border-border text-foreground hover:bg-accent hover:text-accent-foreground'
-                                >
-                                    <SidebarTrigger />
-                                </Button>
-                            </SheetTrigger>
-                        </Sheet>
                     </div>
                 </div>
             </div>
