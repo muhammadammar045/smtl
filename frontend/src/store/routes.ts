@@ -49,6 +49,22 @@ export const apiRoutes = {
 
     calendar: {
         getCalendar: "user/calendar/calendar_api"
+    },
+
+    parent: {
+        dashboard: "/parent/parents/dashboard_api",
+        getStudent: (childId: string) => `/parent/parents/getstudent_api/${childId}`,
+        getNotifications: (childId: string) => `/parent/notification/index_api/${childId}`,
+        getAttendance: (childId: string) => `/parent/parents/getattendence_api/${childId}`,
+        getAttendanceDetails: (childId: string, month: string, year: number, search: string) => `/parent/parents/detail_attendance_api?month=${month}&year=${year}&std_id=${childId}&search=${search}`,
+        getLeaveRequest: (childId: string) => `/parent/parents/leaverequest_api/${childId}`,
+        getBioLog: (childId: string) => `/parent/parents/bio_log_api/${childId}`,
+        getDiary: (childId: string) => `/parent/diary/student_diary_desc_api/${childId}`,
+        getExamTimetable: (childId: string) => `/parent/parents/getexamtimetable_api/${childId}`,
+        getExams: (childId: string) => `/parent/parents/getexams_api/${childId}`,
+        getDownloads: (childId: string) => `/parent/parents/downloads_api/${childId}`,
+        getSubject: (childId: string) => `/parent/parents/getsubject_api/${childId}`,
+        getRoutes: "/parent/route_api"
     }
 
 

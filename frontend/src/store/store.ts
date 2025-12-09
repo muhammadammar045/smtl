@@ -12,6 +12,17 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import subjectReducer from "./slices/subject/subject.slice";
 import timeLogReducer from "./slices/timelog/timelog.slice";
 import transportReducer from "./slices/transport/transport.slice";
+import parentDashboardReducer from "./slices/parent/dashboard/parentDashboard.slice";
+import parentStudentReducer from "./slices/parent/student/parentStudent.slice";
+import parentNotificationReducer from "./slices/parent/notification/parentNotification.slice";
+import parentAttendanceReducer from "./slices/parent/attendance/parentAttendance.slice";
+import parentLeaveRequestReducer from "./slices/parent/leaveRequest/parentLeaveRequest.slice";
+import parentBioLogReducer from "./slices/parent/bioLog/parentBioLog.slice";
+import parentDiaryReducer from "./slices/parent/diary/parentDiary.slice";
+import parentExamReducer from "./slices/parent/exam/parentExam.slice";
+import parentDownloadReducer from "./slices/parent/download/parentDownload.slice";
+import parentSubjectReducer from "./slices/parent/subject/parentSubject.slice";
+import parentRouteReducer from "./slices/parent/route/parentRoute.slice";
 
 export const store = configureStore({
     reducer: {
@@ -26,7 +37,18 @@ export const store = configureStore({
         liveClass: liveClassesReducer,
         timelog: timeLogReducer,
         diary: diaryReducer,
-        transport: transportReducer
+        transport: transportReducer,
+        parentDashboard: parentDashboardReducer,
+        parentStudent: parentStudentReducer,
+        parentNotification: parentNotificationReducer,
+        parentAttendance: parentAttendanceReducer,
+        parentLeaveRequest: parentLeaveRequestReducer,
+        parentBioLog: parentBioLogReducer,
+        parentDiary: parentDiaryReducer,
+        parentExam: parentExamReducer,
+        parentDownload: parentDownloadReducer,
+        parentSubject: parentSubjectReducer,
+        parentRoute: parentRouteReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(api.middleware),

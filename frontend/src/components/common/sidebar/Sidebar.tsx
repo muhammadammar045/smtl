@@ -30,13 +30,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { selectAuth } from "@/store/slices/auth/auth.slice";
 import { useAppSelector } from "@/store/hooks/hooks";
-
-// Mocked children
-const mockChildren = [
-    { id: "1", name: "Muhammad Senan" },
-    { id: "2", name: "Muhammad Ammar" },
-    { id: "3", name: "Muhammad Maaz" },
-];
+import { useGetParentDashboardQuery } from "@/store/slices/parent/dashboard/parentDashboard.slice";
+import { IChild } from "@/store/slices/parent/dashboard/types";
 
 interface LinkItem {
     title: string;
@@ -118,33 +113,55 @@ const studentLinks: LinkItem[] = [
     { title: "Transport Routes", url: "/dashboard/transport", icon: <Bus /> },
 ];
 
-const generateParentLinks = (): LinkItem[] =>
-    studentLinks.map((link) =>
-        link.items
+const generateParentLinks = (children: IChild[]): LinkItem[] => {
+    const firstChildId = children.length > 0 ? children[0].id : null;
+    
+    return studentLinks.map((link) => {
+        const parentUrl = firstChildId 
+            ? `/parent/child/${firstChildId}${link.url.substring("/dashboard".length)}`
+            : link.url;
+        
+        return link.items
             ? {
                   ...link,
-                  items: link.items.map((subItem) => ({
-                      ...subItem,
-                      items: mockChildren.map((child) => ({
-                          title: child.name,
-                          url: `/parent/child/${
-                              child.id
-                          }${subItem.url.substring("/dashboard".length)}`,
-                          icon: <User />,
-                      })),
-                  })),
+                  url: parentUrl, // Main link points to first child
+                  items: link.items.map((subItem) => {
+                      const subParentUrl = firstChildId
+                          ? `/parent/child/${firstChildId}${subItem.url.substring("/dashboard".length)}`
+                          : subItem.url;
+                      
+                      return {
+                          ...subItem,
+                          url: subParentUrl, // Sub-item link points to first child
+                          items: children.map((child) => {
+                              const fullName = `${child.firstname} ${child.lastname || ""}`.trim();
+                              return {
+                                  title: fullName,
+                                  url: `/parent/child/${
+                                      child.id
+                                  }${subItem.url.substring("/dashboard".length)}`,
+                                  icon: <User />,
+                              };
+                          }),
+                      };
+                  }),
               }
             : {
                   ...link,
-                  items: mockChildren.map((child) => ({
-                      title: child.name,
-                      url: `/parent/child/${child.id}${link.url.substring(
-                          "/dashboard".length
-                      )}`,
-                      icon: <User />,
-                  })),
-              }
-    );
+                  url: parentUrl, // Main link points to first child
+                  items: children.map((child) => {
+                      const fullName = `${child.firstname} ${child.lastname || ""}`.trim();
+                      return {
+                          title: fullName,
+                          url: `/parent/child/${child.id}${link.url.substring(
+                              "/dashboard".length
+                          )}`,
+                          icon: <User />,
+                      };
+                  }),
+              };
+    });
+};
 
 // recursively check if active
 const isItemActive = (item: LinkItem, pathname: string): boolean =>
@@ -155,10 +172,17 @@ export function AppSidebar() {
     const { pathname } = useLocation();
     const user = useAppSelector(selectAuth);
     const role = user?.role;
+    
+    // Always call the hook (React rules)
+    // For void queries, RTK Query allows options as first parameter
+    const parentDashboardResult = useGetParentDashboardQuery();
+    const { data: parentDashboardData } = role === "parent" ? parentDashboardResult : { data: undefined };
+
+    const children: IChild[] = parentDashboardData?.data?.student_list || [];
 
     const Links = useMemo(
-        () => (role === "parent" ? generateParentLinks() : studentLinks),
-        [role]
+        () => (role === "parent" ? generateParentLinks(children) : studentLinks),
+        [role, children]
     );
 
     const [openAccordions, setOpenAccordions] = useState<

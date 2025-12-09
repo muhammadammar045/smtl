@@ -20,6 +20,18 @@ import ExamsResult from "./pages/dashboard/examinations/ExamsResult";
 import Noticeboard from "./pages/dashboard/Noticeboard";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import ParentDashboardHome from "./pages/parent/ParentDashboardHome";
+import ParentDashboard from "./pages/parent/ParentDashboard";
+import ParentProfile from "./pages/parent/ParentProfile";
+import ParentNoticeboard from "./pages/parent/ParentNoticeboard";
+import ParentAttendance from "./pages/parent/ParentAttendance";
+import ParentLeaveRequest from "./pages/parent/ParentLeaveRequest";
+import ParentBioLog from "./pages/parent/ParentBioLog";
+import ParentDiary from "./pages/parent/ParentDiary";
+import ParentExamSchedule from "./pages/parent/ParentExamSchedule";
+import ParentExamResults from "./pages/parent/ParentExamResults";
+import ParentDownloads from "./pages/parent/ParentDownloads";
+import ParentSubjects from "./pages/parent/ParentSubjects";
+import ParentRoutes from "./pages/parent/ParentRoutes";
 import Login from "./pages/Login/Login";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import Calendar from "./components/student/dashboard/calendar/Calendar";
@@ -148,7 +160,7 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         path: "",
-                        element: <ParentDashboardHome />,
+                        element: <ParentDashboard />,
                     },
                     {
                         path: "calendar/child/:childId",
@@ -160,29 +172,48 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: "child/:childId/profile",
-                        element: <Profile />,
+                        element: <ParentProfile />,
                     },
                     {
                         path: "child/:childId/notice-board",
-                        element: <Noticeboard />,
+                        element: <ParentNoticeboard />,
                     },
                     {
                         path: "child/:childId/attendance",
-                        element: <Attendance />,
+                        element: <ParentAttendance />,
                     },
                     {
-                        path: "child/:childId/live-classes",
-                        element: <LiveClasses />,
+                        path: "child/:childId/leave-request",
+                        element: <ParentLeaveRequest />,
                     },
                     {
                         path: "child/:childId/time-log",
-                        element: <TimeLog />,
+                        element: <ParentBioLog />,
                     },
                     {
                         path: "child/:childId/diary",
-                        element: <Diary />,
+                        element: <ParentDiary />,
                     },
-                    // Add other routes as needed
+                    {
+                        path: "child/:childId/exams/schedule",
+                        element: <ParentExamSchedule />,
+                    },
+                    {
+                        path: "child/:childId/exams/results",
+                        element: <ParentExamResults />,
+                    },
+                    {
+                        path: "child/:childId/downloads",
+                        element: <ParentDownloads />,
+                    },
+                    {
+                        path: "child/:childId/subjects",
+                        element: <ParentSubjects />,
+                    },
+                    {
+                        path: "routes",
+                        element: <ParentRoutes />,
+                    },
                 ],
             },
             {
